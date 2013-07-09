@@ -6,7 +6,7 @@ body {
   font-size-adjust: none;
 }
 body {
-  font: 16px 'PT Serif', serif;
+  font: 17px 'PT Serif', serif;
   color: #767F85;
   color: #777;
   font-weight: 100;
@@ -20,7 +20,7 @@ body {
 }
 @media screen and (max-width: 960px) {
   body {
-    font-size: 14px;
+    font-size: 15px;
   }
 }
 h1,
@@ -141,6 +141,10 @@ aside .social {
   margin: 1.2em;
   overflow: hidden;
 }
+aside .pdf {
+  font-size: .8em;
+  color: #999;
+}
 @media print {
   aside .social {
     display: none;
@@ -204,7 +208,7 @@ q {
 blockquote,
 q {
   color: #445de9;
-  font-size: 2em;
+  font-size: 1.5em;
   font-style: italic;
   line-height: 1.5em;
 }
@@ -213,7 +217,6 @@ q {
   q {
     display: block;
     margin: 2em 1em;
-    font-size: 1.5em;
     text-align: center;
     padding: 0;
     width: auto;
@@ -230,6 +233,7 @@ footer {
   background: #445de9;
   color: white;
   padding: 3em;
+  margin-top: 3em;
   text-align: center;
 }
 footer a {
@@ -377,6 +381,8 @@ figure figcaption:before {
   }
   #reactive-applications .focus li {
     display: inline-block;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
     box-sizing: border-box;
     width: 180px;
     padding: 0 1em;
@@ -491,7 +497,7 @@ figure figcaption:before {
   }
 }
 #sign {
-  z-index: 20;
+  z-index: 2;
   position: fixed;
   top: -50%;
   left: 50%;
@@ -520,6 +526,41 @@ figure figcaption:before {
   -moz-transition: -moz-transform 400ms cubic-bezier(0, 0.5, 0.5, 1) 400ms, top 1ms linear, opacity 400ms cubic-bezier(0, 0.5, 0.5, 1) 400ms;
   transition: transform 400ms cubic-bezier(0, 0.5, 0.5, 1) 400ms, top 1ms linear, opacity 400ms cubic-bezier(0, 0.5, 0.5, 1) 400ms;
 }
+@media screen and (max-width: 500px) {
+  #sign {
+    top: 40px;
+    width: auto;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    transform: translate(0,-100%);
+    -moz-transform: translate(0,-100%);
+    -webkit-transform: translate(0,-100%);
+  }
+  .signing #sign {
+    top: 40px;
+    transform: translate(0,0);
+    -moz-transform: translate(0,0);
+    -webkit-transform: translate(0,0);
+  }
+  #sign {
+    opacity: 1;
+  }
+}
+#sign .close {
+  display: block;
+  border: 2px solid white;
+  border-radius: 13px;
+  width: 20px;
+  height: 20px;
+  line-height: 17px;
+  padding: 0;
+  text-align: center;
+  position: absolute;
+  top: 2em;
+  right: 2em;
+  cursor: pointer;
+}
 #sign .inner {
   text-align: center;
 }
@@ -541,12 +582,14 @@ figure figcaption:before {
   text-decoration: none;
 }
 #sign .logout:hover,
+#sign .close:hover,
 #sign button:hover {
   background: white;
   color: #445de9;
 }
 #sign .logout {
   float: right;
+  margin-right: 30px;
 }
 #sign button {
   width: 200px;
@@ -566,6 +609,11 @@ figure figcaption:before {
   padding: .5em 1em 2em;
   text-align: center;
 }
+@media print {
+  .signatures {
+    display: none;
+  }
+}
 .signatures ul {
   padding: 0;
   margin: 0;
@@ -573,7 +621,44 @@ figure figcaption:before {
 .signatures li {
   display: inline-block;
   padding: .2em;
+  position: relative;
+}
+.signatures li img {
+  background: #eee;
 }
 .signatures li cite {
   display: none;
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  -webkit-transform: translate(-50%,-100%);
+  -moz-transform: translate(-50%,-100%);
+  transform: translate(-50%,-100%);
+  background: #444;
+  color: #fff;
+  padding: .3em 1em; 
+  white-space: nowrap;
+}
+.signatures li cite:before {
+  display: block;
+  content: " ";
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  -webkit-transform: translate(-50%,0);
+  -moz-transform: translate(-50%,0);
+  transform: translate(-50%,0);
+  width: 0px;
+  height: 0px;
+  border-style: solid;
+  border-width: 10px 10px 0 10px;
+  border-color: #444 transparent transparent transparent;
+}
+.signatures li:hover cite {
+  display: block;
+}
+
+.full {
+  padding: 2em;
+  line-height: 1.4em;
 }
