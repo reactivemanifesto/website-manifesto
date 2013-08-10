@@ -1,0 +1,23 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+GET           /                    controllers.Application.index
+GET           /list                controllers.Application.list
+
+GET           /signatories         controllers.SignatoriesController.list(page: Int ?= 1, per_page: Int ?= 30)
+GET           /signatories/total   controllers.SignatoriesController.count
+
+GET           /user                controllers.CurrentUserController.getUser
+DELETE        /user                controllers.CurrentUserController.logOut
+
+PUT           /user/sign           controllers.SignatoriesController.sign
+DELETE        /user/sign           controllers.SignatoriesController.unsign
+
+GET           /twitter/auth        controllers.oauth.TwitterController.authenticate
+GET           /google/auth         controllers.oauth.GoogleController.authenticate
+GET           /github/auth         controllers.oauth.GitHubController.authenticate
+GET           /linkedin/auth       controllers.oauth.LinkedInController.authenticate
+
+GET           /webjars/*file       controllers.WebJarAssets.at(file)
+GET           /*file               controllers.Assets.at(path="/public", file)
