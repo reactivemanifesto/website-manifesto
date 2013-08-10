@@ -1,0 +1,38 @@
+Local Development
+-----------------
+
+This file will be packaged with your application, when using `play dist`.
+
+=======
+Setup the environment:
+
+    export TWITTER_AUTH_KEY="---YOUR-KEY---"
+    export TWITTER_AUTH_SECRET="---YOUR-SECRET---"
+    export GOOGLE_CLIENT_ID="---YOUR-ID---"
+    export GOOGLE_CLIENT_SECRET="---YOUR-SECRET---"
+    export GITHUB_CLIENT_ID="---YOUR-ID---"
+    export GITHUB_CLIENT_SECRET="---YOUR-SECRET---"
+    export LINKEDIN_CLIENT_ID="---YOUR-ID---"
+    export LINKEDIN_CLIENT_SECRET="---YOUR-SECRET---"
+
+Run:
+
+    play ~run
+
+
+Deploy on Heroku
+----------------
+
+    heroku create
+    heroku addons:add mongohq
+    heroku config:add APPLICATION_SECRET="---YOUR-APPLICATION-SECRET---"
+    heroku config:add TWITTER_AUTH_KEY="---YOUR-KEY---"
+    heroku config:add TWITTER_AUTH_SECRET="---YOUR-KEY---"
+    heroku config:add GOOGLE_CLIENT_ID="---YOUR-KEY---"
+    heroku config:add GOOGLE_CLIENT_SECRET="---YOUR-KEY---"
+    heroku config:add GITHUB_CLIENT_ID="---YOUR-KEY---"
+    heroku config:add GITHUB_CLIENT_SECRET="---YOUR-KEY---"
+    heroku config:add LINKEDIN_CLIENT_ID="---YOUR-KEY---"
+    heroku config:add LINKEDIN_CLIENT_SECRET="---YOUR-KEY---"
+    
+    git push heroku master
