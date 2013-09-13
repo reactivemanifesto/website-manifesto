@@ -2,22 +2,30 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-GET           /                    controllers.Application.index
-GET           /list                controllers.Application.list
+GET           /                         controllers.Application.index
+GET           /list                     controllers.Application.list
 
-GET           /signatories         controllers.SignatoriesController.list(page: Int ?= 1, per_page: Int ?= 30)
-GET           /signatories/total   controllers.SignatoriesController.count
+GET           /signatories              controllers.SignatoriesController.list(page: Int ?= 1, per_page: Int ?= 30)
+GET           /signatories/total        controllers.SignatoriesController.count
 
-GET           /user                controllers.CurrentUserController.getUser
-DELETE        /user                controllers.CurrentUserController.logOut
+GET           /user                     controllers.CurrentUserController.getUser
+DELETE        /user                     controllers.CurrentUserController.logOut
 
-PUT           /user/sign           controllers.SignatoriesController.sign
-DELETE        /user/sign           controllers.SignatoriesController.unsign
+PUT           /user/sign                controllers.SignatoriesController.sign
+DELETE        /user/sign                controllers.SignatoriesController.unsign
 
-GET           /twitter/auth        controllers.oauth.TwitterController.authenticate
-GET           /google/auth         controllers.oauth.GoogleController.authenticate
-GET           /github/auth         controllers.oauth.GitHubController.authenticate
-GET           /linkedin/auth       controllers.oauth.LinkedInController.authenticate
+GET           /twitter/auth             controllers.oauth.TwitterController.authenticate
+GET           /google/auth              controllers.oauth.GoogleController.authenticate
+GET           /github/auth              controllers.oauth.GitHubController.authenticate
+GET           /linkedin/auth            controllers.oauth.LinkedInController.authenticate
 
-GET           /webjars/*file       controllers.WebJarAssets.at(file)
-GET           /*file               controllers.Assets.at(path="/public", file)
+GET           /admin                    controllers.admin.AdminController.index
+GET           /admin/login              controllers.admin.AdminController.login
+GET           /admin/logout             controllers.admin.AdminController.logout
+# Must be a sub path of /github/auth
+GET           /github/auth/admin        controllers.admin.AdminController.authenticate
+GET           /admin/list               controllers.admin.AdminController.list
+GET           /admin/csv                controllers.admin.AdminController.csv
+
+GET           /webjars/*file            controllers.WebJarAssets.at(file)
+GET           /*file                    controllers.Assets.at(path="/public", file)

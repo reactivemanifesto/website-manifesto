@@ -1,0 +1,20 @@
+@main {
+    <main>
+        <header>
+            <h1>The <span>Reactive</span> Manifesto</h1>
+
+        </header>
+
+        <article class="admin">
+            <h2>Admin</h2>
+
+            <ul>
+                <li><a href="@controllers.admin.routes.AdminController.list()">List signatories</a></li>
+                <li><a href="@controllers.admin.routes.AdminController.csv()">List signatories (CSV format)</a></li>
+                <li><a href="@controllers.admin.routes.AdminController.logout()">Logout</a></li>
+            </ul>
+        </article>
+
+    </main>
+    @footer()
+}
