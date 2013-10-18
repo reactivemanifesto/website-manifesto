@@ -31,4 +31,9 @@ object Application extends Controller {
    * The list page.
    */
   val list = cached(views.html.list())
+
+  /**
+   * The ribbons page.
+   */
+  val ribbons = cached(views.html.ribbons())
 }

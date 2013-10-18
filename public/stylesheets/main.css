@@ -666,3 +666,13 @@ figure figcaption:before {
   padding: 2em;
   line-height: 1.4em;
 }
+
+.ribbons li {
+  padding: 20px;
+  list-style-type: none;
+  text-align: center;
+}
+.ribbons code {
+  font-size: 12px;
+  display: block;
+}
