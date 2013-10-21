@@ -661,6 +661,11 @@ figure figcaption:before {
 .signatures li:hover cite {
   display: block;
 }
+.signatures .version {
+  color: #999;
+  font-style: italic;
+  font-size: 11px;
+}
 
 .full {
   padding: 2em;
