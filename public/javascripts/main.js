@@ -138,20 +138,28 @@ $(window).ready(function() {
         /**
          * Work out how long ago the person signed the manifesto in human readable English
          */
+        function version(time) {
+            switch(false){
+                case (time > 1382479200000): // September 23 2013. (v1.1)
+                    return ["1.1","https://github.com/reactivemanifesto/reactivemanifesto/tree/v1.1/README.md"];
+                default:
+                    return ["1.0","https://github.com/reactivemanifesto/reactivemanifesto/tree/v1.0/README.md"];
+            }
+        }
+
+        function inEnglish(time, singular, plural) {
+            if (time <= 1) {
+                return singular + " ago"
+            } else {
+                return time + " " + plural + " ago"
+            }
+        }
         function processSigned(person) {
             var now = new Date().getTime()
             var signed = person.signed
             var ago = now - signed
             // Work out minutes
             var minutes = Math.floor(ago / 60000)
-
-            function inEnglish(time, singular, plural) {
-                if (time <= 1) {
-                    return singular + " ago"
-                } else {
-                    return time + " " + plural + " ago"
-                }
-            }
 
             if (minutes < 60) {
                 person.fromNowSigned = inEnglish(minutes, "a minute", "minutes")
@@ -168,6 +176,9 @@ $(window).ready(function() {
                     }
                 }
             }
+
+            person.version = version(person.signed);
+
             return person
         }
 
