@@ -1,11 +1,10 @@
-
 @import scala.util.matching._
 @getImg(img: String) = {
-    &lt;a href="http://www.reactivemanifesto.org/" style="position: absolute; @{
+    &lt;a href="http://www.reactivemanifesto.org/"&gt;
+        &lt;img style="border: 0; position: fixed; @{
             if (img contains "left") "left"
             else "right"
-        }: 0; top:0;"&gt;
-        &lt;img src="http://www.reactivemanifesto.org/images/ribbons/@img"&gt;
+        }: 0; top:0; z-index: 9000" src="http://www.reactivemanifesto.org/images/ribbons/@img"&gt;
     &lt;a&gt;
 }
 
