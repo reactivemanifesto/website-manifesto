@@ -23,6 +23,26 @@ $(window).ready(function() {
          * The URL to fetch more, if there are more signatories to display
          */
         self.fetchMore = ko.observable();
+        /**
+         * Whether we are currently searching
+         */
+        self.searching = ko.observable();
+        /**
+         * The search field
+         */
+        self.searchField = ko.observable("");
+
+        self.searchField.subscribe(function(term) {
+            if (term.length >= 2) {
+                if (!self.searching()) {
+                    search(term);
+                }
+            } else if (term.length == 0) {
+                if (!self.searching()) {
+                    self.refreshSignatories(30)
+                }
+            }
+        });
 
         /**
          * Invoked when the user clicks sign the manifesto
@@ -113,14 +133,49 @@ $(window).ready(function() {
          * @param number The number of signatories to fetch
          */
         self.refreshSignatories = function(number) {
+            self.searching(true);
             $.ajax("/signatories?per_page=" + number).done(function(data, status, xhr) {
-                for (var i = 0; i < data.length; i++) {
-                    processSigned(data[i])
+                handleSignatories(data, xhr);
+                var term = self.searchField();
+                if (term.length >= 2) {
+                    // If the search field has been updated since we asked to load the signatories, search for it
+                    search(term);
+                } else {
+                    self.searching(null);
                 }
-                self.signatories(data);
-                handleLink(xhr);
             });
         };
+
+        /**
+         * Search for the currently entered search term
+         */
+        function search(term) {
+            self.searching(true);
+            $.ajax("/search?query=" + encodeURIComponent(term)).done(function(data, status, xhr) {
+                handleSignatories(data, xhr);
+                var newTerm = self.searchField();
+                if (newTerm != term && newTerm.length >= 2) {
+                    // If the search field has been updated since we issued the search request, search again.
+                    search(newTerm);
+                } else if (newTerm == "") {
+                    self.refreshSignatories(30)
+                } else {
+                    self.searching(null);
+                }
+            });
+
+        }
+
+        /**
+         * Handle the returned signatories.
+         */
+        function handleSignatories(data, xhr) {
+            for (var i = 0; i < data.length; i++) {
+                processSigned(data[i])
+            }
+            self.signatories(data);
+            handleLink(xhr);
+        }
 
         /**
          * Handle the link header from the signatories response, extracting out the rel="next" URL, if present.
@@ -139,7 +194,6 @@ $(window).ready(function() {
          * Work out how long ago the person signed the manifesto in human readable English
          */
         function version(time) {
-            console.log(time);
             if(time > 1379887200000) { // September 23 2013. (v1.1)
                return ["1.1","https://github.com/reactivemanifesto/reactivemanifesto/tree/v1.1/README.md"];
             } else {
@@ -202,7 +256,7 @@ $(window).ready(function() {
 
     model.refreshTotal();
     if (location.pathname == "/list") {
-        model.refreshSignatories(200)
+        model.refreshSignatories(30)
     } else {
         model.refreshSignatories(30);
 

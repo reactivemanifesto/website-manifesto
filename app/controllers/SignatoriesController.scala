@@ -7,12 +7,13 @@ import akka.pattern.ask
 import akka.util.Timeout._
 import akka.util.Timeout
 import actors.SignatoriesCache._
-import play.api.libs.json.Json
+import play.api.libs.json.{JsArray, Json}
 import reactivemongo.bson.BSONObjectID
 import scala.concurrent.duration._
 
 import play.api.Play.current
 import models.Formats.signatoryFormat
+import scala.concurrent.Future
 
 /**
  * Provides access to signatories.  All access to the signatories is through an actor, which ensures consistent caching.
@@ -42,15 +43,27 @@ object SignatoriesController extends Controller with MongoController {
   /**
    * Lists all the users that have signed the manifesto
    *
-   * @param p The page number, 1 based
-   * @param pp The number of users per page, maximum 200
+   * @param page The page number, 1 based
+   * @param perPage The number of users per page, maximum 200
    * @return The users that have signd the manifesto
    */
-  def list(p: Int, pp: Int) = Action { implicit req =>
-    Async {
-      (signatoriesActor ? GetSignatories).map {
-        case Signatories(signatories, hash) => {
+  def list(page: Int, perPage: Int) = pagedAction(page, perPage, routes.SignatoriesController.list) { () =>
+    (signatoriesActor ? GetSignatories).mapTo[Signatories]
+  }
 
+  def search(page: Int, perPage: Int, query: String) = pagedAction(page, perPage,
+    (p, pp) => routes.SignatoriesController.search(p, pp, query)) { () =>
+    if (query.length < 2) {
+      Future.successful(Signatories(Nil, 0))
+    } else {
+      (signatoriesActor ? Search(query)).mapTo[Signatories]
+    }
+  }
+
+  def pagedAction(p: Int, pp: Int, reverseRoute: (Int, Int) => Call)(loadSignatories: () => Future[Signatories]) = Action { implicit req =>
+    Async {
+      loadSignatories().map {
+        case Signatories(signatories, hash) =>
           val total = signatories.length
           // Make page 0 based
           val page = Math.max(p - 1, 0)
@@ -64,16 +77,16 @@ object SignatoriesController extends Controller with MongoController {
             // It's minus 1 so that if it's an exact divisor, we don't get one extra page
             val lastPage = (total - 1) / perPage
             val linkHeader = if (lastPage > page) {
-              val next = routes.SignatoriesController.list(page + 2, perPage).absoluteURL()
-              val last = routes.SignatoriesController.list(lastPage + 1, perPage).absoluteURL()
-              Some("Link" -> s"""<$next>; rel="next", <$last>; rel="last"""")
+              val nextUrl= reverseRoute(page + 2, perPage).absoluteURL()
+              val lastUrl = reverseRoute(lastPage + 1, perPage).absoluteURL()
+              Some("Link" -> s"""<$nextUrl>; rel="next", <$lastUrl>; rel="last"""")
             } else None
 
             Ok(Json.toJson(sigPage)).withHeaders(linkHeader.toSeq:_*).withHeaders(
               ETAG -> hash.toString
             )
           }
-        }
+
       }
     }
   }
