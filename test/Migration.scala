@@ -15,6 +15,7 @@ import services.UserService
 
 object MigrationSpec extends Specification {
 
+  /*
   "the migration" should {
     "migrate everything" in running(FakeApplication()) {
 
@@ -80,5 +81,6 @@ object MigrationSpec extends Specification {
       }
     }
   }
+  */
 
 }

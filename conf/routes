@@ -4,10 +4,11 @@
 
 GET           /                         controllers.Application.index
 GET           /list                     controllers.Application.list
-GET           /ribbons             controllers.Application.ribbons
+GET           /ribbons                  controllers.Application.ribbons
 
 GET           /signatories              controllers.SignatoriesController.list(page: Int ?= 1, per_page: Int ?= 30)
 GET           /signatories/total        controllers.SignatoriesController.count
+GET           /search                   controllers.SignatoriesController.search(page: Int ?= 1, per_page: Int ?= 30, query)
 
 GET           /user                     controllers.CurrentUserController.getUser
 DELETE        /user                     controllers.CurrentUserController.logOut

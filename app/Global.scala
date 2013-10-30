@@ -15,7 +15,7 @@ object Global extends GlobalSettings {
     val sigsActor = actorSystem.actorOf(Props[SignatoriesCache], "signatories")
     // There's a race condition, when MongoDB connects, it then authenticates, but we might be sending messages before
     // that.  So wait 2 seconds for authentication to happen.
-    actorSystem.scheduler.schedule(2 seconds, 30 seconds, sigsActor, SignatoriesCache.Reload)
+    actorSystem.scheduler.schedule(2 seconds, 10 minutes, sigsActor, SignatoriesCache.Reload)
   }
 
   override def onRouteRequest(req: RequestHeader) = {

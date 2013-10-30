@@ -1,7 +1,7 @@
 package actors
 
 import akka.actor.{ActorRef, Actor}
-import models.Signatory
+import models.{Trie, Signatory}
 import reactivemongo.bson.BSONObjectID
 import play.api.Logger
 import scala.util._
@@ -17,6 +17,13 @@ object SignatoriesCache {
    * Get all the signatories.  Will send back a Signatories message.
    */
   case object GetSignatories
+
+  /**
+   * Search for signatories by first or last name using the given prefix.
+   *
+   * Will send back a Signatories message.
+   */
+  case class Search(query: String)
 
   /**
    * A list of signatories, in reverse chronological order.
@@ -92,6 +99,8 @@ class SignatoriesCache extends Actor {
   var signatories: List[Signatory] = Nil
   // Hash code of the cached signatories.
   var signatoriesHash = signatories.hashCode()
+  // Prefix lookup index of the signatories
+  var signatoriesIndex = Trie.empty[Signatory]
 
   def update(signatories: List[Signatory]) = {
     this.signatories = signatories
@@ -108,6 +117,7 @@ class SignatoriesCache extends Actor {
   // Default state, in error.
   def receive = {
     case GetSignatories => sender ! Signatories(Nil, Nil.hashCode())
+    case Search(_) => sender ! Signatories(Nil, Nil.hashCode())
     case s: Sign => sender ! UpdateFailed("Unknown error")
     case u: Unsign => sender ! UpdateFailed("Unknown error")
     case Reload => loadSignatories
@@ -122,6 +132,13 @@ class SignatoriesCache extends Actor {
         sender ! Signatories(signatories, signatoriesHash)
       }
     }
+    case s @ Search(query) => {
+      if (signatories.isEmpty) {
+        pendingRequests = (sender, s) :: pendingRequests
+      } else {
+        sender ! search(query)
+      }
+    }
     case s: Sign => {
       pendingRequests = (sender, s) :: pendingRequests
     }
@@ -131,6 +148,10 @@ class SignatoriesCache extends Actor {
     case SignatoriesLoaded(sigs) => {
       signatories = sigs
       signatoriesHash = signatories.hashCode()
+      val start = System.currentTimeMillis()
+      signatoriesIndex = Trie(sigs.flatMap(s => extractSearchTerms(s).map(_ -> s)):_*)
+      val time = System.currentTimeMillis() - start
+      Logger.info("Indexing " + signatories.length + " signatories took " + time + "ms")
       become(hot)
       sendPending
     }
@@ -148,6 +169,8 @@ class SignatoriesCache extends Actor {
   def hot: Receive = {
 
     case GetSignatories => sender ! Signatories(signatories, signatoriesHash)
+
+    case Search(query) => sender ! search(query)
 
     /*
       Sign and unsign could have either failed for a known reason, ie returned Left, which we want to report back to
@@ -188,13 +211,15 @@ class SignatoriesCache extends Actor {
     }
 
     case SignatoryAdded(signatory) => {
-      signatories = signatory :: signatories
+      signatories ::= signatory
       signatoriesHash = signatories.hashCode()
+      signatoriesIndex = signatoriesIndex.index(extractSearchTerms(signatory), signatory)
     }
 
     case SignatoryRemoved(signatory) => {
       signatories = signatories.filterNot(_.id == signatory.id)
       signatoriesHash = signatories.hashCode()
+      signatoriesIndex = signatoriesIndex.deindex(extractSearchTerms(signatory), _.id == signatory.id)
     }
 
     case Reload => loadSignatories
@@ -207,6 +232,19 @@ class SignatoriesCache extends Actor {
     pendingRequests = Nil
   }
 
+  def search(query: String): Signatories = {
+    // Split into words, take a maximum of 2 terms
+    val results = query.split("\\s+").take(2)
+      // Search for all signatories for each term
+      .map(signatoriesIndex.getAllWithPrefix)
+      // Take the intersection of the results
+      .reduce(_ intersect _)
+      // Sorted
+      .sortBy(_.name)
+
+    Signatories(results, results.hashCode())
+  }
+  
   def loadSignatories = {
     Logger.info("Loading signatories...")
     become(loading)
@@ -222,4 +260,6 @@ class SignatoriesCache extends Actor {
       }
     }
   }
+
+  def extractSearchTerms(signatory: Signatory) = signatory.name.split("\\s+")
 }

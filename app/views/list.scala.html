@@ -9,6 +9,12 @@
                 <span data-bind="template: { name: 'total-template', data: total }"></span>
             </span>
         </p>
+        <div class="signatures">
+            Search: <input data-bind="value: searchField, valueUpdate: 'afterkeydown'"/>
+            <span class="searching">
+                <img src="@routes.Assets.at("images/spinner.gif")" data-bind="visible: searching"/>
+            </span>
+        </div>
         <div data-bind="if: signatories" class="signatures">
             <span data-bind="template: { name: 'signatories-template', data: signatories }"></span>
         </div>

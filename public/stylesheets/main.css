@@ -681,3 +681,6 @@ figure figcaption:before {
   font-size: 12px;
   display: block;
 }
+.searching {
+  position: absolute;
+}
