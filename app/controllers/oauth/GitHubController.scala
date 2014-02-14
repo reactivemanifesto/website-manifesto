@@ -23,7 +23,7 @@ object GitHubController extends OAuth2Controller {
       clientSecret = clientSecret,
       signInUrl = "https://github.com/login/oauth/authorize",
       accessTokenUrl = "https://github.com/login/oauth/access_token",
-      scopes = Seq("user")
+      scopes = Seq()
     )
   }).getOrElse(throw new IllegalStateException("Could not load GitHub creds"))
 
