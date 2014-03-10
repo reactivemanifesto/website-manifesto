@@ -10,23 +10,11 @@ import play.api.libs.concurrent.Execution.Implicits._
 class HeadAction(wrapped: EssentialAction) extends EssentialAction with RequestTaggingHandler {
 
   def apply(req: RequestHeader) = {
-
-    def skipBody(result: Result): Result = result match {
-      case SimpleResult(header, body) => {
-        // Tell the body enumerator it's done so that it can clean up resources
-        body(Done(()))
-        SimpleResult(header, Enumerator(Results.EmptyContent()))
-      }
-      case ChunkedResult(header, body) => {
-        body(Done(()))
-        ChunkedResult(header, (it: Iteratee[Array[Byte], Unit]) => it.run)
-      }
-      case AsyncResult(future) => AsyncResult(future.map(skipBody))
-    }
-
-    // Invoke the wrapped action
+   // Invoke the wrapped action
     wrapped(req).map { result =>
-      skipBody(result)
+      // Tell the body enumerator it's done so that it can clean up resources
+      result.body(Done(()))
+      result.copy(body = Enumerator.empty)
     }
   }
 

@@ -25,7 +25,9 @@ trait OAuth2Controller extends Controller {
   /**
    * Authenticate action.  The same URL is used for authentication and for redirecting to with the access token.
    */
-  def authenticate = Action { implicit req =>
+  def authenticate = Action.async { implicit req =>
+
+    import scala.concurrent.Future.{successful => sync}
 
     // Check if this is an authentication request, or a access token request.
     req.queryString.get("code").flatMap(_.headOption) match {
@@ -39,37 +41,35 @@ trait OAuth2Controller extends Controller {
         } yield {
           // Verify that the state matches.
           if (queryState == sessionState) {
-            Async {
-              (for {
-                // Get the access token from the OAuth service
-                accessToken <- OAuth2.requestAccessToken(settings, redirectUri, code)
-                // And the user info from the OAuth service
-                userInfo <- getUserInfo(accessToken)
-                // And find or save that user
-                signatory <- UserService.findOrSaveUser(userInfo)
-              } yield {
-                // Return the page for the popup that will communicate back to the main page what the user is,
-                // and then close itself.
-                Ok(views.html.popup()).withSession("user" -> signatory.id.stringify)
-              }).recover {
-                case NonFatal(t) => {
-                  Logger.warn("Error logging in user to " + name, t)
-                  Forbidden
-                }
+            (for {
+              // Get the access token from the OAuth service
+              accessToken <- OAuth2.requestAccessToken(settings, redirectUri, code)
+              // And the user info from the OAuth service
+              userInfo <- getUserInfo(accessToken)
+              // And find or save that user
+              signatory <- UserService.findOrSaveUser(userInfo)
+            } yield {
+              // Return the page for the popup that will communicate back to the main page what the user is,
+              // and then close itself.
+              Ok(views.html.popup()).withSession("user" -> signatory.id.stringify)
+            }).recover {
+              case NonFatal(t) => {
+                Logger.warn("Error logging in user to " + name, t)
+                Forbidden
               }
             }
           } else {
 
             // The state doesn't match, reject the request.
-            Forbidden("State doesn't match")
+            sync(Forbidden("State doesn't match"))
           }
-        }).getOrElse(NotFound("State not found"))
+        }).getOrElse(sync(NotFound("State not found")))
       }
 
       case None => {
         // It's an authentication request, generate state, and redirect the user to the service
         val state = OAuth2.generateState
-        Redirect(OAuth2.signInUrl(settings, redirectUri, state, extraParams:_*)).withSession("state" -> state)
+        sync(Redirect(OAuth2.signInUrl(settings, redirectUri, state, extraParams:_*)).withSession("state" -> state))
       }
     }
   }

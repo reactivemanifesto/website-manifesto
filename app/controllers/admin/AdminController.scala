@@ -28,7 +28,10 @@ object AdminController extends Controller {
     Redirect(OAuth2.signInUrl(settings, redirectUri, state)).withSession("state" -> state)
   }
 
-  def authenticate = Action { implicit req =>
+  def authenticate = Action.async { implicit req =>
+
+    import scala.concurrent.Future.{successful => sync}
+
     req.queryString.get("code").flatMap(_.headOption) match {
 
       case Some(code) => {
@@ -40,35 +43,33 @@ object AdminController extends Controller {
         } yield {
           // Verify that the state matches.
           if (queryState == sessionState) {
-            Async {
-              (for {
-                // Get the access token from the OAuth service
-                accessToken <- OAuth2.requestAccessToken(settings, redirectUri, code)
-                // And the user organisation
-                userOrgs <- getUserOrgs(accessToken)
-              } yield {
-                // Check that the user is an admin
-                if (userOrgs.contains("typesafehub")) {
-                  Redirect(routes.AdminController.index()).withSession("admin" -> "true",
-                    "timestamp" -> System.currentTimeMillis().toString)
-                } else {
-                  Forbidden("Not a member of Typesafe")
-                }
-              }).recover {
-                case NonFatal(t) => {
-                  Logger.warn("Error logging in user", t)
-                  Forbidden
-                }
+            (for {
+              // Get the access token from the OAuth service
+              accessToken <- OAuth2.requestAccessToken(settings, redirectUri, code)
+              // And the user organisation
+              userOrgs <- getUserOrgs(accessToken)
+            } yield {
+              // Check that the user is an admin
+              if (userOrgs.contains("typesafehub")) {
+                Redirect(routes.AdminController.index()).withSession("admin" -> "true",
+                  "timestamp" -> System.currentTimeMillis().toString)
+              } else {
+                Forbidden("Not a member of Typesafe")
+              }
+            }).recover {
+              case NonFatal(t) => {
+                Logger.warn("Error logging in user", t)
+                Forbidden
               }
             }
           } else {
             // The state doesn't match, reject the request.
-            Forbidden("State doesn't match")
+            sync(Forbidden("State doesn't match"))
           }
-        }).getOrElse(NotFound("State not found"))
+        }).getOrElse(sync(NotFound("State not found")))
 
       }
-      case None => BadRequest
+      case None => sync(BadRequest)
     }
   }
 
@@ -82,11 +83,13 @@ object AdminController extends Controller {
     } yield true).getOrElse(false)
   }
 
-  def authenticated(action: RequestHeader => Result) = Action { req =>
-    if (isAuthenticated(req)) {
-      action(req)
-    } else {
-      Redirect(routes.AdminController.index())
+  object Authenticated extends ActionBuilder[Request] {
+    protected def invokeBlock[A](request: Request[A], block: Request[A] => Future[SimpleResult]) = {
+      if (isAuthenticated(request)) {
+        block(request)
+      } else {
+        Future.successful(Redirect(routes.AdminController.index()))
+      }
     }
   }
 
@@ -116,21 +119,17 @@ object AdminController extends Controller {
     })
   }
 
-  def list = authenticated { req =>
-    Async {
-      getFormatedSigs.map { sigs =>
-        Ok(views.html.admin.list(sigs))
-      }
+  def list = Authenticated.async { req =>
+    getFormatedSigs.map { sigs =>
+      Ok(views.html.admin.list(sigs))
     }
   }
 
-  def csv = authenticated { req =>
-    Async {
-      getFormatedSigs.map { sigs =>
-        Ok(sigs.map { sig =>
-          s"""${sig.id},"${sig.name}",${sig.provider},${sig.providerId},"${sig.providerScreenName}",${sig.signed},"${sig.avatarUrl}""""
-        }.mkString("\n")).as("text/csv").withHeaders("Content-Disposition" -> "attachment;filename=signatories.csv")
-      }
+  def csv = Authenticated.async { req =>
+    getFormatedSigs.map { sigs =>
+      Ok(sigs.map { sig =>
+        s"""${sig.id},"${sig.name}",${sig.provider},${sig.providerId},"${sig.providerScreenName}",${sig.signed},"${sig.avatarUrl}""""
+      }.mkString("\n")).as("text/csv").withHeaders("Content-Disposition" -> "attachment;filename=signatories.csv")
     }
   }
 

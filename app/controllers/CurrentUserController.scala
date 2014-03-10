@@ -27,15 +27,13 @@ object CurrentUserController extends Controller {
    *
    * @return The logged in user as JSON, or 404 if no user is logged in.
    */
-  def getUser = Action { req =>
-    Async {
-      req.session.get("user") match {
-        case Some(id) => UserService.findUser(id).map {
-          case Some(signatory) => Ok(Json.toJson(signatory))
-          case None => NotFound
-        }
-        case None => Future.successful(NotFound)
+  def getUser = Action.async { req =>
+    req.session.get("user") match {
+      case Some(id) => UserService.findUser(id).map {
+        case Some(signatory) => Ok(Json.toJson(signatory))
+        case None => NotFound
       }
+      case None => Future.successful(NotFound)
     }
   }
 }

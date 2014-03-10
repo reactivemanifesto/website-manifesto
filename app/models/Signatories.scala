@@ -1,10 +1,9 @@
 package models
 
-import reactivemongo.bson._
+import reactivemongo.bson.{BSONLongHandler => _, _}
 import reactivemongo.bson.Macros._
 import org.joda.time.DateTime
 import play.api.libs.json._
-import play.api.libs.functional.syntax._
 import scala.util.control.NonFatal
 
 /**
@@ -40,6 +39,16 @@ case class LinkedIn(id: String) extends Provider
  * Reactive mongo handlers
  */
 object Handlers {
+
+  implicit object idHandler extends BSONHandler[BSONValue, Long] {
+    def write(v: Long) = new BSONLong(v)
+    def read(bson: BSONValue) = bson match {
+      case BSONLong(l) => l
+      case BSONDouble(d) => d.toLong
+      case _ => throw new IllegalArgumentException("Expected a long or double, but got " + bson)
+    }
+  }
+
   implicit val githubHandler = handler[GitHub]
   implicit val twitterHandler = handler[Twitter]
   implicit val googleHandler = handler[Google]
@@ -55,7 +64,8 @@ object Handlers {
    */
   implicit lazy val providerHandler = new BSONHandler[BSONDocument, Provider] {
 
-    def readProvider[T](bson: BSONDocument)(implicit reader: BSONDocumentReader[T]): T = bson.getAs[T]("details").get
+    def readProvider[T](bson: BSONDocument)(implicit reader: BSONDocumentReader[T]): T =
+      bson.getAs[T]("details").getOrElse(throw new RuntimeException("Could not parse provider details"))
 
     def read(bson: BSONDocument) = bson.getAs[String]("id") match {
       case Some("github") => readProvider[GitHub](bson)

@@ -3,6 +3,7 @@ package controllers
 import play.api.mvc._
 import play.modules.reactivemongo.MongoController
 import play.api.libs.concurrent.Akka
+import play.api.libs.concurrent.Execution.Implicits._
 import akka.pattern.ask
 import akka.util.Timeout._
 import akka.util.Timeout
@@ -24,18 +25,16 @@ object SignatoriesController extends Controller with MongoController {
 
   lazy val signatoriesActor = {
     val system = Akka.system
-    system.actorFor(system / "signatories")
+    system.actorSelection(system / "signatories")
   }
 
   /**
    * Gets a count of all the people that have signed the manifesto
    */
-  def count = Action {
-    Async {
-      (signatoriesActor ? GetSignatories).map {
-        case Signatories(signatories, hash) => {
-          Ok(Json.toJson(Json.obj("total" -> signatories.length)))
-        }
+  def count = Action.async {
+    (signatoriesActor ? GetSignatories).map {
+      case Signatories(signatories, hash) => {
+        Ok(Json.toJson(Json.obj("total" -> signatories.length)))
       }
     }
   }
@@ -60,60 +59,58 @@ object SignatoriesController extends Controller with MongoController {
     }
   }
 
-  def pagedAction(p: Int, pp: Int, reverseRoute: (Int, Int) => Call)(loadSignatories: () => Future[Signatories]) = Action { implicit req =>
-    Async {
-      loadSignatories().map {
-        case Signatories(signatories, hash) =>
-          val total = signatories.length
-          // Make page 0 based
-          val page = Math.max(p - 1, 0)
-          val perPage = Math.max(Math.min(pp, 200), 1)
+  def pagedAction(p: Int, pp: Int, reverseRoute: (Int, Int) => Call)(loadSignatories: () => Future[Signatories]) = Action.async { implicit req =>
+    loadSignatories().map {
+      case Signatories(signatories, hash) =>
+        val total = signatories.length
+        // Make page 0 based
+        val page = Math.max(p - 1, 0)
+        val perPage = Math.max(Math.min(pp, 200), 1)
 
-          // Check E-Tag
-          if (req.headers.get(IF_NONE_MATCH).exists(_ == hash.toString)) {
-            NotModified
-          } else {
-            val sigPage = signatories.drop(page * perPage).take(perPage)
-            // It's minus 1 so that if it's an exact divisor, we don't get one extra page
-            val lastPage = (total - 1) / perPage
-            val linkHeader = if (lastPage > page) {
-              val nextUrl= reverseRoute(page + 2, perPage).absoluteURL()
-              val lastUrl = reverseRoute(lastPage + 1, perPage).absoluteURL()
-              Some("Link" -> s"""<$nextUrl>; rel="next", <$lastUrl>; rel="last"""")
-            } else None
+        // Check E-Tag
+        if (req.headers.get(IF_NONE_MATCH).exists(_ == hash.toString)) {
+          NotModified
+        } else {
+          val sigPage = signatories.drop(page * perPage).take(perPage)
+          // It's minus 1 so that if it's an exact divisor, we don't get one extra page
+          val lastPage = (total - 1) / perPage
+          val linkHeader = if (lastPage > page) {
+            val nextUrl= reverseRoute(page + 2, perPage).absoluteURL()
+            val lastUrl = reverseRoute(lastPage + 1, perPage).absoluteURL()
+            Some("Link" -> s"""<$nextUrl>; rel="next", <$lastUrl>; rel="last"""")
+          } else None
 
-            Ok(Json.toJson(sigPage)).withHeaders(linkHeader.toSeq:_*).withHeaders(
-              ETAG -> hash.toString
-            )
-          }
+          Ok(Json.toJson(sigPage)).withHeaders(linkHeader.toSeq:_*).withHeaders(
+            ETAG -> hash.toString
+          )
+        }
 
-      }
     }
   }
 
   /**
    * Sign the manifesto
    */
-  def sign = Action { req =>
+  def sign = Action.async { req =>
     req.session.get("user") match {
-      case Some(id) => AsyncResult((signatoriesActor ? Sign(new BSONObjectID(id))).map {
+      case Some(id) => (signatoriesActor ? Sign(new BSONObjectID(id))).map {
         case Updated(signatory) => Ok(Json.toJson(signatory))
         case UpdateFailed(msg) => NotFound(Json.toJson(Json.obj("error" -> msg)))
-      })
-      case None => Forbidden
+      }
+      case None => Future.successful(Forbidden)
     }
   }
 
   /**
    * Remove signature from the manifesto
    */
-  def unsign = Action { req =>
+  def unsign = Action.async { req =>
     req.session.get("user") match {
-      case Some(id) => AsyncResult((signatoriesActor ? Unsign(new BSONObjectID(id))).map {
+      case Some(id) => (signatoriesActor ? Unsign(new BSONObjectID(id))).map {
         case Updated(signatory) => Ok(Json.toJson(signatory))
         case UpdateFailed(msg) => NotFound(Json.toJson(Json.obj("error" -> msg)))
-      })
-      case None => Forbidden
+      }
+      case None => Future.successful(Forbidden)
     }
   }
 }
