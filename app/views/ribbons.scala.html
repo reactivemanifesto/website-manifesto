@@ -4,7 +4,7 @@
         &lt;img style="border: 0; position: fixed; @{
             if (img contains "left") "left"
             else "right"
-        }: 0; top:0; z-index: 9000" src="http://www.reactivemanifesto.org/images/ribbons/@img"&gt;
+        }: 0; top:0; z-index: 9000" src="//d379ifj7s9wntv.cloudfront.net/reactivemanifesto/images/ribbons/@img"&gt;
     &lt;/a&gt;
 }
 
@@ -35,7 +35,7 @@
                 )) { list =>
                     @list.map { img =>
                     <li>
-                        <img src="@routes.Assets.at("images/ribbons/"+img)">
+                        <img src="//d379ifj7s9wntv.cloudfront.net/reactivemanifesto/images/ribbons/@img">
                         <code>@getImg(img)</code>
                     </li>
                     }
