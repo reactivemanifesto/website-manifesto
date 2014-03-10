@@ -17,7 +17,11 @@ object AdminController extends Controller {
   case class FormattedSignatory(id: String, name: String, provider: String, providerId: String,
                                 providerScreenName: String, signed: String, avatarUrl: String)
 
-  lazy val settings = GitHubController.settings
+  lazy val settings = GitHubController.settings.copy(
+    // When logging in to the admin section, we need to verify that the user is a member of the Typesafe organisation,
+    // so request access to that.
+    scopes = Seq("read:org")
+  )
 
   val Expires = 7200000
 
