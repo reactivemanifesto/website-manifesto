@@ -6,6 +6,7 @@ import play.api.mvc._
 import play.api.{Logger, Application, GlobalSettings}
 import scala.concurrent.duration._
 import play.api.libs.concurrent.Execution.Implicits._
+import scala.concurrent.Future
 
 object Global extends GlobalSettings {
 
@@ -35,11 +36,11 @@ object Global extends GlobalSettings {
 
   override def onError(request: RequestHeader, ex: Throwable) = {
     Logger.error("An error occurred", ex)
-    Results.InternalServerError("Sorry, something went wrong, and I don't know how to react to it.")
+    Future.successful(Results.InternalServerError("Sorry, something went wrong, and I don't know how to react to it."))
   }
 
   override def onHandlerNotFound(request: RequestHeader) = {
     // Redirect all unknown URLs to the index page.
-    Results.Redirect("/")
+    Future.successful(Results.Redirect("/"))
   }
 }

@@ -41,7 +41,7 @@ object UserService {
     def find = collection.find(BSONDocument(
       "provider.id" -> BSONString(providerAndId._1),
       "provider.details.id" -> providerAndId._2
-    )).cursor[Signatory].headOption()
+    )).cursor[Signatory].headOption
 
     def returnOrSave(s: Option[Signatory]) = s match {
       case Some(signatory) => {
@@ -50,7 +50,7 @@ object UserService {
       case None => {
         val signatory = Signatory(BSONObjectID.generate, user.provider, user.name, user.avatar, user.signed)
         for {
-          lastError <- collection.save(signatory, writeConcern = GetLastError(awaitJournalCommit = true))
+          lastError <- collection.save(signatory, writeConcern = GetLastError(fsync = true))
         } yield {
           if (lastError.ok) {
             signatory
@@ -82,7 +82,7 @@ object UserService {
    * @return A future of the user, if found.
    */
   def findUser(id: BSONObjectID): Future[Option[Signatory]] = {
-    collection.find(BSONDocument("_id" -> id)).cursor[Signatory].headOption()
+    collection.find(BSONDocument("_id" -> id)).cursor[Signatory].headOption
   }
 
   /**
@@ -91,7 +91,7 @@ object UserService {
   def loadSignatories(): Future[List[Signatory]] = {
     collection.find(BSONDocument("signed" -> BSONDocument("$exists" -> true))).sort(
       BSONDocument("signed" -> BSONInteger(-1))
-    ).cursor[Signatory].toList()
+    ).cursor[Signatory].collect[List]()
   }
 
   /**
@@ -108,7 +108,7 @@ object UserService {
           val signed = DateTime.now
           collection.update(BSONDocument("_id" -> id), BSONDocument("$set" ->
             BSONDocument("signed" -> BSONDateTime(signed.getMillis))
-          ), GetLastError(awaitJournalCommit = true)).map {
+          ), GetLastError(fsync = true)).map {
             lastError =>
               if (lastError.ok) {
                 Right(signatory.copy(signed = Some(signed)))
@@ -136,7 +136,7 @@ object UserService {
       case Some(signatory) => {
         collection.update(BSONDocument("_id" -> id), BSONDocument("$unset" ->
           BSONDocument("signed" -> BSONInteger(1))
-        ), GetLastError(awaitJournalCommit = true)).map {
+        ), GetLastError(fsync = true)).map {
           lastError =>
             if (lastError.ok) {
               Right(signatory.copy(signed = None))

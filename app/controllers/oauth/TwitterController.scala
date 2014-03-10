@@ -28,7 +28,9 @@ object TwitterController extends Controller {
     "https://api.twitter.com/oauth/authorize", Key),
     use10a = true)
 
-  def authenticate = Action { implicit request =>
+  def authenticate = Action.async { implicit request =>
+
+    import scala.concurrent.Future.{successful => sync}
 
     // See if this is a redirect
     request.getQueryString("oauth_verifier").map { verifier =>
@@ -38,7 +40,7 @@ object TwitterController extends Controller {
         case Right(token) => {
 
           // We received the authorized tokens in the OAuth object - use them to find the details of the user
-          AsyncResult(WS.url("https://api.twitter.com/1.1/account/verify_credentials.json")
+          WS.url("https://api.twitter.com/1.1/account/verify_credentials.json")
             .sign(OAuthCalculator(Key, token)).get().flatMap { response =>
 
             // Check if response is ok
@@ -55,25 +57,25 @@ object TwitterController extends Controller {
             } else {
               Logger.error("Unable to get user details from Twitter, got response: " +
                 response.status + " " + response.body)
-              Future.successful(Forbidden(Json.toJson(Json.obj("error" -> "Twitter rejected credentials"))))
+              sync(Forbidden(Json.toJson(Json.obj("error" -> "Twitter rejected credentials"))))
             }
-          })
+          }
         }
         case Left(e) => {
           Logger.error("Failed to retrieve access token", e)
-          NotFound(Json.toJson(Json.obj("error" -> "Failed to retrieve access token")))
+          sync(NotFound(Json.toJson(Json.obj("error" -> "Failed to retrieve access token"))))
         }
       }
     }.getOrElse(
       Twitter.retrieveRequestToken(routes.TwitterController.authenticate().absoluteURL()) match {
         case Right(t) => {
           // We received the unauthorized tokens in the OAuth object - store it before we proceed
-          Redirect(Twitter.redirectUrl(t.token))
-            .withSession("token" -> t.token, "secret" -> t.secret)
+          sync(Redirect(Twitter.redirectUrl(t.token))
+            .withSession("token" -> t.token, "secret" -> t.secret))
         }
         case Left(e) => {
           Logger.error("Failed to retrieve request token", e)
-          NotFound(Json.toJson(Json.obj("error" -> "Failed to retrieve request token")))
+          sync(NotFound(Json.toJson(Json.obj("error" -> "Failed to retrieve request token"))))
         }
       })
   }
