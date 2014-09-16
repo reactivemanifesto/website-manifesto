@@ -1,5 +1,4 @@
 @main {
-    <div id="headerMinimized"></div>
     <div id="sign">
         <span class="close">×</span>
         <div data-bind="with: loggedInUser">
@@ -50,45 +49,16 @@
     <main>
         <header>
             <h1>The <span>Reactive</span> Manifesto</h1>
-
             <aside>
                 <p>
                     @manifestoVersion()
                 </p>
-                <div class="social">
-                    <a href="https://twitter.com/share" class="twitter-share-button">Tweet</a>
-                    <iframe src="//www.facebook.com/plugins/like.php?href=http%3A%2F%2Freactivemanifesto.org&amp;send=false&amp;layout=button_count&amp;width=450&amp;show_faces=false&amp;font&amp;colorscheme=light&amp;action=like&amp;height=21&amp;appId=17899947359" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:450px; height:21px;" allowTransparency="true"></iframe>
-                    <div class="g-plus" data-action="share" data-annotation="bubble" data-href="http://reactivemanifesto.org"></div><br/>
-                    <script type="IN/Share" data-url="http://reactivemanifesto.org" data-counter="right"></script>
-                <p>
-                    <a class="pdf" href="@routes.Assets.at("pdf/the-reactive-manifesto-1.1.pdf")">Download as PDF</a>
-                </p>
-                <p>
-                    <a class="pdf" href="https://github.com/reactivemanifesto/reactivemanifesto/blob/master/README.md">Suggest improvements</a>
-                </p>
-                </div>
+
             </aside>
-
-            <nav id="table">
-                @manifestoContents()
-            </nav>
-
-            <div class="sign">
-                <button data-bind="click: signTheManifesto, clickBubble: false">Sign the manifesto</button>
-            </div>
         </header>
 
-        <p class="signatures">
-            <span data-bind="ifnot: total">Loading...</span>
-            <span data-bind="if: total">
-                <span data-bind="template: { name: 'total-template', data: total }"></span>
-            </span>
-        </p>
-        <div data-bind="if: signatories" class="signatures">
-            <span data-bind="template: { name: 'signatories-template', data: signatories }"></span>
-        </div>
 
-        <div class="cloud"></div>
+
 
         <article>
 
@@ -99,6 +69,28 @@
             </div>
 
 
+        </article>
+        <p class="signatures">
+            <span data-bind="ifnot: total">Loading...</span>
+            <span data-bind="if: total">
+                <span data-bind="template: { name: 'total-template', data: total }"></span>
+            </span>
+        </p>
+        <div data-bind="if: signatories" class="signatures">
+            <span data-bind="template: { name: 'signatories-template', data: signatories }"></span>
+        </div>
+
+        <article class="social">
+                    <a href="https://twitter.com/share" class="twitter-share-button">Tweet</a>
+                    <iframe src="//www.facebook.com/plugins/like.php?href=http%3A%2F%2Freactivemanifesto.org&amp;send=false&amp;layout=button_count&amp;width=450&amp;show_faces=false&amp;font&amp;colorscheme=light&amp;action=like&amp;height=21&amp;appId=17899947359" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:100px; height:21px;" allowTransparency="true"></iframe>
+                    <div class="g-plus" data-action="share" data-annotation="bubble" data-href="http://reactivemanifesto.org"></div>
+                    <script type="IN/Share" data-url="http://reactivemanifesto.org" data-counter="right"></script>
+                <p>
+                    <a class="pdf" href="@routes.Assets.at("pdf/the-reactive-manifesto-2.0.pdf")">Download as PDF</a>
+                </p>
+                <p>
+                    <a class="pdf" href="https://github.com/reactivemanifesto/reactivemanifesto/blob/master/README.md">Suggest improvements</a>
+                </p>
         </article>
 
         @footer()

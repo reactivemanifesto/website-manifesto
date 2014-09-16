@@ -7,17 +7,11 @@ body {
 }
 body {
   font: 17px 'PT Serif', serif;
-  color: #767F85;
   color: #777;
   font-weight: 100;
   counter-reset: figure;
 }
-@media print {
-  body {
-    color: #444;
-    font-size: 14px;
-  }
-}
+
 @media screen and (max-width: 960px) {
   body {
     font-size: 15px;
@@ -28,7 +22,7 @@ h2,
 h3,
 h4 {
   font-family: "Helvetica Neue", sans-serif;
-  color: #374045;
+  color: #777;
 }
 h1 {
   font-weight: 100;
@@ -41,7 +35,8 @@ h1 span {
 h2 {
   font-weight: 100;
   font-size: 50px;
-  margin: 1em 0;
+  margin: 1em 0 .3em 0;
+  color: #445de9;
 }
 @media screen and (max-width: 960px) {
   h2 {
@@ -49,8 +44,9 @@ h2 {
   }
 }
 h3 {
-  font-size: 16px;
-  margin: 2em 0 1em;
+  font-size: 24px;
+  margin: 2em 0 0;
+  font-weight: 100;
 }
 p {
   line-height: 1.4em;
@@ -63,6 +59,29 @@ a:hover {
   color: #3049d5;
   text-decoration: none;
 }
+.trait h2 {
+  font-weight: 100;
+  font-size: 30px;
+  margin: 1em 0 .1em 0;
+}
+.trait {
+  margin: 0 40px 0 40px;
+  padding-top: 10px;
+}
+
+.trait p {
+  margin-bottom: 5px;
+}
+
+.trait img {
+  max-width: 100%;
+  margin: 20px 0;
+}
+
+.trait strong {
+  color: #445de9;
+}
+
 main {
   -moz-transition: opacity 400ms linear 400ms, -moz-filter 400ms linear 400ms;
   transition: opacity 400ms linear 400ms, filter 400ms linear 400ms;
@@ -101,12 +120,23 @@ header {
 @media screen and (max-width: 960px) {
   header {
     height: auto;
-    padding-top: 40px;
+    text-align: center;
   }
-  header h1,
+  header h1 {
+    font-size: 45px;
+  }
   header nav {
     display: none;
   }
+}
+@media screen and (max-width: 600px) {
+  .ribbon {
+    display: none;
+  }
+  header h1 {
+    font-size: 30px;
+  }
+
 }
 @media print {
   header {
@@ -129,31 +159,38 @@ nav {
   }
 }
 @media print {
-  aside,
   nav {
     width: auto;
     float: none;
     margin: 0 4em;
   }
 }
+aside {
+  text-align: center;
+  width: 100%;
+}
 aside p {
   color: #999;
   font-style: italic;
   margin: 0;
 }
-aside .social {
-  margin: 1.2em;
+.social {
   overflow: hidden;
+  text-align: center;
 }
+.social > iframe,
+.social > div,
+.social > span {
+  display: inline-block;
+  width: auto;
+  min-width: 110px;
+}
+
 aside .pdf {
   font-size: .8em;
   color: #999;
 }
-@media print {
-  aside .social {
-    display: none;
-  }
-}
+
 nav {
   counter-reset: section;
 }
@@ -532,7 +569,6 @@ figure figcaption:before {
 }
 @media screen and (max-width: 500px) {
   #sign {
-    top: 40px;
     width: auto;
     left: 0;
     right: 0;
@@ -542,7 +578,7 @@ figure figcaption:before {
     -webkit-transform: translate(0,-100%);
   }
   .signing #sign {
-    top: 40px;
+    top: 0px;
     transform: translate(0,0);
     -moz-transform: translate(0,0);
     -webkit-transform: translate(0,0);
@@ -683,4 +719,25 @@ figure figcaption:before {
 }
 .searching {
   position: absolute;
+}
+@media print {
+  body {
+    color: #444;
+    font-size: 14px;
+  }
+  .ribbon, .social, footer {
+    display: none;
+  }
+  header h1 {
+    margin-top: 10px;
+  }
+  aside {
+    text-align: left;
+  }
+  h3 {
+    color: #444;
+  }
+  .trait {
+    padding-top: 5px;
+  }
 }
