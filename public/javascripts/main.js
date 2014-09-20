@@ -194,7 +194,9 @@ $(window).ready(function() {
          * Work out how long ago the person signed the manifesto in human readable English
          */
         function version(time) {
-            if(time > 1379887200000) { // September 23 2013. (v1.1)
+            if (time > 1410907204000) { // September 17 2014. (v2.0)
+               return ["2.0","https://github.com/reactivemanifesto/reactivemanifesto/tree/v2.0/README.md"];
+            } else if (time > 1379887200000) { // September 23 2013. (v1.1)
                return ["1.1","https://github.com/reactivemanifesto/reactivemanifesto/tree/v1.1/README.md"];
             } else {
                 return ["1.0","https://github.com/reactivemanifesto/reactivemanifesto/tree/v1.0/README.md"];
