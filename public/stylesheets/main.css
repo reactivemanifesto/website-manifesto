@@ -32,12 +32,49 @@ h1 {
 h1 span {
   border-bottom: 2px solid #445de9;
 }
+
+header a  {
+    text-decoration: none;
+}
+
 h2 {
   font-weight: 100;
   font-size: 50px;
   margin: 1em 0 .3em 0;
   color: #445de9;
 }
+
+
+#glossary h1 {
+  font-size: 40px;
+  margin: 1em 0  0.5em;
+}
+
+#glossary h2 {
+  font-size: 20px;
+  font-weight: normal;
+  margin: 2em 0 0 0;
+}
+#glossary h2 + p {
+  margin-top: 0;
+}
+
+.btt {
+  text-decoration: none;
+  font-size: 12px;
+  color: white;
+  background: #445de9;
+  padding: 5px 10px;
+  font-weight: normal;
+  font-family: "Helvetica Neue", sans-serif;
+
+}
+
+.btt:hover {
+  color: white;
+  text-decoration: underline;
+}
+
 @media screen and (max-width: 960px) {
   h2 {
     font-size: 2em;
