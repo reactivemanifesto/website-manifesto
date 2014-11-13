@@ -10,6 +10,31 @@
         <article>
             <section id="glossary">
                 <h1>Glossary</h1>
+                <div class="toc cf">
+                    <h2>Table of Contents</h2>
+                    <ul>
+                        <li><a href="#Asynchronous">Asynchronous</a></li>
+                        <li><a href="#Back-Pressure">Back-Pressure</a></li>
+                        <li><a href="#Batching">Batching</a></li>
+                        <li><a href="#Delegation">Delegation</a></li>
+                        <li><a href="#Component">Component</a></li>
+                        <li><a href="#Elasticity">Elasticity (in contrast to Scalability)</a></li>
+                        <li><a href="#Failure">Failure (in contrast to Error)</a></li>
+                        <li><a href="#Isolation">Isolation (and Containment)</a></li>
+                        <li><a href="#Location-Transparency">Location-Transparency</a></li>
+                    </ul>
+                    <ul>
+                        <li><a href="#Message-Driven">Message-Driven (in contrast to Event-Driven)</a></li>
+                        <li><a href="#Non-Blocking">Non-Blocking</a></li>
+                        <li><a href="#Protocol">Protocol</a></li>
+                        <li><a href="#Replication">Replication</a></li>
+                        <li><a href="#Resource">Resource</a></li>
+                        <li><a href="#Scalability">Scalability</a></li>
+                        <li><a href="#System">System</a></li>
+                        <li><a href="#User">User</a></li>
+                    </ul>
+                </div>
+
                 <h2 id="Asynchronous">Asynchronous</h2>
                 <p>The Oxford Dictionary defines asynchronous as “not existing or occurring at the same time”. In the context of this manifesto we mean that the processing of a request occurs at an arbitrary point in time, sometime after it has been transmitted from client to service. The client cannot directly observe, or synchronize with, the execution that occurs within the service. This is the antonym of synchronous processing which implies that the client only resumes its own execution once the service has processed the request.</p>
 
@@ -28,7 +53,7 @@
                 <p>What we are describing is a modular software architecture, which is a very old idea, see for example <a href="https://www.cs.umd.edu/class/spring2003/cmsc838p/Design/criteria.pdf" target="_blank">Parnas (1972)</a>. We are using the term “component” due to its proximity with compartment, which implies that each component is self-contained, encapsulated and isolated from other components. This notion applies foremost to the runtime characteristics of the system, but it will typically also be reflected in the source code’s module structure as well. While different components might make use of the same software modules to perform common tasks, the program code that defines the top-level behavior of each component is then a module of its own. Component boundaries are often closely aligned with <a href="http://martinfowler.com/bliki/BoundedContext.html" target="_blank">Bounded Contexts</a> in the problem domain. This means that the system design tends to reflect the problem domain and so is easy to evolve, while retaining isolation. Message protocols provide a natural mapping and communications layer between Bounded Contexts (components).</p>
 
                 <h2 id="Elasticity">Elasticity (in contrast to Scalability)</h2>
-                <p>Elasticity means that the throughput of a system scales up or down automatically to meet varying demand as resource is proportionally added or removed. The system needs to be scalable (see Scalability) to allow it to benefit from the dynamic addition, or removal, of resources at runtime. Elasticity therefore builds upon scalability and expands on it by adding the notion of automatic resource management.</p>
+                <p>Elasticity means that the throughput of a system scales up or down automatically to meet varying demand as resource is proportionally added or removed. The system needs to be scalable (see <a href="#Scalability">Scalability</a>) to allow it to benefit from the dynamic addition, or removal, of resources at runtime. Elasticity therefore builds upon scalability and expands on it by adding the notion of automatic <a href="#Resource">resource</a> management.</p>
 
                 <h2 id="Failure">Failure (in contrast to Error)</h2>
                 <p>A failure is an unexpected event within a service that prevents it from continuing to function normally. A failure will generally prevent responses to the current, and possibly all following, client requests. This is in contrast with an error, which is an expected and coded-for condition—for example an error discovered during input validation, that will be communicated to the client as part of the normal processing of the message. Failures are unexpected and will require intervention before the system can resume at the same level of operation. This does not mean that failures are always fatal, rather that some capacity of the system will be reduced following a failure. Errors are an expected part of normal operations, are dealt with immediately and the system will continue to operate at the same capacity following an error.</p>
@@ -39,13 +64,13 @@
                 <p>True isolation goes beyond the notion of encapsulation found in most object-oriented languages and gives us compartmentalization and containment of:</p>
                 <ul>
                     <li>State and behavior: it enables share-nothing designs and minimizes contention and coherence cost (as defined in the <a href="http://www.perfdynamics.com/Manifesto/USLscalability.html" target="_blank"> Universal Scalability Law</a>); </li>
-                    <li>Failures: it allows errors to be captured, signalled and managed at a fine-grained level instead of letting them cascade to other components.</li>
+                    <li>Failures: it allows <a href="#Failure">errors</a> to be captured, signalled and managed at a fine-grained level instead of letting them cascade to other components.</li>
                 </ul>
-                <p>Strong isolation between components is built on communication over well-defined protocols and enables loose coupling, leading to systems that are easier to understand, extend, test and evolve.</p>
+                <p>Strong isolation between components is built on communication over well-defined <a href="#Protocol">protocols</a> and enables loose coupling, leading to systems that are easier to understand, extend, test and evolve.</p>
 
                 <h2 id="Location-Transparency">Location Transparency</h2>
                 <p>Elastic systems needs to be adaptive and continuously react to changes in demand, they need to gracefully and efficiently increase and decrease scale. One key insight that simplifies this problem immensely is to realize that we are all doing distributed computing. This is true whether we are running our systems on a single node (with multiple independent CPUs communicating over the QPI link) or on a cluster of nodes (with independent machines communicating over the network). Embracing this fact means that there is no conceptual difference between scaling vertically on multicore or horizontally on the cluster.</p>
-                <p>If all of our components support mobility, and local communication is just an optimization, then we do not have to define a static system topology and deployment model upfront. We can leave this decision to the operations personnel and the runtime, which can adapt and optimize the system depending on how it is used.</p>
+                <p>If all of our <a href="#Component">components</a> support mobility, and local communication is just an optimization, then we do not have to define a static system topology and deployment model upfront. We can leave this decision to the operations personnel and the runtime, which can adapt and optimize the system depending on how it is used.</p>
                 <p>This decoupling in space (see the the definition for Isolation), enabled through asynchronous message-passing, and decoupling of the runtime instances from their references is what we call Location Transparency. Location Transparency is often mistaken for 'transparent distributed computing', while it is actually the opposite: we embrace the network and all its constraints—like partial failure, network splits, dropped messages, and its asynchronous and message-based nature—by making them first class in the programming model, instead of trying to emulate in-process method dispatch on the network (ala RPC, XA etc.). Our view of Location Transparency is in perfect agreement with <a href="http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.41.7628" target="_blank"> A Note On Distributed Computing</a> by Waldo et al.</p>
 
                 <h2 id="Message-Driven">Message-Driven (in contrast to Event-Driven)</h2>

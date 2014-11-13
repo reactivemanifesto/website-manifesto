@@ -11,6 +11,15 @@ body {
   font-weight: 100;
   counter-reset: figure;
 }
+.cf:before,
+.cf:after {
+    content: " "; /* 1 */
+    display: table; /* 2 */
+}
+
+.cf:after {
+    clear: both;
+}
 
 @media screen and (max-width: 960px) {
   body {
@@ -776,5 +785,35 @@ figure figcaption:before {
   }
   .trait {
     padding-top: 5px;
+  }
+}
+
+.toc ul {
+  padding: 0;
+  list-style-type: none;
+  width: 50%;
+  margin: 0;
+  float: left;
+}
+.toc li {
+  padding: 3px 0;
+}
+.toc a {
+  font-size: 0.8em;
+}
+#glossary .toc h2 {
+  color: #777;
+  margin-bottom: 1em;
+}
+@media screen and (max-width: 960px) {
+  .toc ul {
+    width: 100%;
+    float: none;
+  }
+  .toc li {
+    padding: 6px 0;
+  }
+  .toc a {
+    font-size: 1em;
   }
 }
