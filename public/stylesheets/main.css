@@ -64,6 +64,20 @@ h2 {
   font-weight: normal;
   margin: 2em 0 0 0;
 }
+#glossary h2 .link-icon {
+  margin-left: -20px;
+  padding-right: 4px;
+}
+#glossary h2 .link-icon img {
+  width: 16px;
+  height: 16px;
+  opacity: 0.46667;
+  filter: alpha(opacity=47);
+}
+#glossary h2 .link-icon img:hover {
+  opacity: 1.0;
+  filter: alpha(opacity=100);
+}
 #glossary h2 + p {
   margin-top: 0;
 }
