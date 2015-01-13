@@ -1,57 +1,57 @@
-@main("The Reactive Manifesto") {
+@main("El Manifiesto de Sistemas Reactivos") {
     <div id="sign">
         <span class="close">×</span>
         <div data-bind="with: loggedInUser">
-            <a class="logout" href="#" data-bind="click: $root.logOut">Logout</a>
+            <a class="logout" href="#" data-bind="click: $root.logOut">Cerrar sesión</a>
             <p>
-                Hello <span data-bind="text: name"></span>.
+                Hola <span data-bind="text: name"></span>.
             </p>
             <hr/>
             <div class="inner" data-bind="ifnot: $data.signed">
                 <button data-bind="click: $root.sign" class="vote">
-                    Add your signature (<span data-bind="text: $root.total"></span>)
+                    Añadir su firma (<span data-bind="text: $root.total"></span>)
                 </button>
             </div>
             <div class="inner" data-bind="if: $data.signed">
                 <p>
-                    Thank you! And spread the word!
+                    Gracias! Y difundir la palabra!
                 </p>
                 <button data-bind="click: $root.unsign" class="vote unvote">
-                    Remove your signature
+                    Elimine su firma
                 </button>
             </div>
         </div>
         <div data-bind="ifnot: loggedInUser">
             <p>
-                Hi there,<br/> You need to be logged to sign the manifesto
+                Hola,<br/> Necesita estar registrado para firmar el manifiesto
             </p>
             <hr/>
             <div class="inner">
 
                 <button data-bind="click: logInTwitter" class="btn btn-twitter">
-                    Sign In with Twitter
+                    Entra con with Twitter
                 </button>
 
                 <button data-bind="click: logInGitHub" class="btn btn-github">
-                    Sign In with GitHub
+                    Entra con with GitHub
                 </button>
 
                 <button data-bind="click: logInGoogle" class="btn btn-google">
-                    Sign In with Google
+                    Entra con with Google
                 </button>
 
                 <button data-bind="click: logInLinkedIn" class="btn btn-linkedin">
-                    Sign In with LinkedIn
+                    Entra con with LinkedIn
                 </button>
             </div>
         </div>
     </div>
     <main>
         <header>
-            <h1>The <span>Reactive</span> Manifesto</h1>
+            <h1>El Manifiesto de Sistemas <span>Reactivos</span></h1>
             <aside>
                 <p>
-                    @manifestoVersion()
+                    @es.manifestoVersion()
                 </p>
 
             </aside>
@@ -62,16 +62,16 @@
 
         <article>
 
-            @manifesto()
+            @es.manifesto()
 
             <div class="sign">
-                <button data-bind="click: signTheManifesto, clickBubble: false">Sign the manifesto</button>
+                <button data-bind="click: signTheManifesto, clickBubble: false">Firma el manifiesto</button>
             </div>
 
 
         </article>
         <p class="signatures">
-            <span data-bind="ifnot: total">Loading...</span>
+            <span data-bind="ifnot: total">Cargando...</span>
             <span data-bind="if: total">
                 <span data-bind="template: { name: 'total-template', data: total }"></span>
             </span>
@@ -86,14 +86,14 @@
                     <div class="g-plus" data-action="share" data-annotation="bubble" data-href="http://reactivemanifesto.org"></div>
                     <script type="IN/Share" data-url="http://reactivemanifesto.org" data-counter="right"></script>
                 <p>
-                    <a class="" href="/glossary">Glossary</a>
+                    <a class="" href="/glossary">Glosario</a>
                 </p>
 
                 <p>
-                    <a class="pdf" href="@routes.Assets.at("pdf/the-reactive-manifesto-2.0.pdf")">Download as PDF</a>
+                    <a class="pdf" href="@routes.Assets.at("pdf/the-reactive-manifesto-2.0.pdf")">Descargar como PDF</a>
                 </p>
                 <p>
-                    <a class="pdf" href="https://github.com/reactivemanifesto/reactivemanifesto/blob/master/README.md">Suggest improvements</a>
+                    <a class="pdf" href="https://github.com/reactivemanifesto/reactivemanifesto/blob/master/README.es.md">Sugerir mejoras</a>
                 </p>
         </article>
 
@@ -101,7 +101,7 @@
 
     </main>
     <script type="text/html" id="total-template">
-        <span data-bind="text: $data"></span> people already signed (<a href="/list">Full list</a>)
+        <span data-bind="text: $data"></span> personas ya firmaron (<a href="/list">Lista completa</a>)
     </script>
 
     <script type="text/html" id="signatories-template">

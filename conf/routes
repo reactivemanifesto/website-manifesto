@@ -3,6 +3,7 @@
 # ~~~~
 
 GET           /                         controllers.Application.index
+GET           /es                       controllers.Application.esIndex
 GET           /glossary                 controllers.Application.glossary
 GET           /list                     controllers.Application.list
 GET           /ribbons                  controllers.Application.ribbons
