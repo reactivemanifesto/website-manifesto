@@ -27,6 +27,9 @@ object Application extends Controller {
    */
   val index = cached(views.html.index())
 
+
+  val esIndex = cached(views.html.es.index())
+
   /**
    * The list page.
    */
