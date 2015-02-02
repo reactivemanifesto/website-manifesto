@@ -8,6 +8,8 @@ GET           /jp                       controllers.Application.jpIndex
 GET           /glossary                 controllers.Application.glossary
 GET           /jp/glossary              controllers.Application.jpGlossary
 GET           /list                     controllers.Application.list
+GET           /es/list                  controllers.Application.esList
+GET           /jp/list                  controllers.Application.jpList
 GET           /ribbons                  controllers.Application.ribbons
 
 GET           /signatories              controllers.SignatoriesController.list(page: Int ?= 1, per_page: Int ?= 30)

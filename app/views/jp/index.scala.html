@@ -2,46 +2,46 @@
     <div id="sign">
         <span class="close">×</span>
         <div data-bind="with: loggedInUser">
-            <a class="logout" href="#" data-bind="click: $root.logOut">Cerrar sesión</a>
+            <a class="logout" href="#" data-bind="click: $root.logOut">ログアウト</a>
             <p>
-                Hola <span data-bind="text: name"></span>.
+                <span data-bind="text: name"></span> さん、
             </p>
             <hr/>
             <div class="inner" data-bind="ifnot: $data.signed">
                 <button data-bind="click: $root.sign" class="vote">
-                    Añadir su firma (<span data-bind="text: $root.total"></span>)
+                    署名を追加する (<span data-bind="text: $root.total"></span>)
                 </button>
             </div>
             <div class="inner" data-bind="if: $data.signed">
                 <p>
-                    Gracias! Y difundir la palabra!
+                    ありがとう。他の人にも伝えて下さい!
                 </p>
                 <button data-bind="click: $root.unsign" class="vote unvote">
-                    Elimine su firma
+                    署名を取り消す
                 </button>
             </div>
         </div>
         <div data-bind="ifnot: loggedInUser">
             <p>
-                Hola,<br/> Necesita estar registrado para firmar el manifiesto
+                署名にはログインが必要です。
             </p>
             <hr/>
             <div class="inner">
 
                 <button data-bind="click: logInTwitter" class="btn btn-twitter">
-                    Entra con Twitter
+                    Twitter で署名する
                 </button>
 
                 <button data-bind="click: logInGitHub" class="btn btn-github">
-                    Entra con GitHub
+                    GitHub で署名する
                 </button>
 
                 <button data-bind="click: logInGoogle" class="btn btn-google">
-                    Entra con Google
+                    Google で署名する
                 </button>
 
                 <button data-bind="click: logInLinkedIn" class="btn btn-linkedin">
-                    Entra con LinkedIn
+                    LinkedIn で署名する
                 </button>
             </div>
         </div>
@@ -51,7 +51,7 @@
             <h1>リアクティブ宣言</h1>
             <aside>
                 <p>
-                    @es.manifestoVersion()
+                    @jp.manifestoVersion()
                 </p>
 
             </aside>
@@ -71,7 +71,7 @@
 
         </article>
         <p class="signatures">
-            <span data-bind="ifnot: total">Cargando...</span>
+            <span data-bind="ifnot: total">読み込み中...</span>
             <span data-bind="if: total">
                 <span data-bind="template: { name: 'total-template', data: total }"></span>
             </span>
@@ -86,14 +86,14 @@
                     <div class="g-plus" data-action="share" data-annotation="bubble" data-href="http://reactivemanifesto.org"></div>
                     <script type="IN/Share" data-url="http://reactivemanifesto.org" data-counter="right"></script>
                 <p>
-                    <a class="" href="/glossary">Glosario</a>
+                    <a class="" href="/jp/glossary">用語集</a>
                 </p>
 
                 <p>
-                    <a class="pdf" href="@routes.Assets.at("pdf/the-reactive-manifesto-2.0.pdf")">Descargar como PDF</a>
+                    <a class="pdf" href="@routes.Assets.at("pdf/the-reactive-manifesto-2.0-jp.pdf")">PDF としてダウンロードする</a>
                 </p>
                 <p>
-                    <a class="pdf" href="https://github.com/reactivemanifesto/reactivemanifesto/blob/master/README.es.md">Sugerir mejoras</a>
+                    <a class="pdf" href="https://github.com/reactivemanifesto/reactivemanifesto/blob/master/README.ja.md">改善点を提案する</a>
                 </p>
         </article>
 
@@ -101,7 +101,7 @@
 
     </main>
     <script type="text/html" id="total-template">
-        <span data-bind="text: $data"></span> personas ya firmaron (<a href="/list">Lista completa</a>)
+        <span data-bind="text: $data"></span> 名の人が署名しました (<a href="/list">署名のリスト</a>)
     </script>
 
     <script type="text/html" id="signatories-template">
