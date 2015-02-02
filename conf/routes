@@ -4,7 +4,9 @@
 
 GET           /                         controllers.Application.index
 GET           /es                       controllers.Application.esIndex
+GET           /jp                       controllers.Application.jpIndex
 GET           /glossary                 controllers.Application.glossary
+GET           /jp/glossary              controllers.Application.jpGlossary
 GET           /list                     controllers.Application.list
 GET           /ribbons                  controllers.Application.ribbons
 
