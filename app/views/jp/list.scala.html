@@ -1,16 +1,16 @@
-@main("Signatures - The Reactive Manifesto") {
+@main("署名 - リアクティブ宣言") {
     <main>
         <header>
-            <h1>The <span>Reactive</span> Manifesto</h1>
+            <h1>リアクティブ宣言</h1>
         </header>
         <p class="signatures">
-            <span data-bind="ifnot: total">Loading...</span>
+            <span data-bind="ifnot: total">読み込み中...</span>
             <span data-bind="if: total">
                 <span data-bind="template: { name: 'total-template', data: total }"></span>
             </span>
         </p>
         <div class="signatures">
-            Search: <input data-bind="value: searchField, valueUpdate: 'afterkeydown'"/>
+            検索: <input data-bind="value: searchField, valueUpdate: 'afterkeydown'"/>
             <span class="searching">
                 <img src="@routes.Assets.at("images/spinner.gif")" data-bind="visible: searching"/>
             </span>
@@ -23,7 +23,7 @@
     </main>
 
     <script type="text/html" id="total-template">
-        <span data-bind="text: $data"></span> people already signed (<a href="/">Go back to the manifesto</a>)
+        <span data-bind="text: $data"></span> 名の人が署名しました (<a href="/jp">宣言へ戻る</a>)
     </script>
 
     <script type="text/html" id="signatories-template">
@@ -36,7 +36,7 @@
             </li>
         </ul>
         <span data-bind="if: $root.fetchMore">
-            <button data-bind="click: $root.doFetchMore" class="button">Fetch more...</button>
+            <button data-bind="click: $root.doFetchMore" class="button">読み込む...</button>
         </span>
     </script>
 }

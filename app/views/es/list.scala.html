@@ -1,4 +1,4 @@
-@main("Signatures - El Manifiesto de Sistemas Reactivos") {
+@main("Volver arriba - El Manifiesto de Sistemas Reactivos") {
     <main>
         <header>
             <h1>El Manifiesto de Sistemas <span>Reactivos</span></h1>
@@ -10,7 +10,7 @@
             </span>
         </p>
         <div class="signatures">
-            Search: <input data-bind="value: searchField, valueUpdate: 'afterkeydown'"/>
+            búsqueda: <input data-bind="value: searchField, valueUpdate: 'afterkeydown'"/>
             <span class="searching">
                 <img src="@routes.Assets.at("images/spinner.gif")" data-bind="visible: searching"/>
             </span>
@@ -23,7 +23,7 @@
     </main>
 
     <script type="text/html" id="total-template">
-        <span data-bind="text: $data"></span> personas ya firmaron (<a href="/es">Go back to the manifesto</a>)
+        <span data-bind="text: $data"></span> personas ya firmaron (<a href="/es">Volver al manifiesto</a>)
     </script>
 
     <script type="text/html" id="signatories-template">
@@ -36,7 +36,7 @@
             </li>
         </ul>
         <span data-bind="if: $root.fetchMore">
-            <button data-bind="click: $root.doFetchMore" class="button">Fetch more...</button>
+            <button data-bind="click: $root.doFetchMore" class="button">Fetch más...</button>
         </span>
     </script>
 }
