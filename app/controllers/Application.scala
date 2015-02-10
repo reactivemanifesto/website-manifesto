@@ -30,10 +30,16 @@ object Application extends Controller {
 
   val esIndex = cached(views.html.es.index())
 
+  val jpIndex = cached(views.html.jp.index())
+
   /**
    * The list page.
    */
   val list = cached(views.html.list())
+
+  val esList = cached(views.html.es.list())
+
+  val jpList = cached(views.html.jp.list())
 
   /**
    * The ribbons page.
@@ -43,4 +49,6 @@ object Application extends Controller {
    * The glossary page.
    */
   val glossary = cached(views.html.glossary())
+
+  val jpGlossary = cached(views.html.jp.glossary())
 }

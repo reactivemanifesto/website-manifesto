@@ -1,0 +1,42 @@
+@main("署名 - リアクティブ宣言") {
+    <main>
+        <header>
+            <h1>リアクティブ宣言</h1>
+        </header>
+        <p class="signatures">
+            <span data-bind="ifnot: total">読み込み中...</span>
+            <span data-bind="if: total">
+                <span data-bind="template: { name: 'total-template', data: total }"></span>
+            </span>
+        </p>
+        <div class="signatures">
+            検索: <input data-bind="value: searchField, valueUpdate: 'afterkeydown'"/>
+            <span class="searching">
+                <img src="@routes.Assets.at("images/spinner.gif")" data-bind="visible: searching"/>
+            </span>
+        </div>
+        <div data-bind="if: signatories" class="signatures">
+            <span data-bind="template: { name: 'signatories-template', data: signatories }"></span>
+        </div>
+
+        @footer()
+    </main>
+
+    <script type="text/html" id="total-template">
+        <span data-bind="text: $data"></span> 名の人が署名しました (<a href="/jp">宣言へ戻る</a>)
+    </script>
+
+    <script type="text/html" id="signatories-template">
+        <ul class="full" data-bind="foreach: $data">
+            <li style="display: block">
+                <span data-bind="if: $data.avatarUrl">
+                    <img class="avatar" data-bind="attr: { src: $data.avatarUrl }" width="25" height="25"/>
+                </span>
+                <span data-bind="text: name"></span> <span data-bind="text: fromNowSigned"></span> (<a class="version" data-bind="attr: { href: $data.version[1]}, text: version[0]"></a>)
+            </li>
+        </ul>
+        <span data-bind="if: $root.fetchMore">
+            <button data-bind="click: $root.doFetchMore" class="button">読み込む...</button>
+        </span>
+    </script>
+}
