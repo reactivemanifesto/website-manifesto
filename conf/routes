@@ -4,12 +4,12 @@
 
 GET           /                         controllers.Application.index
 GET           /es                       controllers.Application.esIndex
-GET           /jp                       controllers.Application.jpIndex
+GET           /ja                       controllers.Application.jaIndex
 GET           /glossary                 controllers.Application.glossary
-GET           /jp/glossary              controllers.Application.jpGlossary
+GET           /ja/glossary              controllers.Application.jaGlossary
 GET           /list                     controllers.Application.list
 GET           /es/list                  controllers.Application.esList
-GET           /jp/list                  controllers.Application.jpList
+GET           /ja/list                  controllers.Application.jaList
 GET           /ribbons                  controllers.Application.ribbons
 
 GET           /signatories              controllers.SignatoriesController.list(page: Int ?= 1, per_page: Int ?= 30)
