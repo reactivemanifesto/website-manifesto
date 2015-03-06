@@ -32,6 +32,8 @@ object Application extends Controller {
 
   val jaIndex = cached(views.html.ja.index())
 
+  val deIndex = cached(views.html.de.index())
+
   /**
    * The list page.
    */
@@ -51,4 +53,6 @@ object Application extends Controller {
   val glossary = cached(views.html.glossary())
 
   val jaGlossary = cached(views.html.ja.glossary())
+
+  val deGlossary = cached(views.html.de.glossary())
 }
