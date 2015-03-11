@@ -6,6 +6,7 @@ GET           /                         controllers.Application.index
 GET           /es                       controllers.Application.esIndex
 GET           /ja                       controllers.Application.jaIndex
 GET           /de                       controllers.Application.deIndex
+GET           /fr                       controllers.Application.frIndex
 GET           /glossary                 controllers.Application.glossary
 GET           /ja/glossary              controllers.Application.jaGlossary
 GET           /de/glossary              controllers.Application.deGlossary

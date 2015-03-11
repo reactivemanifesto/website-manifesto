@@ -34,6 +34,8 @@ object Application extends Controller {
 
   val deIndex = cached(views.html.de.index())
 
+  val frIndex = cached(views.html.fr.index())
+
   /**
    * The list page.
    */
