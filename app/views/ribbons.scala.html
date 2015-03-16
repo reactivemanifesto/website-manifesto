@@ -1,3 +1,5 @@
+@(implicit lang: Lang)
+
 @import scala.util.matching._
 @getImg(img: String) = {
     &lt;a href="http://www.reactivemanifesto.org/"&gt;
@@ -8,14 +10,14 @@
     &lt;/a&gt;
 }
 
-@main("Ribbons - The Reactive Manifesto Admin") {
+@main(s"${Messages("ribbons.title")} - ${Messages("title")}") {
     <main>
         <header>
-            <h1>The <span>Reactive</span> Manifesto</h1>
+            <h1>@Html(Messages("title.formatted", "<span>", "</span>"))</h1>
         </header>
         <article>
-            <h2>Show your support!</h2>
-            <p>Choose a ribbon that you like, right or left, and copy/paste the code underneath in your html page right before <code>&lt;/body&gt;</code>.</p>
+            <h2>@Messages("ribbons.showYourSupport")</h2>
+            <p>@Html(Messages("ribbons.instructions"))</p>
             <ul class="ribbons">
                 @defining(Seq(
                     "we-are-reactive-black-left.png",
@@ -42,6 +44,6 @@
                 }
             </ul>
         </article>
-        @footer()
+        @footer.apply
     </main>
 }
