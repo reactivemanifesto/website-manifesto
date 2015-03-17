@@ -1,16 +1,18 @@
-@main("Signatures - The Reactive Manifesto") {
+@(implicit lang: Lang)
+
+@main(s"${Messages("list.title")} - ${Messages("title")}") {
     <main>
         <header>
-            <h1>The <span>Reactive</span> Manifesto</h1>
+            <h1>@Html(Messages("title.formatted", "<span>", "</span>"))</h1>
         </header>
         <p class="signatures">
-            <span data-bind="ifnot: total">Loading...</span>
+            <span data-bind="ifnot: total">@Messages("list.loading")</span>
             <span data-bind="if: total">
                 <span data-bind="template: { name: 'total-template', data: total }"></span>
             </span>
         </p>
         <div class="signatures">
-            Search: <input data-bind="value: searchField, valueUpdate: 'afterkeydown'"/>
+            @Messages("list.search"): <input data-bind="value: searchField, valueUpdate: 'afterkeydown'"/>
             <span class="searching">
                 <img src="@routes.Assets.at("images/spinner.gif")" data-bind="visible: searching"/>
             </span>
@@ -19,11 +21,12 @@
             <span data-bind="template: { name: 'signatories-template', data: signatories }"></span>
         </div>
 
-        @footer()
+        @footer.apply
     </main>
 
     <script type="text/html" id="total-template">
-        <span data-bind="text: $data"></span> people already signed (<a href="/">Go back to the manifesto</a>)
+        @Html(Messages("list.peopleAlreadySigned", "<span data-bind='text: $data'></span>"))
+        (<a href="@routes.Application.index(lang.code)">@Messages("list.goBackToTheManifesto")</a>)
     </script>
 
     <script type="text/html" id="signatories-template">
@@ -36,7 +39,7 @@
             </li>
         </ul>
         <span data-bind="if: $root.fetchMore">
-            <button data-bind="click: $root.doFetchMore" class="button">Fetch more...</button>
+            <button data-bind="click: $root.doFetchMore" class="button">@Messages("list.fetchMore")</button>
         </span>
     </script>
 }

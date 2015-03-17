@@ -1,6 +1,7 @@
 package controllers.admin
 
 import controllers.oauth.GitHubController
+import play.api.i18n.Lang
 import play.api.mvc._
 import services.{UserService, OAuth2}
 import scala.util.control.NonFatal
@@ -13,6 +14,8 @@ import org.joda.time.format.DateTimeFormat
 import scala.util.control.Exception._
 
 object AdminController extends Controller {
+
+  implicit val lang = Lang("en")
 
   case class FormattedSignatory(id: String, name: String, provider: String, providerId: String,
                                 providerScreenName: String, signed: String, avatarUrl: String)
@@ -103,9 +106,9 @@ object AdminController extends Controller {
 
   def index = Action { req =>
     if (isAuthenticated(req)) {
-      Ok(views.html.admin.index())
+      Ok(views.html.admin.index.apply)
     } else {
-      Ok(views.html.admin.login())
+      Ok(views.html.admin.login.apply)
     }
   }
 

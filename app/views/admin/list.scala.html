@@ -1,4 +1,4 @@
-@(signatories: Seq[controllers.admin.AdminController.FormattedSignatory])
+@(signatories: Seq[controllers.admin.AdminController.FormattedSignatory])(implicit lang: Lang)
 
 @main("The Reactive Manifesto Admin") {
     <main>
@@ -28,5 +28,5 @@
         </article>
 
     </main>
-    @footer()
+    @footer.apply
 }

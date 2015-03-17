@@ -1,8 +1,11 @@
+@(implicit lang: Lang)
 <footer>
-    <a href="/" >The Reactive Manifesto</a> (English) |
-    <a href="/es" >El Manifiesto de Sistemas Reactivos</a> (Spanish) |
-    <a href="/ja" >リアクティブ宣言</a> (Japanese)
+    <a href="@routes.Application.index("en")">@Messages("title")(Lang("en"))</a> (@Messages("footer.english")) |
+    <a href="@routes.Application.index("es")" >@Messages("title")(Lang("es"))</a> (@Messages("footer.spanish")) |
+    <a href="@routes.Application.index("ja")" >@Messages("title")(Lang("ja"))</a> (@Messages("footer.japanese")) |
+    <a href="@routes.Application.index("de")" >@Messages("title")(Lang("de"))</a> (@Messages("footer.german")) |
+    <a href="@routes.Application.index("fr")" >@Messages("title")(Lang("fr"))</a> (@Messages("footer.french"))
     <br/><br/>
-    Show your support <a href="/ribbons">with a ribbon</a>.
+    @Html(Messages("footer.ribbonSupport", "<a href='" + routes.Application.ribbons(lang.code) + "'>", "</a>"))
 </footer>
-<a class="ribbon" href="/ribbons" style="right: 0; top:0; position: absolute;"><img src="/images/ribbons/we-are-reactive-blue-right.png"></a>
+<a class="ribbon" href="@routes.Application.ribbons(lang.code)" style="right: 0; top:0; position: absolute;"><img src="/images/ribbons/we-are-reactive-blue-right.png"></a>
