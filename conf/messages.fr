@@ -1,4 +1,6 @@
-manifesto.publishVersion = Publié le 16 Septembre 2014 (v2.0)
+title = Le Manifeste Réactif
+title.formatted = Le Manifeste {0}Réactif{1}
+
 sign.hello = Bonjour
 sign.addYourSignature = Signer
 sign.thankYouAndSpreadTheWord = Merci! Et passez le mot!
@@ -6,15 +8,20 @@ sign.removeYourSignature = Enlever votre signature
 sign.hiThere = Bonjour,{0} vous devez être connecté pour signer le Manifeste
 sign.signInWith = Enregistrement avec {0}
 sign.signTheManifesto = Signer le manifeste
-list.loading = Chargement...
-glossary.title = Glossaire
+sign.logout = Déconnexion
+
+manifesto.publishVersion = Publié le 16 Septembre 2014 (v2.0)
 manifesto.downloadAsPDF = Télécharger la version PDF
 manifesto.suggestImprovements = Suggérer des améliorations
+
 list.peopleAlreadySigned = {0} personnes ont déjà signé
 list.fullList = Liste complète
-sign.logout = Déconnexion
-glossary.backToTop = Retourner en haut
+list.loading = Chargement...
 list.search = Chercher
 list.goBackToTheManifesto = Retourner au Manifeste
 list.title = Signatures
 list.fetchMore = En charger plus...
+
+glossary.title = Glossaire
+glossary.backToTop = Retourner en haut
+
