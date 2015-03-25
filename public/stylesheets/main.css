@@ -343,6 +343,8 @@ footer {
 }
 footer a {
   color: inherit !important;
+  padding-bottom: 5px;
+  display: inline-block;
 }
 #headerMinimized {
   position: absolute;
