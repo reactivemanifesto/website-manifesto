@@ -30,7 +30,9 @@ object Application extends Controller {
   private val es = FullLang(Lang("es"), "es_ES")
   private val fr = FullLang(Lang("fr"), "fr_FR")
   private val ja = FullLang(Lang("ja"), "ja_JP")
-  private val ptBR = FullLang(Lang("pt-br"), "pt_BR")
+  private val ptBR = FullLang(Lang("pt-BR"), "pt_BR")
+
+  private val all = Seq(de, en, es, fr, ja, ptBR)
 
   private val dateFormat: DateTimeFormatter =
     DateTimeFormat.forPattern("EEE, dd MMM yyyy HH:mm:ss 'GMT'")
@@ -103,17 +105,8 @@ object Application extends Controller {
    * The list page.
    */
   val list = {
-    def render(lang: FullLang) = {
-      lang -> views.html.list(lang.lang)
-    }
-
     cached(routes.Application.list,
-      render(en),
-      render(es),
-      render(ja),
-      render(fr),
-      render(de),
-      render(ptBR)
+      all.map(lang => lang -> views.html.list(lang.lang)): _*
     )
   }
 
