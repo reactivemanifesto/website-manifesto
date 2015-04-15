@@ -30,9 +30,10 @@ object Application extends Controller {
   private val es = FullLang(Lang("es"), "es_ES")
   private val fr = FullLang(Lang("fr"), "fr_FR")
   private val ja = FullLang(Lang("ja"), "ja_JP")
+  private val pt = FullLang(Lang("pt"), "pt_PT")
   private val ptBR = FullLang(Lang("pt-BR"), "pt_BR")
 
-  private val all = Seq(de, en, es, fr, ja, ptBR)
+  private val all = Seq(de, en, es, fr, ja, pt, ptBR)
 
   private val dateFormat: DateTimeFormatter =
     DateTimeFormat.forPattern("EEE, dd MMM yyyy HH:mm:ss 'GMT'")
@@ -97,6 +98,7 @@ object Application extends Controller {
       render(fr, views.html.fr.manifesto()),
       render(de, views.html.de.manifesto()),
       render(es, views.html.es.manifesto()),
+      render(pt, views.html.pt.manifesto()),
       render(ptBR, views.html.ptBR.manifesto())
     )
   }

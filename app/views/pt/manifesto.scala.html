@@ -1,0 +1,52 @@
+@*
+ * Main manifesto.
+ *@
+
+
+<section id="the-reactive-manifesto">
+
+    <p>As diversas organizações que trabalham nos mais variados domínios estão a descobrir, de forma independente, padrões de desenvolvimento de software muito semelhantes. Estes sistemas são mais robustos, mais resilientes, mais flexíveis e muito mais capazes de responder às exigências de hoje em dia.</p>
+
+    <p>Estas alterações acontecem devido às dramáticas mudanças dos requisitos das aplicações dos anos mais recentes. No passado mais recente, uma aplicação era apenas constituída por algumas dezenas de servidores, com tempos de resposta na ordem dos segundos, incontáveis horas de manutenção offline e dados apenas na ordem dos Gigabytes. Hoje em dia, podemos encontrar aplicações nas mais diversas áreas, desde dispositivos móveis até serviços de nuvem executados em milhares de processadores de múltiplos cores. Os utilizadores destes sistemas são muito mais exigentes e esperam tempos de resposta na ordem dos milisegundos com disponibilidade permanente de 100%. O volume de dados passou a ser medido em Petabytes. Simplesmente, as arquitecturas do passado que tão boa conta deram de si, não são capazes de dar resposta às necessidades de hoje.</p>
+
+    <p>Acreditamos que é necessária uma abordagem coerente às arquitecturas destes sistemas, e acreditamos que todos os aspectos necessários já foram identificados individualmente: queremos sistemas que sejam Responsivos, Resilientes, Elásticos e Conduzidos por Mensagens. São os chamados Sistemas Reactivos.</p>
+
+    <p>Sistemas desenvolvidos como Sistemas Reactivos são mais flexíveis, desacupolados e <a href="/pt/glossary#Scalability">escaláveis</a>. Assim, são mais fáceis de manter e de mudar. São significamente mais tolerantes a <a href="/pt/glossary#Failure">falhas</a> e quando estas ocorrem, são tratadas com elegância. Sistemas Reactivos são altamente responsivos, dando aos <a href="/pt/glossary#User">utilizadores</a> um verdadeiro feedback interactivo.</p>
+
+    <h3>Sistemas Reactivos são:</h3>
+
+</section>
+
+<section id="responsive" class="trait">
+
+    <p><strong>Responsivos: </strong>O <a href="/pt/glossary#System">sistema</a> responde atempadamente, se possível. Responsividade é a pedra basilar da usabilidade e utilidade, mas muito mais que isso, significa que os problemas podem ser detectados mais rapidamente e tratados com eficácia. Sistemas Responsivos estão focados em oferecer tempos de resposta rápidos e consistentes, estabelecendo margens de tolerância que garantam uma qualidade de serviço regular. Este comportamento consistente, simplifica o tratamento de erros, transmite confiança ao utilizador final e encoraja a interacção.</p>
+
+</section>
+
+<section id="resilient" class="trait">
+
+    <p><strong>Resilientes: </strong>O sistema continua responsivo perante a <a href="/pt/glossary#Failure">falha</a>. Aplica-se não só apenas a sistemas críticos de alta disponibilidade - qualquer sistema que não seja resiliente não será responsivo após uma falha. Resiliência é obtida através de <a href="/pt/glossary#Replication">replicação</a>, contenção, <a href="/pt/glossary#Isolation">isolamento</a> e <a href="/pt/glossary#Delegation">delegação</a>. As falhas são contidas em cada <a href="/pt/glossary#Component">componente</a>, que por sua vez estão isoladas umas das outras e assim garantem que partes do sistema possam falhar e recuperar sem comprometer o sistema como um todo. A recuperação de cada componente é delegada para outro componente externo e a alta-disponibilidade é assegurada por réplica, quando necessário. O tratamento das falhas de um componente não é da responsabilidade dos seus clientes.</p>
+
+</section>
+
+<section id="elastic" class="trait">
+
+    <p><strong>Elástico: </strong>O sistema mantém-se responsivo face a variações de carga. Sistemas Reactivos podem reagir a mudanças no ritmo de acessos, aumentando ou diminuindo os <a href="/pt/glossary#Resource">recursos</a> alocados para servir estes mesmos acessos. Isto implica que não possa existir qualquer ponto de contenção, possibilitanto a divisão ou replicação de componentes, assim como a distribuição dos acessos entre eles. Sistemas Reactivos suportam algoritmos escaláveis, assim como de previsão e de reacção porque geram métricas de desempenho em tempo real. Conseguem <a href="/pt/glossary#Elasticity">elasticidade</a> de uma forma eficaz em hardware de baixo custo.</p>
+
+</section>
+
+<section id="message-driven" class="trait">
+
+    <p><strong>Conduzido por Mensagens: </strong>Sistemas Reactivos dependem de mensagens <a href="/pt/glossary#Asynchronous">assíncronas</a> para assegurar que os componentes estão desacupolados, isolados e localizados transparentemente, com meios para oferecer delegação de <a href="/pt/glossary#Failure">erros</a> na forma de mensagens. O roteamento de mensagens permite gerir a carga e a elasticidade enquanto que o controlo de fluxo cria e monitoriza filas de mensagens no sistema, que quando necessário são roteadas por caminhos alternativos. Transparência na localização das mensagens como um meio de comunicação, torna possível a gestão de falhas de forma idêntica, quer se trate de um “cluster” ou de apenas uma máquina. Comunicação <a href="/pt/glossary#Non-Blocking">não bloqueante</a> permite aos destinatários consumir apenas os <a href="/pt/glossary#Resource">recursos</a> necessários quando estão activos, traduzindo-se numa carga muito menor no sistema.</p>
+
+    @image("reactive-traits-pt.svg")
+
+</section>
+
+<section id="conclusion">
+
+    <p>Os grandes sistemas são compostos por sistemas mais pequenos, que por sua vez dependem das propriedades Reactivas dos seus componentes. Isto significa que os Sistemas Reactivos aplicam estes princípios a todos os níveis, permitindo diversas combinações entre os vários componentes. Os maiores sistemas do mundo dependem de arquitecturas baseadas nestes princípios, servindo as necessidades de biliões de pessoas diariamente. É tempo de aplicar estes princípios conscientemente desde o princípio, do que ter que os descobrir de cada vez que implementamos um novo sistema.</p>
+
+</section>
+
+
