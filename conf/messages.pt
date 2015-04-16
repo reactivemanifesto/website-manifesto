@@ -1,0 +1,26 @@
+title = O Manifesto pela Reactividade
+title.formatted = O Manifesto pela {0}Reactividade{1}
+
+sign.hello = Olá
+sign.addYourSignature = Adicione a sua assinatura
+sign.thankYouAndSpreadTheWord = Obrigado! E espalhe a palavra!
+sign.removeYourSignature = Remova a sua assinatura
+sign.hiThere = Olá,{0} necessita de estar autenticado para assinar o manifesto
+sign.signInWith = Autenticar com {0}
+sign.signTheManifesto = Assinar o manifesto
+sign.logout = Sair
+
+manifesto.downloadAsPDF = Download como PDF
+manifesto.suggestImprovements = Sugira melhorias
+manifesto.publishVersion = Publicado em 16 de Setembro de 2014. (v2.0)
+
+list.peopleAlreadySigned = {0} pessoas já assinaram
+list.fullList = Lista completa
+list.search = Pesquisa
+list.goBackToTheManifesto = Voltar para o manifesto
+list.title = Assinaturas
+list.fetchMore = Mais resultados...
+list.loading = A carregar
+
+glossary.title = Glossário
+glossary.backToTop = Voltar para o topo
