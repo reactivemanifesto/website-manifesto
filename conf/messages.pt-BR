@@ -3,9 +3,9 @@ title.formatted = O Manifesto {0}Reativo{1}
 
 sign.hello = Olá
 sign.addYourSignature = Adicione sua assinatura
-sign.thankYouAndSpreadTheWord = Obrigado! E espalhe a notícia para o mundo!
+sign.thankYouAndSpreadTheWord = Obrigado! E espalhe a notícia!
 sign.removeYourSignature = Remover sua assinatura
-sign.hiThere = Olá,{0} Você precisa estar conectado para assinar o manifesto
+sign.hiThere = Olá,{0} Você precisa estar logado para assinar o manifesto
 sign.signInWith = Entrar com {0}
 sign.signTheManifesto = Assinar o manifesto
 sign.logout = Sair
@@ -15,12 +15,12 @@ manifesto.suggestImprovements = Sugira melhorias
 manifesto.publishVersion = Publicado em 16 de Setembro de 2014. (v2.0)
 
 list.peopleAlreadySigned = {0} pessoas já assinaram o manifesto
-list.fullList = List completa
+list.fullList = Lista completa
 list.search = Pesquisar
 list.goBackToTheManifesto = Voltar para o manifesto
 list.title = Assinaturas
 list.fetchMore = Carregar mais...
 list.loading = Carregando
 
-glossary.title = Glosário
+glossary.title = Glossário
 glossary.backToTop = Voltar ao topo
