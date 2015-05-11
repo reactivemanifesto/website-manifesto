@@ -29,7 +29,7 @@
 			<path fill-rule="evenodd" clip-rule="evenodd" fill="#445DE9" d="M502,223H290c-4.4,0-8,3.6-8,8v35c0,4.4,3.6,8,8,8h212
 				c4.4,0,8-3.6,8-8v-35C510,226.5,506.4,223,502,223z"/>
 		</g>
-		<text transform="matrix(1 0 0 1 300 253.9655)" fill="#FFFFFF" font-family="'HelveticaNeue-Medium'" font-size="18">Dirigido por mensagem</text>
+		<text transform="matrix(1 0 0 1 300 253.9655)" fill="#FFFFFF" font-family="'HelveticaNeue-Medium'" font-size="18">Orientado a Mensagens</text>
 		<g>
 			<path opacity="0.4" fill-rule="evenodd" clip-rule="evenodd" fill="#445DE9" d="M24,177c-8.8,0-16-7.2-16-16v-35
 				c0-8.8,7.2-16,16-16h212c8.8,0,16,7.2,16,16v35c0,8.8-7.2,16-16,16H24z"/>
