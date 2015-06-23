@@ -1,6 +1,6 @@
 # Title
-title = The Reactive Manifesto
-title.formatted = The {0}Reactive{1} Manifesto
+title = Il Manifesto dei Sistemi Reattivi
+title.formatted = Il Manifesto dei Sistemi {0}Reattivi{1}
 
 # Signing
 sign.hello = Hello
@@ -40,9 +40,7 @@ footer.ribbonSupport = Show your support {0}with a ribbon{1}.
 footer.english = English
 footer.german = German
 footer.french = French
-footer.italian = Italian
 footer.spanish = Spanish
 footer.japanese = Japanese
 footer.portuguese = Portuguese
 footer.portugueseBrazilian = Portuguese Brazilian
-footer.turkish = Turkish
