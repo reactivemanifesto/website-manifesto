@@ -3,45 +3,34 @@ title = Reaktif Manifesto
 title.formatted = {0}Reaktif{1} Manifesto
 
 # Signing
-sign.hello = Hello
-sign.addYourSignature = Add your signature
-sign.thankYouAndSpreadTheWord = Thank you! And spread the word!
-sign.removeYourSignature = Remove your signature
-sign.hiThere = Hi there,{0} You need to be logged to sign the manifesto
-sign.signInWith = Sign In with {0}
-sign.signTheManifesto = Sign the manifesto
-sign.logout = Logout
+sign.hello = Merhaba
+sign.addYourSignature = İmzanızı ekleyin
+sign.thankYouAndSpreadTheWord = Teşekkürler! Ve haberi yayın!
+sign.removeYourSignature = İmzanızı kaldırın
+sign.hiThere =  Merhaba,{0} manifestoyu imzalamak için giriş yapmanız gerekiyor
+sign.signInWith = {0} ile giriş yapın
+sign.signTheManifesto = Manifestoyu imzalayın
+sign.logout = Çıkış
 
 # Manifesto
-manifesto.publishVersion = Published on September 16 2014. (v2.0)
-manifesto.downloadAsPDF = Download as PDF
-manifesto.suggestImprovements = Suggest improvements
+manifesto.publishVersion = 16 Eylül 2014 tarihinde yayınlandı. (v2.0)
+manifesto.downloadAsPDF = PDF olarak indirin
+manifesto.suggestImprovements = İyileştirmeler önerin
 
 # List
-list.title = Signatures
-list.loading = Loading...
-list.peopleAlreadySigned = {0} people already signed
-list.fullList = Full list
-list.search = Search
-list.fetchMore = Fetch more...
-list.goBackToTheManifesto = Go back to the manifesto
+list.title = İmzalar
+list.loading = Yükleniyor...
+list.peopleAlreadySigned = {0} kişi imzaladı
+list.fullList = Tam liste
+list.search = Ara
+list.fetchMore = Daha fazla getir...
+list.goBackToTheManifesto = Manifestoya geri dön
 
 # Glossary
-glossary.title = Glossary
-glossary.backToTop = Back To Top
+glossary.title = Terimler sözlüğü
+glossary.backToTop = Başa Dön
 
 # Ribbons
-ribbons.title = Ribbons
-ribbons.showYourSupport = Show your support!
+ribbons.title = Kurdeleler
+ribbons.showYourSupport = Desteğinizi gösterin!
 ribbons.instructions = Choose a ribbon that you like, right or left, and copy/paste the code underneath in your html page right before the <code>&lt;/body&gt;</code> tag.
-
-# Footer
-footer.ribbonSupport = Show your support {0}with a ribbon{1}.
-footer.english = English
-footer.german = German
-footer.french = French
-footer.italian = Italian
-footer.spanish = Spanish
-footer.japanese = Japanese
-footer.portuguese = Portuguese
-footer.portugueseBrazilian = Portuguese Brazilian
