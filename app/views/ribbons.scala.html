@@ -13,7 +13,7 @@
 @main(s"${Messages("ribbons.title")} - ${Messages("title")}") {
     <main>
         <header>
-            <h1>@Html(Messages("title.formatted", "<span>", "</span>"))</h1>
+            <a class="title-link" href="@routes.Application.index(lang.code)"><h1>@Html(Messages("title.formatted", "<span>", "</span>"))</h1></a>
         </header>
         <article>
             <h2>@Messages("ribbons.showYourSupport")</h2>
