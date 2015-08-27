@@ -24,7 +24,7 @@ Deploy on Heroku
 ----------------
 
     heroku create
-    heroku addons:add mongohq
+    heroku addons:add mongolab
     heroku config:add APPLICATION_SECRET="---YOUR-APPLICATION-SECRET---"
     heroku config:add TWITTER_AUTH_KEY="---YOUR-KEY---"
     heroku config:add TWITTER_AUTH_SECRET="---YOUR-KEY---"
