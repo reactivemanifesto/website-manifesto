@@ -1,18 +1,18 @@
-@(glossary: Html)(implicit lang: Lang)
+@(glossary: Html)(implicit messages: MessagesApi, lang: Lang)
 
-@main(s"${Messages("glossary.title")} - ${Messages("title")}") {
+@main(s"${messages("glossary.title")} - ${messages("title")}") {
     <main>
         <header>
-            <a class="title-link" href="@routes.Application.index(lang.code)"><h1>@Html(Messages("title.formatted", "<span>", "</span>"))</h1></a>
+            <a class="title-link" href="@routes.Application.index(lang.code)"><h1>@Html(messages("title.formatted", "<span>", "</span>"))</h1></a>
         </header>
 
         <article>
             <section id="glossary">
-                <h1>@Messages("glossary.title")</h1>
+                <h1>@messages("glossary.title")</h1>
 
                 @glossary
 
-                <a href="#glossary" class="btt">&#8593; @Messages("glossary.backToTop")</a>
+                <a href="#glossary" class="btt">&#8593; @messages("glossary.backToTop")</a>
 
             </section>
         </article>

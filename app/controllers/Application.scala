@@ -4,15 +4,15 @@ import java.util.{Locale, Date}
 
 import org.joda.time.DateTimeZone
 import org.joda.time.format.{DateTimeFormat, DateTimeFormatter}
-import play.api.i18n.Lang
-import play.api.mvc.{Call, Action, Controller}
+import play.api.i18n.{MessagesApi, Lang}
+import play.api.mvc.{EssentialAction, Call, Action, Controller}
 import org.apache.commons.codec.digest.DigestUtils
-import play.api.templates.Html
+import play.twirl.api.Html
 
 /**
  * Serves the main pages of the application
  */
-object Application extends Controller {
+class Application(messages: MessagesApi) extends Controller {
 
   /**
    * A full lang.
@@ -48,7 +48,7 @@ object Application extends Controller {
    *                     for the given language not be found.
    * @param langContents The language to HTML page contents map.
    */
-  def cached(reverseRoute: String => Call, langContents: (FullLang, Html)*): String => Action[_] = {
+  def cached(reverseRoute: String => Call, langContents: (FullLang, Html)*): String => EssentialAction = {
 
     val cache = langContents.map {
       case (language, content) =>
@@ -89,7 +89,7 @@ object Application extends Controller {
   val index = {
 
     def render(lang: FullLang, manifesto: Html) = {
-      lang -> views.html.index(manifesto, lang.full)(lang.lang)
+      lang -> views.html.index(manifesto, lang.full)(messages, lang.lang)
     }
 
     cached(routes.Application.index,
@@ -108,7 +108,7 @@ object Application extends Controller {
    */
   val list = {
     cached(routes.Application.list,
-      all.map(lang => lang -> views.html.list(lang.lang)): _*
+      all.map(lang => lang -> views.html.list(messages, lang.lang)): _*
     )
   }
 
@@ -117,7 +117,7 @@ object Application extends Controller {
    */
   val ribbons = {
     def render(lang: FullLang) = {
-      lang -> views.html.ribbons(lang.lang)
+      lang -> views.html.ribbons(messages, lang.lang)
     }
 
     cached(routes.Application.ribbons,
@@ -130,7 +130,7 @@ object Application extends Controller {
    */
   val glossary = {
     def render(lang: FullLang, glossary: Html) = {
-      lang -> views.html.glossary(glossary)(lang.lang)
+      lang -> views.html.glossary(glossary)(messages, lang.lang)
     }
 
     cached(routes.Application.glossary,

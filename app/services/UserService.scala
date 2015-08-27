@@ -1,29 +1,16 @@
 package services
 
-import play.modules.reactivemongo.ReactiveMongoPlugin
-import play.api.Play._
+import play.modules.reactivemongo.ReactiveMongoApi
 import models._
-import models.Handlers.signatoryHandler
+import reactivemongo.api.collections.bson.BSONCollection
+import reactivemongo.api.commands.GetLastError
 import reactivemongo.bson._
-import reactivemongo.core.commands.GetLastError
-import reactivemongo.api.collections.default.BSONCollection
-import scala.concurrent.Future
-import play.api.libs.concurrent.Execution.Implicits._
+import scala.concurrent.{ExecutionContext, Future}
 import org.joda.time.DateTime
 
-object UserService {
+class UserService(reactiveMongo: ReactiveMongoApi)(implicit ec: ExecutionContext) {
 
-  /**
-   * A user that has logged in using OAuth.
-   *
-   * @param provider The service specific identifier for the user.
-   * @param name The name of the user.
-   * @param avatar The users avatar, if they have one.
-   * @param signed When the user signed the manifesto, if they signed it.
-   */
-  case class OAuthUser(provider: Provider, name: String, avatar: Option[String], signed: Option[DateTime] = None)
-
-  lazy val collection = ReactiveMongoPlugin.db(current)[BSONCollection]("signatories")
+  val collection = reactiveMongo.db[BSONCollection]("signatories")
 
   /**
    * Find the given OAuth user, and if the user can't be found, create a new one.
@@ -41,16 +28,16 @@ object UserService {
     def find = collection.find(BSONDocument(
       "provider.id" -> BSONString(providerAndId._1),
       "provider.details.id" -> providerAndId._2
-    )).cursor[Signatory].headOption
+    )).one[Signatory]
 
     def returnOrSave(s: Option[Signatory]) = s match {
-      case Some(signatory) => {
+      case Some(signatory) =>
         Future.successful(signatory)
-      }
-      case None => {
+
+      case None =>
         val signatory = Signatory(BSONObjectID.generate, user.provider, user.name, user.avatar, user.signed)
         for {
-          lastError <- collection.save(signatory, writeConcern = GetLastError(fsync = true))
+          lastError <- collection.insert(signatory, writeConcern = GetLastError.Default)
         } yield {
           if (lastError.ok) {
             signatory
@@ -58,7 +45,6 @@ object UserService {
             throw new RuntimeException("Unable to save signatory: " + lastError.message)
           }
         }
-      }
     }
 
     for {
@@ -82,7 +68,7 @@ object UserService {
    * @return A future of the user, if found.
    */
   def findUser(id: BSONObjectID): Future[Option[Signatory]] = {
-    collection.find(BSONDocument("_id" -> id)).cursor[Signatory].headOption
+    collection.find(BSONDocument("_id" -> id)).one[Signatory]
   }
 
   /**
@@ -91,7 +77,7 @@ object UserService {
   def loadSignatories(): Future[List[Signatory]] = {
     collection.find(BSONDocument("signed" -> BSONDocument("$exists" -> true))).sort(
       BSONDocument("signed" -> BSONInteger(-1))
-    ).cursor[Signatory].collect[List]()
+    ).cursor[Signatory]().collect[List]()
   }
 
   /**
@@ -104,11 +90,11 @@ object UserService {
 
     findUser(id).flatMap {
       case Some(signatory) => signatory.signed match {
-        case None => {
+        case None =>
           val signed = DateTime.now
           collection.update(BSONDocument("_id" -> id), BSONDocument("$set" ->
             BSONDocument("signed" -> BSONDateTime(signed.getMillis))
-          ), GetLastError(fsync = true)).map {
+          ), GetLastError.Default).map {
             lastError =>
               if (lastError.ok) {
                 Right(signatory.copy(signed = Some(signed)))
@@ -116,7 +102,7 @@ object UserService {
                 throw new RuntimeException("Error signing: " + lastError.message)
               }
           }
-        }
+
         case Some(signed) => Future.successful(Left("Already signed on " + signed))
       }
 
@@ -133,10 +119,10 @@ object UserService {
   def unsign(id: BSONObjectID): Future[Either[String, Signatory]] = {
 
     findUser(id).flatMap {
-      case Some(signatory) => {
+      case Some(signatory) =>
         collection.update(BSONDocument("_id" -> id), BSONDocument("$unset" ->
           BSONDocument("signed" -> BSONInteger(1))
-        ), GetLastError(fsync = true)).map {
+        ), GetLastError.Default).map {
           lastError =>
             if (lastError.ok) {
               Right(signatory.copy(signed = None))
@@ -144,7 +130,6 @@ object UserService {
               throw new RuntimeException("Error unsigning: " + lastError.message)
             }
         }
-      }
 
       case None => Future.successful(Left("Signatory not found"))
     }

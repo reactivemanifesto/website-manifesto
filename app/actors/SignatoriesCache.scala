@@ -83,7 +83,7 @@ object SignatoriesCache {
  *
  * The third state is a hot state.  The cache is hot and consistent.  All messages will be handled normally.
  */
-class SignatoriesCache extends Actor {
+class SignatoriesCache(userService: UserService) extends Actor {
 
   // Internal messages, sent from asynchronous callbacks.
   case class SignatoryAdded(signatory: Signatory)
@@ -110,42 +110,38 @@ class SignatoriesCache extends Actor {
   // Pending requests. Sent when we are
   var pendingRequests: List[(ActorRef, AnyRef)] = Nil
 
-  // This will trigger an immediate connect to MongoDB, if not already connected, so hopefully by the time we
-  // receive a reload request, it's connected and authenticated.
-  override def preStart() = UserService.collection
-
   // Default state, in error.
   def receive = {
     case GetSignatories => sender ! Signatories(Nil, Nil.hashCode())
     case Search(_) => sender ! Signatories(Nil, Nil.hashCode())
     case s: Sign => sender ! UpdateFailed("Unknown error")
     case u: Unsign => sender ! UpdateFailed("Unknown error")
-    case Reload => loadSignatories
+    case Reload => loadSignatories()
   }
 
   // We are cold, we haven't loaded the database yet, so hold off returning anything or saving anything
   def loading: Receive = {
-    case g @ GetSignatories => {
+    case g @ GetSignatories =>
       if (signatories.isEmpty) {
-        pendingRequests = (sender, g) :: pendingRequests
+        pendingRequests = (sender(), g) :: pendingRequests
       } else {
         sender ! Signatories(signatories, signatoriesHash)
       }
-    }
-    case s @ Search(query) => {
+
+    case s @ Search(query) =>
       if (signatories.isEmpty) {
-        pendingRequests = (sender, s) :: pendingRequests
+        pendingRequests = (sender(), s) :: pendingRequests
       } else {
         sender ! search(query)
       }
-    }
-    case s: Sign => {
-      pendingRequests = (sender, s) :: pendingRequests
-    }
-    case u: Unsign => {
-      pendingRequests = (sender, u) :: pendingRequests
-    }
-    case SignatoriesLoaded(sigs) => {
+
+    case s: Sign =>
+      pendingRequests = (sender(), s) :: pendingRequests
+
+    case u: Unsign =>
+      pendingRequests = (sender(), u) :: pendingRequests
+
+    case SignatoriesLoaded(sigs) =>
       signatories = sigs
       signatoriesHash = signatories.hashCode()
       val start = System.currentTimeMillis()
@@ -153,16 +149,15 @@ class SignatoriesCache extends Actor {
       val time = System.currentTimeMillis() - start
       Logger.info("Indexing " + signatories.length + " signatories took " + time + "ms")
       become(hot)
-      sendPending
-    }
-    case LoadFailed => {
+      sendPending()
+
+    case LoadFailed =>
       // If loading failed, but we still have signatories to serve, then go hot and serve those
       if (signatories.isEmpty)
         unbecome()
       else
         become(hot)
-      sendPending
-    }
+      sendPending()
   }
 
   // We are hot, and guaranteed to be internally consistent on this node.
@@ -178,54 +173,46 @@ class SignatoriesCache extends Actor {
       the error and converting it to an "Unknown error" message for the user.
      */
 
-    case Sign(oid) => {
-      val from = sender
-      UserService.sign(oid).recover {
-        case NonFatal(e) => {
+    case Sign(oid) =>
+      val from = sender()
+      userService.sign(oid).recover {
+        case NonFatal(e) =>
           Logger.error("Error signing " + oid, e)
           Left("Unknown error")
-        }
       } onSuccess {
         case Left(err) => from ! UpdateFailed(err)
-        case Right(s) => {
+        case Right(s) =>
           from ! Updated(s)
           self ! SignatoryAdded(s)
-        }
       }
-    }
 
-    case Unsign(oid) => {
-      val from = sender
-      UserService.unsign(oid).recover {
-        case NonFatal(e) => {
+    case Unsign(oid) =>
+      val from = sender()
+      userService.unsign(oid).recover {
+        case NonFatal(e) =>
           Logger.error("Error unsigning " + oid, e)
           Left("Unknown error")
-        }
       } onSuccess {
         case Left(err) => from ! UpdateFailed(err)
-        case Right(s) => {
+        case Right(s) =>
           from ! Updated(s)
           self ! SignatoryRemoved(s)
-        }
       }
-    }
 
-    case SignatoryAdded(signatory) => {
+    case SignatoryAdded(signatory) =>
       signatories ::= signatory
       signatoriesHash = signatories.hashCode()
       signatoriesIndex = signatoriesIndex.index(extractSearchTerms(signatory), signatory)
-    }
 
-    case SignatoryRemoved(signatory) => {
+    case SignatoryRemoved(signatory) =>
       signatories = signatories.filterNot(_.id == signatory.id)
       signatoriesHash = signatories.hashCode()
       signatoriesIndex = signatoriesIndex.deindex(extractSearchTerms(signatory), _.id == signatory.id)
-    }
 
-    case Reload => loadSignatories
+    case Reload => loadSignatories()
   }
 
-  def sendPending = {
+  def sendPending() = {
     pendingRequests.foreach { p =>
       self.!(p._2)(p._1)
     }
@@ -245,19 +232,18 @@ class SignatoriesCache extends Actor {
     Signatories(results, results.hashCode())
   }
   
-  def loadSignatories = {
+  def loadSignatories() = {
     Logger.info("Loading signatories...")
     become(loading)
 
-    UserService.loadSignatories().onComplete {
-      case Success(results) => {
+    userService.loadSignatories().onComplete {
+      case Success(results) =>
         Logger.info("Loaded " + results.size + " signatories")
         self ! SignatoriesLoaded(results)
-      }
-      case Failure(t) => {
+
+      case Failure(t) =>
         Logger.error("Error loading signatories", t)
         self ! LoadFailed
-      }
     }
   }
 

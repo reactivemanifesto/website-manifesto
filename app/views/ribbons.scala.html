@@ -1,4 +1,4 @@
-@(implicit lang: Lang)
+@(implicit messages: MessagesApi, lang: Lang)
 
 @import scala.util.matching._
 @getImg(img: String) = {
@@ -10,14 +10,14 @@
     &lt;/a&gt;
 }
 
-@main(s"${Messages("ribbons.title")} - ${Messages("title")}") {
+@main(s"${messages("ribbons.title")} - ${messages("title")}") {
     <main>
         <header>
-            <a class="title-link" href="@routes.Application.index(lang.code)"><h1>@Html(Messages("title.formatted", "<span>", "</span>"))</h1></a>
+            <a class="title-link" href="@routes.Application.index(lang.code)"><h1>@Html(messages("title.formatted", "<span>", "</span>"))</h1></a>
         </header>
         <article>
-            <h2>@Messages("ribbons.showYourSupport")</h2>
-            <p>@Html(Messages("ribbons.instructions"))</p>
+            <h2>@messages("ribbons.showYourSupport")</h2>
+            <p>@Html(messages("ribbons.instructions"))</p>
             <ul class="ribbons">
                 @defining(Seq(
                     "we-are-reactive-black-left.png",

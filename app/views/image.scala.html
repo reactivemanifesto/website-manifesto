@@ -2,4 +2,4 @@
  * Render an image. Keeps the details of reverse routing etc out of the manifesto itself.
  *@
 @(name: String)
-<img src="@routes.Assets.at("images/" + name)">
+<img src="@routes.Assets.versioned("images/" + name)">

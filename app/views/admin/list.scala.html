@@ -1,4 +1,4 @@
-@(signatories: Seq[controllers.admin.AdminController.FormattedSignatory])(implicit lang: Lang)
+@(signatories: Seq[controllers.admin.FormattedSignatory])(implicit messages: MessagesApi, lang: Lang)
 
 @main("The Reactive Manifesto Admin") {
     <main>

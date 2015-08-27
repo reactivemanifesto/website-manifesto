@@ -1,59 +1,59 @@
-@(manifesto: Html, fullLang: String)(implicit lang: Lang)
+@(manifesto: Html, fullLang: String)(implicit messages: MessagesApi, lang: Lang)
 
-@main(Messages("title")) {
+@main(messages("title")) {
     <div id="sign">
         <span class="close">×</span>
         <div data-bind="with: loggedInUser">
-            <a class="logout" href="#" data-bind="click: $root.logOut">@Messages("sign.logout")</a>
+            <a class="logout" href="#" data-bind="click: $root.logOut">@messages("sign.logout")</a>
             <p>
-                @Messages("sign.hello") <span data-bind="text: name"></span>.
+                @messages("sign.hello") <span data-bind="text: name"></span>.
             </p>
             <hr/>
             <div class="inner" data-bind="ifnot: $data.signed">
                 <button data-bind="click: $root.sign" class="vote">
-                    @Messages("sign.addYourSignature") (<span data-bind="text: $root.total"></span>)
+                    @messages("sign.addYourSignature") (<span data-bind="text: $root.total"></span>)
                 </button>
             </div>
             <div class="inner" data-bind="if: $data.signed">
                 <p>
-                    @Messages("sign.thankYouAndSpreadTheWord")
+                    @messages("sign.thankYouAndSpreadTheWord")
                 </p>
                 <button data-bind="click: $root.unsign" class="vote unvote">
-                    @Messages("sign.removeYourSignature")
+                    @messages("sign.removeYourSignature")
                 </button>
             </div>
         </div>
         <div data-bind="ifnot: loggedInUser">
             <p>
-                @Html(Messages("sign.hiThere", "<br/>"))
+                @Html(messages("sign.hiThere", "<br/>"))
             </p>
             <hr/>
             <div class="inner">
 
                 <button data-bind="click: logInTwitter" class="btn btn-twitter">
-                    @Messages("sign.signInWith", "Twitter")
+                    @messages("sign.signInWith", "Twitter")
                 </button>
 
                 <button data-bind="click: logInGitHub" class="btn btn-github">
-                    @Messages("sign.signInWith", "GitHub")
+                    @messages("sign.signInWith", "GitHub")
                 </button>
 
                 <button data-bind="click: logInGoogle" class="btn btn-google">
-                    @Messages("sign.signInWith", "Google")
+                    @messages("sign.signInWith", "Google")
                 </button>
 
                 <button data-bind="click: logInLinkedIn" class="btn btn-linkedin">
-                    @Messages("sign.signInWith", "LinkedIn")
+                    @messages("sign.signInWith", "LinkedIn")
                 </button>
             </div>
         </div>
     </div>
     <main>
         <header>
-            <h1>@Html(Messages("title.formatted", "<span>", "</span>"))</h1>
+            <h1>@Html(messages("title.formatted", "<span>", "</span>"))</h1>
             <aside>
                 <p>
-                    @Messages("manifesto.publishVersion")
+                    @messages("manifesto.publishVersion")
                 </p>
 
             </aside>
@@ -65,13 +65,13 @@
             @manifesto
 
             <div class="sign" id="sign-button">
-                <button data-bind="click: signTheManifesto, clickBubble: false">@Messages("sign.signTheManifesto")</button>
+                <button data-bind="click: signTheManifesto, clickBubble: false">@messages("sign.signTheManifesto")</button>
             </div>
 
 
         </article>
         <p class="signatures">
-            <span data-bind="ifnot: total">@Messages("list.loading")</span>
+            <span data-bind="ifnot: total">@messages("list.loading")</span>
             <span data-bind="if: total">
                 <span data-bind="template: { name: 'total-template', data: total }"></span>
             </span>
@@ -86,14 +86,14 @@
                     <div class="g-plus" data-action="share" data-annotation="bubble" data-href="http://reactivemanifesto.org"></div>
                     <script type="IN/Share" data-url="http://reactivemanifesto.org" data-counter="right"></script>
                 <p>
-                    <a class="" href="@routes.Application.glossary(lang.code)">@Messages("glossary.title")</a>
+                    <a class="" href="@routes.Application.glossary(lang.code)">@messages("glossary.title")</a>
                 </p>
 
                 <p>
-                    <a class="pdf" href="@routes.Assets.at("pdf/the-reactive-manifesto-2.0" + Option(lang.code).filterNot(_ == "en").fold("")("-" + _) + ".pdf")">@Messages("manifesto.downloadAsPDF")</a>
+                    <a class="pdf" href="@routes.Assets.versioned("pdf/the-reactive-manifesto-2.0" + Option(lang.code).filterNot(_ == "en").fold("")("-" + _) + ".pdf")">@messages("manifesto.downloadAsPDF")</a>
                 </p>
                 <p>
-                <a class="pdf" href="https://github.com/reactivemanifesto/reactivemanifesto/blob/master/README@{Option(lang.code).filterNot(_ == "en").fold("")("." + _)}.md">@Messages("manifesto.suggestImprovements")</a>
+                <a class="pdf" href="https://github.com/reactivemanifesto/reactivemanifesto/blob/master/README@{Option(lang.code).filterNot(_ == "en").fold("")("." + _)}.md">@messages("manifesto.suggestImprovements")</a>
                 </p><br />
                 <p><strong>Authors</strong> (in alphabetic order, with roughly equal contributions):<br /> Jonas Bonér, Dave Farley, Roland Kuhn, and Martin Thompson. With the help and refinement of many members in the community.</p>
         </article>
@@ -102,8 +102,8 @@
 
     </main>
     <script type="text/html" id="total-template">
-        @Html(Messages("list.peopleAlreadySigned", "<span data-bind='text: $data'></span>"))
-        (<a href="@routes.Application.list(lang.code)">@Messages("list.fullList")</a>)
+        @Html(messages("list.peopleAlreadySigned", "<span data-bind='text: $data'></span>"))
+        (<a href="@routes.Application.list(lang.code)">@messages("list.fullList")</a>)
     </script>
 
     <script type="text/html" id="signatories-template">

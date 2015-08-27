@@ -34,5 +34,4 @@ GET           /github/auth/admin                             controllers.admin.A
 GET           /admin/list                                    controllers.admin.AdminController.list
 GET           /admin/csv                                     controllers.admin.AdminController.csv
 
-GET           /webjars/*file                                 controllers.WebJarAssets.at(file)
-GET           /*file                                         controllers.Assets.at(path="/public", file)
+GET           /*file                                         controllers.Assets.versioned(path="/public", file)

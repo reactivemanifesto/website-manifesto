@@ -1,20 +1,20 @@
-@(implicit lang: Lang)
+@(implicit messages: MessagesApi, lang: Lang)
 
-@main(s"${Messages("list.title")} - ${Messages("title")}") {
+@main(s"${messages("list.title")} - ${messages("title")}") {
     <main>
         <header>
-            <h1>@Html(Messages("title.formatted", "<span>", "</span>"))</h1>
+            <h1>@Html(messages("title.formatted", "<span>", "</span>"))</h1>
         </header>
         <p class="signatures">
-            <span data-bind="ifnot: total">@Messages("list.loading")</span>
+            <span data-bind="ifnot: total">@messages("list.loading")</span>
             <span data-bind="if: total">
                 <span data-bind="template: { name: 'total-template', data: total }"></span>
             </span>
         </p>
         <div class="signatures">
-            @Messages("list.search"): <input data-bind="value: searchField, valueUpdate: 'afterkeydown'"/>
+            @messages("list.search"): <input data-bind="value: searchField, valueUpdate: 'afterkeydown'"/>
             <span class="searching">
-                <img src="@routes.Assets.at("images/spinner.gif")" data-bind="visible: searching"/>
+                <img src="@routes.Assets.versioned("images/spinner.gif")" data-bind="visible: searching"/>
             </span>
         </div>
         <div data-bind="if: signatories" class="signatures">
@@ -25,8 +25,8 @@
     </main>
 
     <script type="text/html" id="total-template">
-        @Html(Messages("list.peopleAlreadySigned", "<span data-bind='text: $data'></span>"))
-        (<a href="@routes.Application.index(lang.code)">@Messages("list.goBackToTheManifesto")</a>)
+        @Html(messages("list.peopleAlreadySigned", "<span data-bind='text: $data'></span>"))
+        (<a href="@routes.Application.index(lang.code)">@messages("list.goBackToTheManifesto")</a>)
     </script>
 
     <script type="text/html" id="signatories-template">
@@ -39,7 +39,7 @@
             </li>
         </ul>
         <span data-bind="if: $root.fetchMore">
-            <button data-bind="click: $root.doFetchMore" class="button">@Messages("list.fetchMore")</button>
+            <button data-bind="click: $root.doFetchMore" class="button">@messages("list.fetchMore")</button>
         </span>
     </script>
 }

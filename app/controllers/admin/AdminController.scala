@@ -1,26 +1,24 @@
 package controllers.admin
 
-import controllers.oauth.GitHubController
-import play.api.i18n.Lang
+import play.api.i18n.{MessagesApi, Lang}
 import play.api.mvc._
-import services.{UserService, OAuth2}
+import services.{OAuthConfig, UserService, OAuth2}
 import scala.util.control.NonFatal
 import play.api.Logger
-import scala.concurrent.Future
-import play.api.libs.ws.WS
+import scala.concurrent.{ExecutionContext, Future}
+import play.api.libs.ws.WSClient
 import models._
-import play.api.libs.concurrent.Execution.Implicits._
 import org.joda.time.format.DateTimeFormat
 import scala.util.control.Exception._
 
-object AdminController extends Controller {
+case class FormattedSignatory(id: String, name: String, provider: String, providerId: String,
+                              providerScreenName: String, signed: String, avatarUrl: String)
+
+class AdminController(config: OAuthConfig, oauth2: OAuth2, userService: UserService, ws: WSClient)(implicit ec: ExecutionContext, messages: MessagesApi) extends Controller {
 
   implicit val lang = Lang("en")
 
-  case class FormattedSignatory(id: String, name: String, provider: String, providerId: String,
-                                providerScreenName: String, signed: String, avatarUrl: String)
-
-  lazy val settings = GitHubController.settings.copy(
+  lazy val settings = config.github.copy(
     // When logging in to the admin section, we need to verify that the user is a member of the Typesafe organisation,
     // so request access to that.
     scopes = Seq("read:org")
@@ -31,8 +29,8 @@ object AdminController extends Controller {
   def redirectUri(implicit req: RequestHeader) = routes.AdminController.authenticate().absoluteURL()
 
   def login = Action { implicit req =>
-    val state = OAuth2.generateState
-    Redirect(OAuth2.signInUrl(settings, redirectUri, state)).withSession("state" -> state)
+    val state = oauth2.generateState
+    Redirect(oauth2.signInUrl(settings, redirectUri, state)).withSession("state" -> state)
   }
 
   def authenticate = Action.async { implicit req =>
@@ -41,7 +39,7 @@ object AdminController extends Controller {
 
     req.queryString.get("code").flatMap(_.headOption) match {
 
-      case Some(code) => {
+      case Some(code) =>
         // It's an access token request.  Get the state from the session and from the query string.
         (for {
           sessionState <- req.session.get("state")
@@ -52,7 +50,7 @@ object AdminController extends Controller {
           if (queryState == sessionState) {
             (for {
               // Get the access token from the OAuth service
-              accessToken <- OAuth2.requestAccessToken(settings, redirectUri, code)
+              accessToken <- oauth2.requestAccessToken(settings, redirectUri, code)
               // And the user organisation
               userOrgs <- getUserOrgs(accessToken)
             } yield {
@@ -75,7 +73,6 @@ object AdminController extends Controller {
           }
         }).getOrElse(sync(NotFound("State not found")))
 
-      }
       case None => sync(BadRequest)
     }
   }
@@ -91,7 +88,7 @@ object AdminController extends Controller {
   }
 
   object Authenticated extends ActionBuilder[Request] {
-    protected def invokeBlock[A](request: Request[A], block: Request[A] => Future[SimpleResult]) = {
+    def invokeBlock[A](request: Request[A], block: Request[A] => Future[Result]) = {
       if (isAuthenticated(request)) {
         block(request)
       } else {
@@ -113,7 +110,7 @@ object AdminController extends Controller {
   }
 
   def getFormatedSigs: Future[List[FormattedSignatory]] = {
-    UserService.loadSignatories().map(_.map { sig =>
+    userService.loadSignatories().map(_.map { sig =>
       val (provider, id, screenName) = sig.provider match {
         case Twitter(id, screenName) => ("twitter", id.toString, screenName)
         case GitHub(id, screenName) => ("github", id.toString, screenName)
@@ -141,7 +138,7 @@ object AdminController extends Controller {
   }
 
   def getUserOrgs(accessToken: String): Future[Seq[String]] = {
-    WS.url("https://api.github.com/user/orgs")
+    ws.url("https://api.github.com/user/orgs")
       .withQueryString("access_token" -> accessToken).get().map { response =>
       if (response.status == 200) {
         (response.json \\ "login").map(_.as[String])

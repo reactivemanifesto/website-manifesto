@@ -1,6 +1,6 @@
 package services
 
-import play.api.libs.ws.WS
+import play.api.libs.ws.WSClient
 import scala.concurrent._
 import java.net.URLEncoder
 import scala.util.Random
@@ -24,7 +24,7 @@ case class OAuth2Settings(clientId: String,
 /**
  * Provides OAuth2 services
  */
-object OAuth2 {
+class OAuth2(ws: WSClient)(implicit ec: ExecutionContext) {
 
   private val rand = new Random(new SecureRandom())
 
@@ -57,10 +57,9 @@ object OAuth2 {
    * @param settings The OAuth 2 settings.
    * @param redirectUri The URI the provider had to have redirected back to.
    * @param code The code supplied by the provider.
-   * @param executionContext An execution context to handle the response from the provider.
    * @return A future of the access token.
    */
-  def requestAccessToken(settings: OAuth2Settings, redirectUri: String, code: String)(implicit executionContext: ExecutionContext): Future[String] = {
+  def requestAccessToken(settings: OAuth2Settings, redirectUri: String, code: String): Future[String] = {
 
     val body = Map(
       "code" -> code,
@@ -70,7 +69,7 @@ object OAuth2 {
       "grant_type" -> "authorization_code"
     ).mapValues(v => Seq(v))
 
-    WS.url(settings.accessTokenUrl).withHeaders("Accept" -> "application/json").post(body).map { response =>
+    ws.url(settings.accessTokenUrl).withHeaders("Accept" -> "application/json").post(body).map { response =>
       if (response.status < 300) {
         (response.json \ "access_token").as[String]
       } else {
