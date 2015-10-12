@@ -19,8 +19,13 @@ class ReactiveManifestoErrorHandler(environment: Environment, configuration: Con
   }
 
   override def onNotFound(request: RequestHeader, message: String) = {
-    // Redirect all unknown URLs to the index page.
-    Future.successful(Results.Redirect("/"))
+    // If it's for a HEAD request, return 404
+    if (request.method == "HEAD") {
+      Future.successful(Results.NotFound)
+    } else {
+      // Otherwise redirect to the index page.
+      Future.successful(Results.Redirect("/"))
+    }
   }
 
 }
