@@ -1,0 +1,36 @@
+# Title
+title = Il Manifesto dei Sistemi Reattivi
+title.formatted = Il Manifesto dei Sistemi {0}Reattivi{1}
+
+# Signing
+sign.hello = Ciao
+sign.addYourSignature = Aggiungi la tua firma
+sign.thankYouAndSpreadTheWord = Grazie! E passaparola!
+sign.removeYourSignature = Rimuovi la tua firma
+sign.hiThere = Ciao,{0} devi effettuare l'accesso per firmare il manifesto
+sign.signInWith = Accedi con {0}
+sign.signTheManifesto = Firma il manifesto
+sign.logout = Esci
+
+# Manifesto
+manifesto.publishVersion = Pubblicato il 16 Settembre 2014 (v2.0)
+manifesto.downloadAsPDF = Scarica in PDF
+manifesto.suggestImprovements = Aiutaci a migliorare
+
+# List
+list.title = Firme
+list.loading = Caricamento...
+list.peopleAlreadySigned = {0} persone hanno già firmato
+list.fullList = Elenco completo
+list.search = Cerca
+list.fetchMore = Caricane di più...
+list.goBackToTheManifesto = Torna al manifesto
+
+# Glossary
+glossary.title = Glossario
+glossary.backToTop = Torna all'inizio
+
+# Ribbons
+ribbons.title = Nastri
+ribbons.showYourSupport = Mostra la tua adesione!
+ribbons.instructions = Choose a ribbon that you like, right or left, and copy/paste the code underneath in your html page right before the <code>&lt;/body&gt;</code> tag.

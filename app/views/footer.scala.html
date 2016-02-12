@@ -5,9 +5,11 @@
     <a href="@routes.Application.index("ja")" >@messages("title")(Lang("ja"))</a> (@messages("footer.japanese")) <br/>
     <a href="@routes.Application.index("de")" >@messages("title")(Lang("de"))</a> (@messages("footer.german")) <br/>
     <a href="@routes.Application.index("fr")" >@messages("title")(Lang("fr"))</a> (@messages("footer.french")) <br/>
+    <a href="@routes.Application.index("it")" >@messages("title")(Lang("it"))</a> (@messages("footer.italian")) <br/>
     <a href="@routes.Application.index("pt")" >@messages("title")(Lang("pt"))</a> (@messages("footer.portuguese")) <br/>
-    <a href="@routes.Application.index("pt-BR")" >@messages("title")(Lang("pt-BR"))</a> (@messages("footer.portugueseBrazilian"))
-    <br/><br/>
+    <a href="@routes.Application.index("pt-BR")" >@messages("title")(Lang("pt-BR"))</a> (@messages("footer.portugueseBrazilian")) <br/>
+    <a href="@routes.Application.index("tr")" >@messages("title")(Lang("tr"))</a> (@messages("footer.turkish")) <br/>
+    <br/>
     @Html(messages("footer.ribbonSupport", "<a href='" + routes.Application.ribbons(lang.code) + "'>", "</a>"))
 </footer>
 <a class="ribbon" href="@routes.Application.ribbons(lang.code)" style="right: 0; top:0; position: absolute;"><img src="/images/ribbons/we-are-reactive-blue-right.png"></a>

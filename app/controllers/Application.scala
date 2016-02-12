@@ -29,11 +29,13 @@ class Application(messages: MessagesApi) extends Controller {
   private val en = FullLang(Lang("en"), "en_US")
   private val es = FullLang(Lang("es"), "es_ES")
   private val fr = FullLang(Lang("fr"), "fr_FR")
+  private val it = FullLang(Lang("it"), "it_IT")
   private val ja = FullLang(Lang("ja"), "ja_JP")
   private val pt = FullLang(Lang("pt"), "pt_PT")
   private val ptBR = FullLang(Lang("pt-BR"), "pt_BR")
+  private val tr = FullLang(Lang("tr"), "tr_TR")
 
-  private val all = Seq(de, en, es, fr, ja, pt, ptBR)
+  private val all = Seq(de, en, es, fr, it, ja, pt, ptBR, tr)
 
   private val dateFormat: DateTimeFormatter =
     DateTimeFormat.forPattern("EEE, dd MMM yyyy HH:mm:ss 'GMT'")
@@ -96,10 +98,12 @@ class Application(messages: MessagesApi) extends Controller {
       render(en, views.html.en.manifesto()),
       render(ja, views.html.ja.manifesto()),
       render(fr, views.html.fr.manifesto()),
+      render(it, views.html.it.manifesto()),
       render(de, views.html.de.manifesto()),
       render(es, views.html.es.manifesto()),
       render(pt, views.html.pt.manifesto()),
-      render(ptBR, views.html.ptBR.manifesto())
+      render(ptBR, views.html.ptBR.manifesto()),
+      render(tr, views.html.tr.manifesto())
     )
   }
 
@@ -136,6 +140,7 @@ class Application(messages: MessagesApi) extends Controller {
     cached(routes.Application.glossary,
       render(en, views.html.en.glossary()),
       render(ja, views.html.ja.glossary()),
+      render(it, views.html.it.glossary()),
       render(de, views.html.de.glossary())
     )
   }
