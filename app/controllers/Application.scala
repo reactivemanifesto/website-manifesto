@@ -34,8 +34,9 @@ class Application(messages: MessagesApi) extends Controller {
   private val pt = FullLang(Lang("pt"), "pt_PT")
   private val ptBR = FullLang(Lang("pt-BR"), "pt_BR")
   private val tr = FullLang(Lang("tr"), "tr_TR")
+  private val id = FullLang(Lang("id"), "id_ID")
 
-  private val all = Seq(de, en, es, fr, it, ja, pt, ptBR, tr)
+  private val all = Seq(de, en, es, fr, it, ja, pt, ptBR, tr, id)
 
   private val dateFormat: DateTimeFormatter =
     DateTimeFormat.forPattern("EEE, dd MMM yyyy HH:mm:ss 'GMT'")
@@ -103,7 +104,8 @@ class Application(messages: MessagesApi) extends Controller {
       render(es, views.html.es.manifesto()),
       render(pt, views.html.pt.manifesto()),
       render(ptBR, views.html.ptBR.manifesto()),
-      render(tr, views.html.tr.manifesto())
+      render(tr, views.html.tr.manifesto()),
+      render(id, views.html.id.manifesto())
     )
   }
 

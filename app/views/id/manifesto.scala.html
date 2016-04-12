@@ -1,0 +1,51 @@
+@*
+ * Main manifesto.
+ *@
+
+
+<section id="the-reactive-manifesto">
+    <p>Organisasi yang bekerja di berbagai macam bidang yang berbeda-beda, masing-masing telah menemukan pola untuk membangun perangkat lunak yang terlihat sama. Sistem ini lebih kuat, lebih tangguh, lebih fleksibel dan lebih bisa memenuhi tuntutan moderen.</p>
+    <p>Perubahan ini terjadi karena kebutuhan aplikasi telah berubah secara dramatis dalam beberapa tahun terakhir. Hanya beberapa tahun yang lalu aplikasi berscala besar memiliki puluhan server, waktu respon yang lambat, lamanya pemeliharaan data bergiga-giga byte secara offline.Saat ini, aplikasi dijalankan mulai dari perangkat mobile sampai cluster berbasis cloud yang dijalankan oleh ribuan prosesor multi-core. Ekspektasi pengguna, waktu respon dalam milidetik dan 100% uptime. Data diukur dalam petabyte. Kebutuhan perangkat lunak hari ini tidak dapat dipenuhi oleh arsitektur perangkat lunak lama.</p>
+    <p>Kami percaya bahwa pendekatan yang koheren pada sistem arsitektur sangat dibutuhkan, dan kami percaya bahwa semua aspek yang diperlukan sudah diakui. Kami menginginkan sistem yang Responsif, Tangguh, Elastis dan Berbasi Pesan. Kami menyebutnya, Reactive Systems.</p>
+    <p>Sistem yang dibangun sebagai Reactive Systems itu lebih fleksibel, loosely-coupled dan <a href="/glossary#Scalability">terukur</a>. Hal ini membuat sistem lebih mudah untuk dikembangkan dan terbuka terhadap perubahan. Sistem ini secara signifikan lebih toleran pada <a href="/glossary#Failure">kegagalan</a> dan ketika kegagalan tidak dapat dihindari, sistem ini dapat mengatasi kegagalan dengan elegan, terhindar dari bencana. Reactive Systems ini sangat responsif, dapat memberikan para <a href="/glossary#User">pengguna</a> umpan balik yang efektif secara interaktif.</p>
+
+    <h3>Reactive Systems adalah:</h3>
+
+</section>
+
+<section id="responsive" class="trait">
+
+    <p><strong>Responsif: </strong> Sebuah <a href="/glossary#System">sistem</a> yang bisa merespon secepat mungkin. Responsiveness adalah landasan kegunaan dan utilitas, tetapi lebih dari itu, respon berarti bahwa masalah dapat dideteksi dengan cepat dan ditangani secara efektif. Sistem responsif fokus pada penyediaan waktu respon yang cepat dan konsisten, membangun sistem yang dapat diandalkan sehingga dapat memberikan kualitas layanan yang konsisten. Kontinuitas perilaku sistem yang seperti ini pada akhirnya akan bisa menyederhanakan penanganan terhadap error, membangun kepercayaan para pengguna, dan mendorong interaksi lebih lanjut.</p>
+
+</section>
+
+<section id="resilient" class="trait">
+
+    <p><strong>Tangguh: </strong>Sistem ini responsif pada saat menghadapi <a href="/glossary#Failure">kegagalan</a>. Hal ini berlaku tidak hanya ketersediaan layanan yang tinggi, seperti mission critical systems — semua sistem yang tidak tangguh akan menjadi tidak responsive pasca kegagalan. Ketangguhan dapat dicapai dengan cara <a href="/glossary#Replication">replikasi</a>, containment, <a href="/glossary#Isolation">isolasi</a> dan <a href="/glossary#Delegation">pengalihan</a>. Kegagalan bisa terjadi pada setiap <a href="/glossary#Component">komponent</a>, mengisolasi komponen dari satu sama lain dan dengan demikian memastikan bahwa bagian-bagian dari sistem dapat gagal dan pulih dengan tanpa mengorbankan sistem secara keseluruhan. Pemulihan setiap komponen itu dapat dialihkan kepada komponen lain (eksternal) dan ketersediaan secara maksimal layanan dijamin dengan cara replikasi apabila diperlukan. Para pengguna komponen tersebut tidak terbebani dengan pada saat berlangsungnya penanganan kegagalan pada komponent tersebut.</p>
+
+</section>
+
+<section id="elastic" class="trait">
+
+    <p><strong>Elastis: </strong>System yang selalu responsif pada situasi yang tidak menentu. Sistem yang reaktif mampu mengatasi perubahan pada tingkat input dengan cara menaikkan atau menurunkan <a href="/glossary#Resource">sumber daya</a> yang disediakan untuk melayani berbagai input. Hal ini menggambarkan sebuah desain yang yang tidak memiliki bottle-neck, yang menghasilkan kemampuan untuk mereplikasi atau mengkopi komponen dan mendistribusikan input di antara mereka. Sistem reaktif dapat mensupport prediksi, serta reaktif, mengukur algoritma dengan cara memberikan pengukuran performa sistem yang relevan secara langsung. kemampuan untuk mereplikasi atau mengkopi komponen dan mendistribusikan input di antara mereka. Sistem reaktif dapat mensupport prediksi, serta reaktif, mengukur algoritma dengan cara memberikan pengukuran performa sistem yang relevan secara langsung.</p>
+
+
+</section>
+
+<section id="message-driven" class="trait">
+
+    <p><strong>Berbasis Pesan: </strong>Sistem reactif bertumpu pada <a href="/glossary#Message-Driven">pengiriman-pesan</a> secara <a href="/glossary#Asynchronous">asynchronous</a> untuk membangun batas antara komponen-komponent yang memastikan elastisitas, isolasi, <a href="/glossary#Location-Transparency">transparansi lokasi</a>, dan menyediakan sarana untuk pengalihan <a href="/glossary#Failure">kegagalan</a> dalam bentuk pesan. Penerapan pesan-passing secara eksplisit  memungkinkan pengaturan beban, elastisitas, dan kontrol aliran dengan membentuk dan memantau antrian pesan dalam sistem dan menerapkan <a href="/glossary#Back-Pressure">back-pressure</a> bila diperlukan. Lokasi messaging yang transparan sebagai sarana komunikasi memungkinkan bagi para agen penanggulanan kegagalan untuk bekerja dengan konstruksi dan semantik yang sama pada seluruh klaster atau hanya satu klaster. <a href="/glossary#Non-Blocking">Non-blocking</a> komunikasi memungkinkan penerima bisa menerima <a href="/glossary#Resource">resource</a> hanya pada saat aktif, yang mampu mengurangi overhead sistem.</p>
+
+    @image("reactive-traits.svg")
+
+
+
+</section>
+
+<section id="conclusion">
+
+    <p>Sistem yang berskala besar terdiri dari komponen-komponen kecil dan karena itu bergantung pada karakter reaktif dari setiap komponent yang dimiliki. Ini berarti bahwa Sistem Reaktif menerapkan prinsip-prinsip desain sehingga sifat ini berlaku di skala semua tingkat, membuat mereka mudah untuk di bangun. Sistem terbesar di dunia bergantung pada arsitektur berdasarkan karakter ini dan melayani kebutuhan milyaran orang setiap hari. Ini adalah saatnya untuk menerapkan prinsip-prinsip desain ini secara sadar mulai dari awal.</p>
+
+</section>
+
+
