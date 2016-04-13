@@ -1,6 +1,6 @@
 # Title
-title = The Reactive Manifesto
-title.formatted = The {0}Reactive{1} Manifesto
+title = Manifesto Reaktif
+title.formatted = Manifesto {0}Reaktif{1}
 
 # Signing
 sign.hello = Hello
