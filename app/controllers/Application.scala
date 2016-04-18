@@ -34,8 +34,9 @@ class Application(messages: MessagesApi) extends Controller {
   private val pt = FullLang(Lang("pt"), "pt_PT")
   private val ptBR = FullLang(Lang("pt-BR"), "pt_BR")
   private val tr = FullLang(Lang("tr"), "tr_TR")
+  private val zhCN = FullLang(Lang("zh-CN"), "zh_CN")
 
-  private val all = Seq(de, en, es, fr, it, ja, pt, ptBR, tr)
+  private val all = Seq(de, en, es, fr, it, ja, pt, ptBR, tr, zhCN)
 
   private val dateFormat: DateTimeFormatter =
     DateTimeFormat.forPattern("EEE, dd MMM yyyy HH:mm:ss 'GMT'")
@@ -103,7 +104,8 @@ class Application(messages: MessagesApi) extends Controller {
       render(es, views.html.es.manifesto()),
       render(pt, views.html.pt.manifesto()),
       render(ptBR, views.html.ptBR.manifesto()),
-      render(tr, views.html.tr.manifesto())
+      render(tr, views.html.tr.manifesto()),
+      render(zhCN, views.html.zhCN.manifesto())
     )
   }
 
@@ -141,7 +143,8 @@ class Application(messages: MessagesApi) extends Controller {
       render(en, views.html.en.glossary()),
       render(ja, views.html.ja.glossary()),
       render(it, views.html.it.glossary()),
-      render(de, views.html.de.glossary())
+      render(de, views.html.de.glossary()),
+      render(zhCN, views.html.zhCN.glossary())
     )
   }
 }
