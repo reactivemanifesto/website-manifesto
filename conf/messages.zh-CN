@@ -27,7 +27,7 @@ list.fetchMore = Fetch more...
 list.goBackToTheManifesto = Go back to the manifesto
 
 # Glossary
-glossary.title = Glossary
+glossary.title = 宣言词汇表
 glossary.backToTop = Back To Top
 
 # Ribbons
