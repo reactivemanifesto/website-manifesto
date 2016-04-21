@@ -7,7 +7,7 @@ import controllers.oauth.{LinkedInController, GitHubController, GoogleController
 import controllers.{Assets, CurrentUserController, SignatoriesController, Application}
 import play.api.http.HttpErrorHandler
 import play.api.i18n.I18nComponents
-import play.api.libs.ws.ning.NingWSComponents
+import play.api.libs.ws.ahc.AhcWSComponents
 import play.api.{BuiltInComponentsFromContext, ApplicationLoader}
 import play.api.ApplicationLoader.Context
 import play.modules.reactivemongo.{DefaultReactiveMongoApi, ReactiveMongoComponents}
@@ -18,7 +18,7 @@ import scala.concurrent.duration._
 class ReactiveManifestoApplicationLoader extends ApplicationLoader {
   def load(context: Context) = {
 
-    val components = new BuiltInComponentsFromContext(context) with I18nComponents with NingWSComponents with ReactiveMongoComponents {
+    val components = new BuiltInComponentsFromContext(context) with I18nComponents with AhcWSComponents with ReactiveMongoComponents {
       lazy val router = new Routes(httpErrorHandler, applicationController, signatoriesController,
         currentUserController, twitterController, googleController, gitHubController, linkedInController,
         adminController, assets)
