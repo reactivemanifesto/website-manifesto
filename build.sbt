@@ -2,12 +2,8 @@ lazy val `reactivemanifesto` = (project in file("."))
   .enablePlugins(PlayScala)
 
 name := "reactivemanifesto"
-
 version := "1.0-SNAPSHOT"
-
 scalaVersion := "2.11.7"
-
-resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
 
 libraryDependencies ++= Seq(
   ws,
@@ -18,4 +14,3 @@ libraryDependencies ++= Seq(
   "org.reactivemongo" %% "play2-reactivemongo" % "0.11.6.play24"
 )
 
-routesGenerator := InjectedRoutesGenerator
