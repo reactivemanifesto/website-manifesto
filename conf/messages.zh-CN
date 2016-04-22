@@ -3,34 +3,34 @@ title = 响应式宣言
 title.formatted = 响应式宣言
 
 # Signing
-sign.hello = Hello
-sign.addYourSignature = Add your signature
-sign.thankYouAndSpreadTheWord = Thank you! And spread the word!
-sign.removeYourSignature = Remove your signature
-sign.hiThere = Hi there,{0} You need to be logged to sign the manifesto
-sign.signInWith = Sign In with {0}
+sign.hello = 你好
+sign.addYourSignature = 留下你的签名
+sign.thankYouAndSpreadTheWord = 感谢你！请告诉更多人！
+sign.removeYourSignature = 撤下你的签名
+sign.hiThere = 你好，{0} 你需要先登录，再签署这份宣言
+sign.signInWith = 以 {0} 的身份登录
 sign.signTheManifesto = 签署这份宣言
-sign.logout = Logout
+sign.logout = 登出
 
 # Manifesto
-manifesto.publishVersion = Published on September 16 2014. (v2.0)
-manifesto.downloadAsPDF = Download as PDF
-manifesto.suggestImprovements = Suggest improvements
+manifesto.publishVersion = 发布于2014 年 09 月 16 日 (v2.0)
+manifesto.downloadAsPDF = 以 PDF 格式下载
+manifesto.suggestImprovements = 提出修改建议
 
 # List
-list.title = Signatures
-list.loading = Loading...
-list.peopleAlreadySigned = {0} people already signed
-list.fullList = Full list
-list.search = Search
-list.fetchMore = Fetch more...
-list.goBackToTheManifesto = Go back to the manifesto
+list.title = 签名表
+list.loading = 正在载入…
+list.peopleAlreadySigned = 已经有 {0} 人签署
+list.fullList = 完整的签名表
+list.search = 搜索
+list.fetchMore = 载入更多…
+list.goBackToTheManifesto = 回到宣言首页
 
 # Glossary
 glossary.title = 宣言词汇表
-glossary.backToTop = Back To Top
+glossary.backToTop = 回到网页顶部
 
 # Ribbons
-ribbons.title = Ribbons
-ribbons.showYourSupport = Show your support!
-ribbons.instructions = Choose a ribbon that you like, right or left, and copy/paste the code underneath in your html page right before the <code>&lt;/body&gt;</code> tag.
+ribbons.title = 彩带
+ribbons.showYourSupport = 展示你的支持
+ribbons.instructions = 有些彩带显示在网页左上角，有些显示在网页右上角，选择一个你喜欢的彩带，把它下方的代码复制并粘贴到紧邻 <code>&lt;/body&gt;</code> 标签之前的位置。
