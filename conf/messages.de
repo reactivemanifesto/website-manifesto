@@ -12,7 +12,7 @@ sign.logout = Abmelden
 
 manifesto.downloadAsPDF = PDF-Version herunterladen
 manifesto.suggestImprovements = Für Verbesserungsvorschläge hier klicken.
-manifesto.publishVersion = Veröffentlicht am 16. Septempter 2014 (v2.0)
+manifesto.publishVersion = Veröffentlicht am 16. September 2014 (v2.0)
 
 list.peopleAlreadySigned = {0} Unterschriften
 list.fullList = komplette Liste
