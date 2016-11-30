@@ -1,0 +1,51 @@
+# Title
+title = 리액티브 선언문
+title.formatted = {0}리액티브{1} 선언문
+
+# Signing
+sign.hello = 안녕하세요
+sign.addYourSignature = 서명 추가하기
+sign.thankYouAndSpreadTheWord = 감사합니다! 널리 알려주세요!
+sign.removeYourSignature = 서명 제거하기
+sign.hiThere = 안녕하세요,{0} 선언문에 서명하기 위해서 로그인이 필요합니다.
+sign.signInWith = {0}로 로그인
+sign.signTheManifesto = 선언문에 서명하기
+sign.logout = 로그아웃
+
+# Manifesto
+manifesto.publishVersion = 2014년 9월 16일에 발행됨. (v2.0)
+manifesto.downloadAsPDF = PDF로 내려받기
+manifesto.suggestImprovements = 개선사항 건의
+
+# List
+list.title = 서명들
+list.loading = 불러오는 중...
+list.peopleAlreadySigned = {0} 명이 서명함
+list.fullList = 전체 목록
+list.search = 찾기
+list.fetchMore = 더 보기...
+list.goBackToTheManifesto = 선언문으로 돌아가기
+
+# Glossary
+glossary.title = 용어집
+glossary.backToTop = 위로 돌아가기
+
+# Ribbons
+ribbons.title = 리본
+ribbons.showYourSupport = 당신의 지지를 보여주세요!
+ribbons.instructions = 원하는 리본을 선택하고 아래의 코드를 복사하여 당신의 홈페이지 <code>&lt;/body&gt;</code> 태그 앞에 붙여 넣으세요.
+
+# Footer
+footer.ribbonSupport = {0}리본{1}으로 당신의 지지를 보여주세요.
+footer.english = 영어
+footer.german = 독일어
+footer.french = 프랑스어
+footer.italian = 이탈리아어
+footer.spanish = 스페인어
+footer.japanese = 일본어
+footer.portuguese = 포르투갈어
+footer.portugueseBrazilian = 브라질 포르투갈어
+footer.turkish = 터키어
+footer.indonesia = 인도네시아어
+footer.simpleChinese = 중국어 간체
+footer.korean = 한국어
