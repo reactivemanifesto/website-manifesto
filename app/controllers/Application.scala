@@ -108,7 +108,8 @@ class Application(messages: MessagesApi) extends Controller {
       render(ptBR, views.html.ptBR.manifesto()),
       render(tr, views.html.tr.manifesto()),
       render(id, views.html.id.manifesto()),
-      render(zhCN, views.html.zhCN.manifesto())
+      render(zhCN, views.html.zhCN.manifesto()),
+      render(ko, views.html.ko.manifesto())
     )
   }
 
@@ -147,7 +148,8 @@ class Application(messages: MessagesApi) extends Controller {
       render(ja, views.html.ja.glossary()),
       render(it, views.html.it.glossary()),
       render(de, views.html.de.glossary()),
-      render(zhCN, views.html.zhCN.glossary())
+      render(zhCN, views.html.zhCN.glossary()),
+      render(ko, views.html.ko.glossary())
     )
   }
 }
