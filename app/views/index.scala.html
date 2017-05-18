@@ -1,6 +1,6 @@
-@(manifesto: Html, fullLang: String)(implicit messages: MessagesApi, lang: Lang)
+@(manifesto: Html, fullLang: String)(implicit messages: MessagesApi, lang: Lang, dir: String)
 
-@main(messages("title")) {
+@main(messages("title"), dir) {
     <div id="sign">
         <span class="close">×</span>
         <div data-bind="with: loggedInUser">
@@ -61,7 +61,6 @@
 
 
         <article>
-
             @manifesto
 
             <div class="sign" id="sign-button">
