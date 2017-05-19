@@ -95,7 +95,7 @@ class Application(messages: MessagesApi) extends Controller {
   val index = {
 
     def render(lang: FullLang, manifesto: Html) = {
-      lang -> views.html.index(manifesto, lang.full)(messages, lang.lang, lang.dir)
+      lang -> views.html.index(manifesto, lang.full, lang.dir)(messages, lang.lang)
     }
 
     cached(routes.Application.index,
@@ -142,7 +142,7 @@ class Application(messages: MessagesApi) extends Controller {
    */
   val glossary = {
     def render(lang: FullLang, glossary: Html) = {
-      lang -> views.html.glossary(glossary)(messages, lang.lang, lang.dir)
+      lang -> views.html.glossary(glossary, lang.dir)(messages, lang.lang)
     }
 
     cached(routes.Application.glossary,
