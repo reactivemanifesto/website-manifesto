@@ -23,22 +23,23 @@ class Application(messages: MessagesApi) extends Controller {
    * @param lang The lang according to our system
    * @param full The full lang
    */
-  case class FullLang(lang: Lang, full: String)
+  case class FullLang(lang: Lang, full: String, dir: String)
 
-  private val de = FullLang(Lang("de"), "de_DE")
-  private val en = FullLang(Lang("en"), "en_US")
-  private val es = FullLang(Lang("es"), "es_ES")
-  private val fr = FullLang(Lang("fr"), "fr_FR")
-  private val it = FullLang(Lang("it"), "it_IT")
-  private val ja = FullLang(Lang("ja"), "ja_JP")
-  private val pt = FullLang(Lang("pt"), "pt_PT")
-  private val ptBR = FullLang(Lang("pt-BR"), "pt_BR")
-  private val tr = FullLang(Lang("tr"), "tr_TR")
-  private val id = FullLang(Lang("id"), "id_ID")
-  private val zhCN = FullLang(Lang("zh-CN"), "zh_CN")
-  private val ko = FullLang(Lang("ko"), "ko_KR")
+  private val de = FullLang(Lang("de"), "de_DE", "ltr")
+  private val en = FullLang(Lang("en"), "en_US", "ltr")
+  private val es = FullLang(Lang("es"), "es_ES", "ltr")
+  private val fr = FullLang(Lang("fr"), "fr_FR", "ltr")
+  private val it = FullLang(Lang("it"), "it_IT", "ltr")
+  private val ja = FullLang(Lang("ja"), "ja_JP", "ltr")
+  private val pt = FullLang(Lang("pt"), "pt_PT", "ltr")
+  private val ptBR = FullLang(Lang("pt-BR"), "pt_BR", "ltr")
+  private val tr = FullLang(Lang("tr"), "tr_TR", "ltr")
+  private val id = FullLang(Lang("id"), "id_ID", "ltr")
+  private val zhCN = FullLang(Lang("zh-CN"), "zh_CN", "ltr")
+  private val ko = FullLang(Lang("ko"), "ko_KR", "ltr")
+  private val fa = FullLang(Lang("fa"), "fa_FA", "rtl")
 
-  private val all = Seq(de, en, es, fr, it, ja, pt, ptBR, tr, id, zhCN, ko)
+  private val all = Seq(de, en, es, fr, it, ja, pt, ptBR, tr, id, zhCN, ko, fa)
 
   private val dateFormat: DateTimeFormatter =
     DateTimeFormat.forPattern("EEE, dd MMM yyyy HH:mm:ss 'GMT'")
@@ -94,7 +95,7 @@ class Application(messages: MessagesApi) extends Controller {
   val index = {
 
     def render(lang: FullLang, manifesto: Html) = {
-      lang -> views.html.index(manifesto, lang.full)(messages, lang.lang)
+      lang -> views.html.index(manifesto, lang.full, lang.dir)(messages, lang.lang)
     }
 
     cached(routes.Application.index,
@@ -109,7 +110,8 @@ class Application(messages: MessagesApi) extends Controller {
       render(tr, views.html.tr.manifesto()),
       render(id, views.html.id.manifesto()),
       render(zhCN, views.html.zhCN.manifesto()),
-      render(ko, views.html.ko.manifesto())
+      render(ko, views.html.ko.manifesto()),
+      render(fa, views.html.fa.manifesto())
     )
   }
 
@@ -140,7 +142,7 @@ class Application(messages: MessagesApi) extends Controller {
    */
   val glossary = {
     def render(lang: FullLang, glossary: Html) = {
-      lang -> views.html.glossary(glossary)(messages, lang.lang)
+      lang -> views.html.glossary(glossary, lang.dir)(messages, lang.lang)
     }
 
     cached(routes.Application.glossary,

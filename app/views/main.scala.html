@@ -1,7 +1,7 @@
-@(title: String)(content: Html)(implicit messages: MessagesApi, lang: Lang)
+@(title: String, textDirection: String = "ltr")(content: Html)(implicit messages: MessagesApi, lang: Lang)
 
 <!DOCTYPE html>
-<html lang="@lang.code">
+<html lang="@lang.code" dir="@textDirection">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <title>@title</title>

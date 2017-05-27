@@ -1,0 +1,52 @@
+# Title
+title = بیانیه واكنشگر
+title.formatted = بیانیه {0}واكنشگر{1}
+
+# Signing
+sign.hello = درود
+sign.addYourSignature = امضای خود را اضافه کنید
+sign.thankYouAndSpreadTheWord = با تشکر! به دیگران اطلاع رسانی کنید!
+sign.removeYourSignature = امضای خود را حذف کنید
+sign.hiThere =  درود ، {0} شما باید در سیستم وارد شده باشید تا مانیفست را امضا کنید
+sign.signInWith = با {0} وارد سیستم شوید
+sign.signTheManifesto = بیانیه را امضا کنید
+sign.logout = خروج از سیستم
+
+# Manifesto
+manifesto.publishVersion =  منتشر شده در ۱۴ سپتامبر ۲۰۱۴(نسخه ۲.۰)
+manifesto.downloadAsPDF = دانلود به صورت پی دی اف
+manifesto.suggestImprovements = پیشنهاد برای بهبود
+
+# List
+list.title = امضاها
+list.loading = بارگیری ...
+list.peopleAlreadySigned =  {0} نفر در حال حاضر امضا کرده اند
+list.fullList = لسیت کامل
+list.search = جستجو
+list.fetchMore = بیشتر بیاورید ...
+list.goBackToTheManifesto = به مانیفست برگردید
+
+# Glossary
+glossary.title = واژه نامه
+glossary.backToTop = بازگشت به بالا
+
+# Ribbons
+ribbons.title = روبان ها
+ribbons.showYourSupport = حمایت خود را نشان دهید
+ribbons.instructions =  روبانی که دوست دارید را انتخاب کنید، راست یا چپ، و کد را کپی کرده و در زیر صفحه اچ تی ام ال خود و درست قبل از برچسب <code>&lt;/body&gt;</code> بچسبانید.
+
+# Footer
+footer.ribbonSupport =  با یک روبان  {1} حمایت خود را نشان دهید {0}.
+footer.english = انگلیسی
+footer.german = آلمانی
+footer.french = فرانسوی
+footer.italian = ایتالیایی
+footer.spanish = اسپانیایی
+footer.japanese = ژاپنی
+footer.portuguese = پرتغالی
+footer.portugueseBrazilian = پرتغالی برزیلی
+footer.turkish = ترکی
+footer.indonesia = اندونزیایی
+footer.simpleChinese = چینی ساده شده
+footer.korean = کره ای
+footer.farsi = فارسی
