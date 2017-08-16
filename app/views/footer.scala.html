@@ -13,7 +13,8 @@
     <a href="@routes.Application.index("zh-CN")" >@messages("title")(Lang("zh-CN"))</a> (@messages("footer.simpleChinese")) <br/>
     <a href="@routes.Application.index("ko")" >@messages("title")(Lang("ko"))</a> (@messages("footer.korean")) <br/>
     <a href="@routes.Application.index("fa")" >@messages("title")(Lang("fa"))</a> (@messages("footer.farsi")) <br/>
-    <br/>
-    @Html(messages("footer.ribbonSupport", "<a href='" + routes.Application.ribbons(lang.code) + "'>", "</a>"))
+    <br>
+    <p>@Html(messages("footer.ribbonSupport", "<a href='" + routes.Application.ribbons(lang.code) + "'>", "</a>"))</p>
+    <p class="copyright">&copy; @messages("footer.copyright")</p>
 </footer>
 <a class="ribbon" href="@routes.Application.ribbons(lang.code)" style="right: 0; top:0; position: absolute;"><img src="/images/ribbons/we-are-reactive-blue-right.png"></a>
