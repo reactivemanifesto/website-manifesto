@@ -69,7 +69,7 @@ class OAuth2(ws: WSClient)(implicit ec: ExecutionContext) {
       "grant_type" -> "authorization_code"
     ).mapValues(v => Seq(v))
 
-    ws.url(settings.accessTokenUrl).withHeaders("Accept" -> "application/json").post(body).map { response =>
+    ws.url(settings.accessTokenUrl).addHttpHeaders("Accept" -> "application/json").post(body).map { response =>
       if (response.status < 300) {
         (response.json \ "access_token").as[String]
       } else {

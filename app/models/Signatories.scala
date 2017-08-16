@@ -1,9 +1,11 @@
 package models
 
+import java.time.Instant
+
 import reactivemongo.bson.{BSONLongHandler => _, _}
 import reactivemongo.bson.Macros._
-import org.joda.time.DateTime
 import play.api.libs.json._
+
 import scala.util.control.NonFatal
 
 /**
@@ -20,7 +22,7 @@ case class Signatory(
   provider: Provider,
   name: String,
   avatarUrl: Option[String],
-  signed: Option[DateTime]
+  signed: Option[Instant]
 ) {
   def id = _id
 }
@@ -128,7 +130,7 @@ object LinkedIn extends Implicits {
 trait Implicits {
 
   implicit val idHandler: BSONHandler[BSONValue, Long] = new BSONHandler[BSONValue, Long] {
-    def write(v: Long) = new BSONLong(v)
+    def write(v: Long) = BSONLong(v)
     def read(bson: BSONValue) = bson match {
       case BSONLong(l) => l
       case BSONDouble(d) => d.toLong
@@ -136,15 +138,15 @@ trait Implicits {
     }
   }
 
-  implicit val dateTimeHandler: BSONHandler[BSONDateTime, DateTime] = new BSONHandler[BSONDateTime, DateTime] {
-    def read(time: BSONDateTime) = new DateTime(time.value)
-    def write(jdtime: DateTime) = BSONDateTime(jdtime.getMillis)
+  implicit val dateTimeHandler: BSONHandler[BSONDateTime, Instant] = new BSONHandler[BSONDateTime, Instant] {
+    def read(time: BSONDateTime) = Instant.ofEpochMilli(time.value)
+    def write(instant: Instant) = BSONDateTime(instant.toEpochMilli)
   }
 
   implicit val bsonObjectIdFormat: Format[BSONObjectID] = new Format[BSONObjectID] {
     def reads(json: JsValue) = json match {
       case JsString(v) => try {
-        JsSuccess(BSONObjectID(v))
+        JsSuccess(BSONObjectID.parse(v).get)
       } catch {
         case NonFatal(e) => JsError("Cannot parse object id from " + v)
       }

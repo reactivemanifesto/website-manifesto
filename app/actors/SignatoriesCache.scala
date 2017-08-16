@@ -179,7 +179,7 @@ class SignatoriesCache(userService: UserService) extends Actor {
         case NonFatal(e) =>
           Logger.error("Error signing " + oid, e)
           Left("Unknown error")
-      } onSuccess {
+      } foreach {
         case Left(err) => from ! UpdateFailed(err)
         case Right(s) =>
           from ! Updated(s)
@@ -192,7 +192,7 @@ class SignatoriesCache(userService: UserService) extends Actor {
         case NonFatal(e) =>
           Logger.error("Error unsigning " + oid, e)
           Left("Unknown error")
-      } onSuccess {
+      } foreach {
         case Left(err) => from ! UpdateFailed(err)
         case Right(s) =>
           from ! Updated(s)

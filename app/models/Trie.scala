@@ -49,7 +49,7 @@ class Trie[A](nodes: SortedMap[Char, Trie[A]] = SortedMap.empty[Char, Trie[A]], 
    */
   def isEmpty = values.isEmpty && nodes.isEmpty
 
-  private def normalise(s: String) = s.trim().toLowerCase(Locale.ENGLISH).toList
+  private def normalise(s: String) = s.trim().toLowerCase(Locale.ROOT).toList
 
   private def remove(key: List[Char], predicate: A => Boolean): Trie[A] = key match {
     case Nil => new Trie(nodes, values.filterNot(predicate))

@@ -1,7 +1,8 @@
 package controllers
 
-import play.api.mvc.{Controller, Action}
+import play.api.mvc.{AbstractController, ControllerComponents}
 import services.UserService
+
 import scala.concurrent.{ExecutionContext, Future}
 import play.api.libs.json.Json
 
@@ -9,7 +10,8 @@ import play.api.libs.json.Json
 /**
  * Controller for managing the currently logged in user.
  */
-class CurrentUserController(userService: UserService)(implicit ec: ExecutionContext) extends Controller {
+class CurrentUserController(components: ControllerComponents, userService: UserService)(implicit ec: ExecutionContext)
+  extends AbstractController(components) {
 
   /**
    * Log the user out.

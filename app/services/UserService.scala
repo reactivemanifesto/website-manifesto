@@ -1,16 +1,20 @@
 package services
 
+import java.time.Instant
+
 import play.modules.reactivemongo.ReactiveMongoApi
 import models._
 import reactivemongo.api.collections.bson.BSONCollection
 import reactivemongo.api.commands.GetLastError
 import reactivemongo.bson._
+
 import scala.concurrent.{ExecutionContext, Future}
 import org.joda.time.DateTime
+import reactivemongo.api.Cursor
 
 class UserService(reactiveMongo: ReactiveMongoApi)(implicit ec: ExecutionContext) {
 
-  val collection = reactiveMongo.db[BSONCollection]("signatories")
+  private val collectionFuture: Future[BSONCollection] = reactiveMongo.database.map(_.apply[BSONCollection]("signatories"))
 
   /**
    * Find the given OAuth user, and if the user can't be found, create a new one.
@@ -25,12 +29,12 @@ class UserService(reactiveMongo: ReactiveMongoApi)(implicit ec: ExecutionContext
       case GitHub(id, _) => ("github", BSONLong(id))
       case LinkedIn(id) => ("linkedin", BSONString(id))
     }
-    def find = collection.find(BSONDocument(
+    def find(collection: BSONCollection) = collection.find(BSONDocument(
       "provider.id" -> BSONString(providerAndId._1),
       "provider.details.id" -> providerAndId._2
     )).one[Signatory]
 
-    def returnOrSave(s: Option[Signatory]) = s match {
+    def returnOrSave(collection: BSONCollection, s: Option[Signatory]) = s match {
       case Some(signatory) =>
         Future.successful(signatory)
 
@@ -42,14 +46,15 @@ class UserService(reactiveMongo: ReactiveMongoApi)(implicit ec: ExecutionContext
           if (lastError.ok) {
             signatory
           } else {
-            throw new RuntimeException("Unable to save signatory: " + lastError.message)
+            throw new RuntimeException("Unable to save signatory: " + lastError.writeErrors)
           }
         }
     }
 
     for {
-      signatory <- find
-      toReturn <- returnOrSave(signatory)
+      collection <- collectionFuture
+      signatory <- find(collection)
+      toReturn <- returnOrSave(collection, signatory)
     } yield toReturn
   }
 
@@ -59,7 +64,7 @@ class UserService(reactiveMongo: ReactiveMongoApi)(implicit ec: ExecutionContext
    * @param id The id of the user to find.
    * @return A future of the user, if found.
    */
-  def findUser(id: String): Future[Option[Signatory]] = findUser(BSONObjectID(id))
+  def findUser(id: String): Future[Option[Signatory]] = findUser(BSONObjectID.parse(id).get)
 
   /**
    * Find the user with the given id.
@@ -68,16 +73,16 @@ class UserService(reactiveMongo: ReactiveMongoApi)(implicit ec: ExecutionContext
    * @return A future of the user, if found.
    */
   def findUser(id: BSONObjectID): Future[Option[Signatory]] = {
-    collection.find(BSONDocument("_id" -> id)).one[Signatory]
+    collectionFuture.flatMap(_.find(BSONDocument("_id" -> id)).one[Signatory])
   }
 
   /**
    * Load all the people that have signed the manifesto, in reverse chronological order.
    */
   def loadSignatories(): Future[List[Signatory]] = {
-    collection.find(BSONDocument("signed" -> BSONDocument("$exists" -> true))).sort(
+    collectionFuture.flatMap(_.find(BSONDocument("signed" -> BSONDocument("$exists" -> true))).sort(
       BSONDocument("signed" -> BSONInteger(-1))
-    ).cursor[Signatory]().collect[List]()
+    ).cursor[Signatory]().collect[List](-1, Cursor.FailOnError[List[Signatory]]()))
   }
 
   /**
@@ -91,15 +96,15 @@ class UserService(reactiveMongo: ReactiveMongoApi)(implicit ec: ExecutionContext
     findUser(id).flatMap {
       case Some(signatory) => signatory.signed match {
         case None =>
-          val signed = DateTime.now
-          collection.update(BSONDocument("_id" -> id), BSONDocument("$set" ->
-            BSONDocument("signed" -> BSONDateTime(signed.getMillis))
-          ), GetLastError.Default).map {
+          val signed = Instant.now()
+          collectionFuture.flatMap(_.update(BSONDocument("_id" -> id), BSONDocument("$set" ->
+            BSONDocument("signed" -> BSONDateTime(signed.toEpochMilli))
+          ), GetLastError.Default)).map {
             lastError =>
               if (lastError.ok) {
                 Right(signatory.copy(signed = Some(signed)))
               } else {
-                throw new RuntimeException("Error signing: " + lastError.message)
+                throw new RuntimeException("Error signing: " + lastError.errmsg)
               }
           }
 
@@ -120,14 +125,14 @@ class UserService(reactiveMongo: ReactiveMongoApi)(implicit ec: ExecutionContext
 
     findUser(id).flatMap {
       case Some(signatory) =>
-        collection.update(BSONDocument("_id" -> id), BSONDocument("$unset" ->
+        collectionFuture.flatMap(_.update(BSONDocument("_id" -> id), BSONDocument("$unset" ->
           BSONDocument("signed" -> BSONInteger(1))
-        ), GetLastError.Default).map {
+        ), GetLastError.Default)).map {
           lastError =>
             if (lastError.ok) {
               Right(signatory.copy(signed = None))
             } else {
-              throw new RuntimeException("Error unsigning: " + lastError.message)
+              throw new RuntimeException("Error unsigning: " + lastError.errmsg)
             }
         }
 

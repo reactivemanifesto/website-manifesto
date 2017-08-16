@@ -1,32 +1,38 @@
 package controllers.admin
 
-import play.api.i18n.{MessagesApi, Lang}
+import java.time.format.DateTimeFormatter
+
+import play.api.i18n.Lang
 import play.api.mvc._
-import services.{OAuthConfig, UserService, OAuth2}
+import services.{OAuth2, OAuthConfig, UserService}
+
 import scala.util.control.NonFatal
 import play.api.Logger
+
 import scala.concurrent.{ExecutionContext, Future}
 import play.api.libs.ws.WSClient
 import models._
-import org.joda.time.format.DateTimeFormat
+
 import scala.util.control.Exception._
 
 case class FormattedSignatory(id: String, name: String, provider: String, providerId: String,
                               providerScreenName: String, signed: String, avatarUrl: String)
 
-class AdminController(config: OAuthConfig, oauth2: OAuth2, userService: UserService, ws: WSClient)(implicit ec: ExecutionContext, messages: MessagesApi) extends Controller {
+class AdminController(components: ControllerComponents, config: OAuthConfig, oauth2: OAuth2,
+  userService: UserService, ws: WSClient)(implicit ec: ExecutionContext)
+  extends AbstractController(components) {
 
-  implicit val lang = Lang("en")
+  private implicit val lang = Lang("en")
 
-  lazy val settings = config.github.copy(
+  private lazy val settings = config.github.copy(
     // When logging in to the admin section, we need to verify that the user is a member of the Typesafe organisation,
     // so request access to that.
     scopes = Seq("read:org")
   )
 
-  val Expires = 7200000
+  private val Expires = 7200000
 
-  def redirectUri(implicit req: RequestHeader) = routes.AdminController.authenticate().absoluteURL()
+  private def redirectUri(implicit req: RequestHeader) = routes.AdminController.authenticate().absoluteURL()
 
   def login = Action { implicit req =>
     val state = oauth2.generateState
@@ -55,17 +61,16 @@ class AdminController(config: OAuthConfig, oauth2: OAuth2, userService: UserServ
               userOrgs <- getUserOrgs(accessToken)
             } yield {
               // Check that the user is an admin
-              if (userOrgs.contains("typesafehub")) {
+              if (userOrgs.contains("typesafehub") || userOrgs.contains("lightbend")) {
                 Redirect(routes.AdminController.index()).withSession("admin" -> "true",
                   "timestamp" -> System.currentTimeMillis().toString)
               } else {
-                Forbidden("Not a member of Typesafe")
+                Forbidden("Not a member of Lightbend")
               }
             }).recover {
-              case NonFatal(t) => {
+              case NonFatal(t) =>
                 Logger.warn("Error logging in user", t)
                 Forbidden
-              }
             }
           } else {
             // The state doesn't match, reject the request.
@@ -77,7 +82,7 @@ class AdminController(config: OAuthConfig, oauth2: OAuth2, userService: UserServ
     }
   }
 
-  def isAuthenticated(req: RequestHeader) = {
+  private def isAuthenticated(req: RequestHeader) = {
     (for {
       admin <- req.session.get("admin")
       if admin == "true"
@@ -87,14 +92,17 @@ class AdminController(config: OAuthConfig, oauth2: OAuth2, userService: UserServ
     } yield true).getOrElse(false)
   }
 
-  object Authenticated extends ActionBuilder[Request] {
-    def invokeBlock[A](request: Request[A], block: Request[A] => Future[Result]) = {
+  private object Authenticated extends ActionBuilder[Request, AnyContent] {
+    def invokeBlock[AnyContent](request: Request[AnyContent], block: Request[AnyContent] => Future[Result]) = {
       if (isAuthenticated(request)) {
         block(request)
       } else {
         Future.successful(Redirect(routes.AdminController.index()))
       }
     }
+
+    override def parser: BodyParser[AnyContent] = components.parsers.default
+    override protected def executionContext: ExecutionContext = components.executionContext
   }
 
   def logout = Action {
@@ -109,7 +117,7 @@ class AdminController(config: OAuthConfig, oauth2: OAuth2, userService: UserServ
     }
   }
 
-  def getFormatedSigs: Future[List[FormattedSignatory]] = {
+  private def getFormatedSigs: Future[List[FormattedSignatory]] = {
     userService.loadSignatories().map(_.map { sig =>
       val (provider, id, screenName) = sig.provider match {
         case Twitter(id, screenName) => ("twitter", id.toString, screenName)
@@ -117,7 +125,7 @@ class AdminController(config: OAuthConfig, oauth2: OAuth2, userService: UserServ
         case Google(id) => ("google", id, "")
         case LinkedIn(id) => ("linkedin", id, "")
       }
-      val signed = sig.signed.map(_.toString(DateTimeFormat.forPattern("yyyy/MM/dd HH:mm"))).getOrElse("")
+      val signed = sig.signed.map(format.format).getOrElse("")
       val avatarUrl = sig.avatarUrl.getOrElse("")
       FormattedSignatory(sig.id.stringify, sig.name, provider, id, screenName, signed, avatarUrl)
     })
@@ -137,9 +145,9 @@ class AdminController(config: OAuthConfig, oauth2: OAuth2, userService: UserServ
     }
   }
 
-  def getUserOrgs(accessToken: String): Future[Seq[String]] = {
+  private def getUserOrgs(accessToken: String): Future[Seq[String]] = {
     ws.url("https://api.github.com/user/orgs")
-      .withQueryString("access_token" -> accessToken).get().map { response =>
+      .addQueryStringParameters("access_token" -> accessToken).get().map { response =>
       if (response.status == 200) {
         (response.json \\ "login").map(_.as[String])
       } else {
@@ -147,5 +155,7 @@ class AdminController(config: OAuthConfig, oauth2: OAuth2, userService: UserServ
       }
     }
   }
+
+  private val format = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")
 
 }

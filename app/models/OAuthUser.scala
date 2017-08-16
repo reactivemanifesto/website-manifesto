@@ -1,5 +1,7 @@
 package models
 
+import java.time.Instant
+
 import org.joda.time.DateTime
 
 
@@ -11,4 +13,4 @@ import org.joda.time.DateTime
  * @param avatar The users avatar, if they have one.
  * @param signed When the user signed the manifesto, if they signed it.
  */
-case class OAuthUser(provider: Provider, name: String, avatar: Option[String], signed: Option[DateTime] = None)
+case class OAuthUser(provider: Provider, name: String, avatar: Option[String], signed: Option[Instant] = None)

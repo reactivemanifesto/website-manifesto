@@ -11,8 +11,9 @@ import scala.concurrent.{ExecutionContext, Future}
 /**
  * Generic controller containing common functionality between all the OAuth2 login services.
  */
-abstract class OAuth2Controller(ws: WSClient, oauth2: OAuth2, userService: UserService, name: String,
-                                settings: OAuth2Settings, extraParams: Seq[(String, String)] = Nil)(implicit ec: ExecutionContext) extends Controller {
+abstract class OAuth2Controller(components: ControllerComponents, ws: WSClient, oauth2: OAuth2,
+  userService: UserService, name: String, settings: OAuth2Settings, extraParams: Seq[(String, String)] = Nil)
+  (implicit ec: ExecutionContext) extends AbstractController(components) {
 
   /**
    * Authenticate action.  The same URL is used for authentication and for redirecting to with the access token.

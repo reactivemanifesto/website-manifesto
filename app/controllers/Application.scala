@@ -1,18 +1,18 @@
 package controllers
 
-import java.util.{Locale, Date}
+import java.util.{Date, Locale}
 
 import org.joda.time.DateTimeZone
 import org.joda.time.format.{DateTimeFormat, DateTimeFormatter}
-import play.api.i18n.{MessagesApi, Lang}
-import play.api.mvc.{EssentialAction, Call, Action, Controller}
+import play.api.i18n.Lang
+import play.api.mvc._
 import org.apache.commons.codec.digest.DigestUtils
 import play.twirl.api.Html
 
 /**
  * Serves the main pages of the application
  */
-class Application(messages: MessagesApi) extends Controller {
+class Application(components: ControllerComponents) extends AbstractController(components) {
 
   /**
    * A full lang.
@@ -95,7 +95,8 @@ class Application(messages: MessagesApi) extends Controller {
   val index = {
 
     def render(lang: FullLang, manifesto: Html) = {
-      lang -> views.html.index(manifesto, lang.full, lang.dir)(messages, lang.lang)
+      implicit val impLang = lang.lang
+      lang -> views.html.index(manifesto, lang.full, lang.dir)
     }
 
     cached(routes.Application.index,
@@ -120,7 +121,10 @@ class Application(messages: MessagesApi) extends Controller {
    */
   val list = {
     cached(routes.Application.list,
-      all.map(lang => lang -> views.html.list(messages, lang.lang)): _*
+      all.map { lang =>
+        implicit val impLang = lang.lang
+        lang -> views.html.list.apply
+      }: _*
     )
   }
 
@@ -129,7 +133,8 @@ class Application(messages: MessagesApi) extends Controller {
    */
   val ribbons = {
     def render(lang: FullLang) = {
-      lang -> views.html.ribbons(messages, lang.lang)
+      implicit val impLang = lang.lang
+      lang -> views.html.ribbons.apply
     }
 
     cached(routes.Application.ribbons,
@@ -142,7 +147,8 @@ class Application(messages: MessagesApi) extends Controller {
    */
   val glossary = {
     def render(lang: FullLang, glossary: Html) = {
-      lang -> views.html.glossary(glossary, lang.dir)(messages, lang.lang)
+      implicit val impLang = lang.lang
+      lang -> views.html.glossary(glossary, lang.dir)
     }
 
     cached(routes.Application.glossary,

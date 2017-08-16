@@ -1,54 +1,62 @@
 package services
 
 import actors.SignatoriesCache
-import akka.actor.Props
+import akka.actor.{ActorRef, Props}
 import controllers.admin.AdminController
-import controllers.oauth.{LinkedInController, GitHubController, GoogleController, TwitterController}
-import controllers.{Assets, CurrentUserController, SignatoriesController, Application}
+import controllers.oauth.{GitHubController, GoogleController, LinkedInController, TwitterController}
+import controllers._
 import play.api.http.HttpErrorHandler
 import play.api.i18n.I18nComponents
 import play.api.libs.ws.ahc.AhcWSComponents
-import play.api.{BuiltInComponentsFromContext, ApplicationLoader}
+import play.api.{ApplicationLoader, BuiltInComponentsFromContext}
 import play.api.ApplicationLoader.Context
 import play.modules.reactivemongo.{DefaultReactiveMongoApi, ReactiveMongoComponents}
 import router.Routes
-import scala.concurrent.ExecutionContext
+
 import scala.concurrent.duration._
+import com.softwaremill.macwire._
 
 class ReactiveManifestoApplicationLoader extends ApplicationLoader {
   def load(context: Context) = {
 
-    val components = new BuiltInComponentsFromContext(context) with I18nComponents with AhcWSComponents with ReactiveMongoComponents {
-      lazy val router = new Routes(httpErrorHandler, applicationController, signatoriesController,
-        currentUserController, twitterController, googleController, gitHubController, linkedInController,
-        adminController, assets)
+    val components = new BuiltInComponentsFromContext(context)
+      with I18nComponents
+      with AhcWSComponents
+      with AssetsComponents {
 
-      lazy val applicationController = new Application(messagesApi)
-      lazy val signatoriesController = new SignatoriesController(signatoriesActor)
-      lazy val currentUserController = new CurrentUserController(userService)
-      lazy val adminController = new AdminController(oauthConfig, oauth2, userService, wsClient)(executionContext, messagesApi)
-      lazy val assets = new Assets(httpErrorHandler)
+      // see https://github.com/ReactiveMongo/Play-ReactiveMongo/issues/245
+      lazy val reactiveMongoApi = new DefaultReactiveMongoApi(configuration, applicationLifecycle)
 
-      lazy val twitterController = new TwitterController(oauthConfig, wsClient, userService)
-      lazy val googleController = new GoogleController(oauthConfig, wsClient, oauth2, userService)
-      lazy val gitHubController = new GitHubController(oauthConfig, wsClient, oauth2, userService)
-      lazy val linkedInController = new LinkedInController(oauthConfig, wsClient, oauth2, userService)
-
-      lazy val oauthConfig = OAuthConfig.fromConfiguration(configuration)
-      lazy val userService = new UserService(reactiveMongoApi)
-      lazy val oauth2 = new OAuth2(wsClient)
-      implicit lazy val executionContext: ExecutionContext = actorSystem.dispatcher
-
-      lazy val reactiveMongoApi = new DefaultReactiveMongoApi(actorSystem, configuration, applicationLifecycle)
-
-      lazy val signatoriesActor = {
+      lazy val signatoriesActor: ActorRef = {
         val actorRef = actorSystem.actorOf(Props(new SignatoriesCache(userService)), "signatories")
         actorSystem.scheduler.schedule(2.seconds, 10.minutes, actorRef, SignatoriesCache.Reload)
         actorRef
       }
 
+      lazy val oauthConfig = OAuthConfig.fromConfiguration(configuration)
+      lazy val userService = wire[UserService]
+      lazy val oauth2 = wire[OAuth2]
+
+      lazy val applicationController = wire[Application]
+      lazy val signatoriesController = wire[SignatoriesController]
+      lazy val currentUserController = wire[CurrentUserController]
+      lazy val adminController = wire[AdminController]
+
+      lazy val twitterController = wire[TwitterController]
+      lazy val googleController = wire[GoogleController]
+      lazy val gitHubController = wire[GitHubController]
+      lazy val linkedInController = wire[LinkedInController]
+
+
       override lazy val httpErrorHandler: HttpErrorHandler = new ReactiveManifestoErrorHandler(environment,
         configuration, sourceMapper, Some(router))
+
+      override lazy val router = {
+        val prefix: String = "/"
+        wire[Routes]
+      }
+
+      override lazy val httpFilters = Nil
     }
 
     // Make sure the actor is eager loaded

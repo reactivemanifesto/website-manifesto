@@ -9,8 +9,8 @@ import models.{OAuthUser, GitHub}
 /**
  * GitHub OAuth2 login provider
  */
-class GitHubController(config: OAuthConfig, ws: WSClient, oauth2: OAuth2, userService: UserService)(implicit ec: ExecutionContext)
-  extends OAuth2Controller(ws, oauth2, userService, "GitHub", config.github) {
+class GitHubController(components: ControllerComponents, config: OAuthConfig, ws: WSClient, oauth2: OAuth2, userService: UserService)(implicit ec: ExecutionContext)
+  extends OAuth2Controller(components, ws, oauth2, userService, "GitHub", config.github) {
 
   val settings = config.github
 
@@ -20,7 +20,7 @@ class GitHubController(config: OAuthConfig, ws: WSClient, oauth2: OAuth2, userSe
 
   def getUserInfo(accessToken: String): Future[OAuthUser] = {
     ws.url("https://api.github.com/user")
-      .withQueryString("access_token" -> accessToken).get().map { response =>
+      .addQueryStringParameters("access_token" -> accessToken).get().map { response =>
       if (response.status == 200) {
         val id = (response.json \ "id").as[Long]
         val login = (response.json \ "login").as[String]

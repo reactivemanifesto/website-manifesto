@@ -10,15 +10,15 @@ import models.{OAuthUser, LinkedIn}
 /**
  * LinkedIn OAuth 2 login provider
  */
-class LinkedInController(config: OAuthConfig, ws: WSClient, oauth2: OAuth2, userService: UserService)(implicit ec: ExecutionContext)
-  extends OAuth2Controller(ws, oauth2, userService, "LinkedIn", config.linkedIn, Seq("response_type" -> "code")) {
+class LinkedInController(components: ControllerComponents, config: OAuthConfig, ws: WSClient, oauth2: OAuth2, userService: UserService)(implicit ec: ExecutionContext)
+  extends OAuth2Controller(components, ws, oauth2, userService, "LinkedIn", config.linkedIn, Seq("response_type" -> "code")) {
 
   def redirectUri(implicit req: RequestHeader) = routes.LinkedInController.authenticate().absoluteURL()
 
   def getUserInfo(accessToken: String): Future[OAuthUser] = {
     ws.url("https://api.linkedin.com/v1/people/~:(id,picture-url,formatted-name)")
-      .withQueryString("oauth2_access_token" -> accessToken)
-      .withHeaders("X-Li-Format" -> "json", "Accept" -> "application/json").get().map { response =>
+      .addQueryStringParameters("oauth2_access_token" -> accessToken)
+      .addHttpHeaders("X-Li-Format" -> "json", "Accept" -> "application/json").get().map { response =>
       if (response.status == 200) {
         try {
           val id = (response.json \ "id").as[String]

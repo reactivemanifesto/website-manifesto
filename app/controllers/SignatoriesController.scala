@@ -2,21 +2,20 @@ package controllers
 
 import akka.actor.ActorRef
 import play.api.mvc._
-import play.api.libs.concurrent.Execution.Implicits._
 import akka.pattern.ask
 import akka.util.Timeout._
 import akka.util.Timeout
 import actors.SignatoriesCache._
 import play.api.libs.json.Json
 import reactivemongo.bson.BSONObjectID
-import scala.concurrent.duration._
 
-import scala.concurrent.Future
+import scala.concurrent.duration._
+import scala.concurrent.{ExecutionContext, Future}
 
 /**
  * Provides access to signatories.  All access to the signatories is through an actor, which ensures consistent caching.
  */
-class SignatoriesController (signatoriesActor: ActorRef) extends Controller {
+class SignatoriesController(components: ControllerComponents, signatoriesActor: ActorRef)(implicit ec: ExecutionContext) extends AbstractController(components) {
 
   implicit val askTimeout: Timeout = 5.seconds
 
@@ -58,21 +57,22 @@ class SignatoriesController (signatoriesActor: ActorRef) extends Controller {
         val page = Math.max(p - 1, 0)
         val perPage = Math.max(Math.min(pp, 200), 1)
 
+        val etag = s""""$hash""""
         // Check E-Tag
-        if (req.headers.get(IF_NONE_MATCH).contains(hash.toString)) {
+        if (req.headers.get(IF_NONE_MATCH).contains(etag)) {
           NotModified
         } else {
-          val sigPage = signatories.drop(page * perPage).take(perPage)
+          val sigPage = signatories.slice(page * perPage, page * perPage + perPage)
           // It's minus 1 so that if it's an exact divisor, we don't get one extra page
           val lastPage = (total - 1) / perPage
           val linkHeader = if (lastPage > page) {
             val nextUrl= reverseRoute(page + 2, perPage).absoluteURL()
             val lastUrl = reverseRoute(lastPage + 1, perPage).absoluteURL()
-            Some("Link" -> s"""<$nextUrl>; rel="next", <$lastUrl>; rel="last"""")
+            Some("Link" -> s"""<$nextUrl>; rel=next, <$lastUrl>; rel=last""")
           } else None
 
           Ok(Json.toJson(sigPage)).withHeaders(linkHeader.toSeq:_*).withHeaders(
-            ETAG -> hash.toString
+            ETAG -> etag
           )
         }
 
@@ -84,7 +84,7 @@ class SignatoriesController (signatoriesActor: ActorRef) extends Controller {
    */
   def sign = Action.async { req =>
     req.session.get("user") match {
-      case Some(id) => (signatoriesActor ? Sign(BSONObjectID(id))).map {
+      case Some(id) => (signatoriesActor ? Sign(BSONObjectID.parse(id).get)).map {
         case Updated(signatory) => Ok(Json.toJson(signatory))
         case UpdateFailed(msg) => NotFound(Json.toJson(Json.obj("error" -> msg)))
       }
@@ -97,7 +97,7 @@ class SignatoriesController (signatoriesActor: ActorRef) extends Controller {
    */
   def unsign = Action.async { req =>
     req.session.get("user") match {
-      case Some(id) => (signatoriesActor ? Unsign(BSONObjectID(id))).map {
+      case Some(id) => (signatoriesActor ? Unsign(BSONObjectID.parse(id).get)).map {
         case Updated(signatory) => Ok(Json.toJson(signatory))
         case UpdateFailed(msg) => NotFound(Json.toJson(Json.obj("error" -> msg)))
       }

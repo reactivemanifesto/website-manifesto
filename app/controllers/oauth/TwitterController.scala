@@ -12,7 +12,8 @@ import play.api._
 /**
  * Twitter login provider
  */
-class TwitterController(config: OAuthConfig, ws: WSClient, userService: UserService)(implicit ec: ExecutionContext) extends Controller {
+class TwitterController(components: ControllerComponents, config: OAuthConfig, ws: WSClient, userService: UserService)
+  (implicit ec: ExecutionContext) extends AbstractController(components) {
 
   def authenticate = Action.async { implicit request =>
 

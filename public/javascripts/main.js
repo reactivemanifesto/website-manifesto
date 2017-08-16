@@ -178,13 +178,13 @@ $(window).ready(function() {
         }
 
         /**
-         * Handle the link header from the signatories response, extracting out the rel="next" URL, if present.
+         * Handle the link header from the signatories response, extracting out the rel=next URL, if present.
          */
         function handleLink(xhr) {
             var link = xhr.getResponseHeader("Link");
             if (link != undefined) {
                 // Extract the next page from the header
-                self.fetchMore(/.*<([^>]*)>; rel="next".*/.exec(link)[1])
+                self.fetchMore(/.*<([^>]*)>; rel=next.*/.exec(link)[1])
             } else {
                 self.fetchMore(null)
             }
@@ -211,29 +211,29 @@ $(window).ready(function() {
             }
         }
         function processSigned(person) {
-            var now = new Date().getTime()
-            var signed = person.signed
-            var ago = now - signed
+            var now = new Date().getTime();
+            var signed = new Date(person.signed).getTime();
+            var ago = now - signed;
             // Work out minutes
-            var minutes = Math.floor(ago / 60000)
+            var minutes = Math.floor(ago / 60000);
 
             if (minutes < 60) {
-                person.fromNowSigned = inEnglish(minutes, "a minute", "minutes")
+                person.fromNowSigned = inEnglish(minutes, "a minute", "minutes");
             } else {
-                var hours = Math.floor(minutes / 60)
+                var hours = Math.floor(minutes / 60);
                 if (hours < 24) {
-                    person.fromNowSigned = inEnglish(hours, "an hour", "hours")
+                    person.fromNowSigned = inEnglish(hours, "an hour", "hours");
                 } else {
-                    var days = Math.floor(hours / 24)
+                    var days = Math.floor(hours / 24);
                     if (days < 365) {
-                        person.fromNowSigned = inEnglish(days, "a day", "days")
+                        person.fromNowSigned = inEnglish(days, "a day", "days");
                     } else {
-                        person.fromNowSigned = inEnglish(Math.floor(days / 365), "a year", "years")
+                        person.fromNowSigned = inEnglish(Math.floor(days / 365), "a year", "years");
                     }
                 }
             }
 
-            person.version = version(person.signed);
+            person.version = version(signed);
 
             return person
         }

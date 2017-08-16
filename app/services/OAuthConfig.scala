@@ -10,18 +10,13 @@ object OAuthConfig {
 
   def fromConfiguration(configuration: Configuration): OAuthConfig = {
     def loadOAuth2(name: String, signInUrl: String, accessTokenUrl: String, scopes: Seq[String] = Nil) = {
-      (for {
-        clientId <- configuration.getString(s"$name.clientId")
-        clientSecret <- configuration.getString(s"$name.clientSecret")
-      } yield {
-          OAuth2Settings(
-            clientId = clientId,
-            clientSecret = clientSecret,
-            signInUrl = signInUrl,
-            accessTokenUrl = accessTokenUrl,
-            scopes = scopes
-          )
-        }).getOrElse(throw new IllegalStateException(s"Could not load $name creds"))
+      OAuth2Settings(
+        clientId = configuration.get[String](s"$name.clientId"),
+        clientSecret = configuration.get[String](s"$name.clientSecret"),
+        signInUrl = signInUrl,
+        accessTokenUrl = accessTokenUrl,
+        scopes = scopes
+      )
     }
 
     val google = loadOAuth2(
@@ -42,12 +37,10 @@ object OAuthConfig {
       scopes = Seq("r_basicprofile")
     )
 
-    val twitterKey = (for {
-      authKey <- configuration.getString("twitter.authKey")
-      authSecret <- configuration.getString("twitter.authSecret")
-    } yield {
-      ConsumerKey(authKey, authSecret)
-    }).getOrElse(throw new IllegalStateException("Could not load twitter creds"))
+    val twitterKey = ConsumerKey(
+      configuration.get[String]("twitter.authKey"),
+      configuration.get[String]("twitter.authSecret")
+    )
 
     val twitter = OAuth(ServiceInfo(
       "https://api.twitter.com/oauth/request_token",
