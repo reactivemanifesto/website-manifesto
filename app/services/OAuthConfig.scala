@@ -3,7 +3,8 @@ package services
 import play.api.Configuration
 import play.api.libs.oauth.{ConsumerKey, OAuth, ServiceInfo}
 
-case class OAuthConfig(twitter: OAuth, google: OAuth2Settings, github: OAuth2Settings, linkedIn: OAuth2Settings)
+case class OAuthConfig(twitter: OAuth, google: OAuth2Settings, github: OAuth2Settings, linkedIn: OAuth2Settings,
+  googleApiKey: String, twitterBearerToken: String)
 
 object OAuthConfig {
 
@@ -53,7 +54,9 @@ object OAuthConfig {
       twitter = twitter,
       google = google,
       github = github,
-      linkedIn = linkedIn
+      linkedIn = linkedIn,
+      configuration.get[String]("google.apiKey"),
+      configuration.get[String]("twitter.bearerToken")
     )
   }
 }

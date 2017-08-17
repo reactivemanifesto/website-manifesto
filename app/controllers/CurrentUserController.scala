@@ -30,7 +30,7 @@ class CurrentUserController(components: ControllerComponents, userService: UserS
   def getUser = Action.async { req =>
     req.session.get("user") match {
       case Some(id) => userService.findUser(id).map {
-        case Some(signatory) => Ok(Json.toJson(signatory))
+        case Some(signatory) => Ok(Json.toJson(signatory.toWeb))
         case None => NotFound
       }
       case None => Future.successful(NotFound)

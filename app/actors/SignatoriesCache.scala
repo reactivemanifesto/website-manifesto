@@ -1,11 +1,17 @@
 package actors
 
-import akka.actor.{ActorRef, Actor}
-import models.{Trie, Signatory}
+import java.time.Instant
+
+import akka.actor.{Actor, ActorRef, Timers}
+import models._
 import reactivemongo.bson.BSONObjectID
-import play.api.Logger
+import play.api.{Configuration, Logger}
+
 import scala.util._
-import services.UserService
+import services.{UserInfoProvider, UserService}
+
+import scala.concurrent.Future
+import scala.concurrent.duration.FiniteDuration
 import scala.util.control.NonFatal
 
 /**
@@ -31,7 +37,7 @@ object SignatoriesCache {
    * @param signatories The signatories.
    * @param hash A hash of the signatories.
    */
-  case class Signatories(signatories: List[Signatory], hash: Int)
+  case class Signatories(signatories: List[DbSignatory], hash: Int)
 
   /**
    * Sign the manifesto.  Will return an Updated or UpdateFailed message.
@@ -52,7 +58,7 @@ object SignatoriesCache {
    *
    * @param signatory The updated signatory.
    */
-  case class Updated(signatory: Signatory)
+  case class Updated(signatory: DbSignatory)
 
   /**
    * Sent in response to operations that update a signatory, to indicate the update failed.
@@ -83,12 +89,12 @@ object SignatoriesCache {
  *
  * The third state is a hot state.  The cache is hot and consistent.  All messages will be handled normally.
  */
-class SignatoriesCache(userService: UserService) extends Actor {
+class SignatoriesCache(userService: UserService, userInfoProvider: UserInfoProvider) extends Actor with Timers {
 
   // Internal messages, sent from asynchronous callbacks.
-  case class SignatoryAdded(signatory: Signatory)
-  case class SignatoryRemoved(signatory: Signatory)
-  case class SignatoriesLoaded(signatories: List[Signatory])
+  case class SignatoryAdded(signatory: DbSignatory)
+  case class SignatoryRemoved(signatory: DbSignatory)
+  case class SignatoriesLoaded(signatories: List[DbSignatory])
   case object LoadFailed
 
   import SignatoriesCache._
@@ -96,31 +102,40 @@ class SignatoriesCache(userService: UserService) extends Actor {
   import context._
 
   // The cached signatories.
-  var signatories: List[Signatory] = Nil
+  private var signatories: List[DbSignatory] = Nil
   // Hash code of the cached signatories.
-  var signatoriesHash = signatories.hashCode()
+  private var signatoriesHash = signatories.hashCode()
   // Prefix lookup index of the signatories
-  var signatoriesIndex = Trie.empty[Signatory]
+  private var signatoriesIndex = Trie.empty[DbSignatory]
 
-  def update(signatories: List[Signatory]) = {
+  private def update(signatories: List[DbSignatory]) = {
     this.signatories = signatories
     this.signatoriesHash = signatories.hashCode()
   }
 
   // Pending requests. Sent when we are
-  var pendingRequests: List[(ActorRef, AnyRef)] = Nil
+  private var pendingRequests: List[(ActorRef, AnyRef)] = Nil
+
+  private val config = Configuration(system.settings.config.getConfig("signatories.cache"))
+  private val profileRefreshInterval = config.get[FiniteDuration]("profile.refreshInterval")
+  private val profileRefreshMax = config.get[Int]("profile.refreshMax")
+
+  override def preStart() = {
+    timers.startPeriodicTimer(Reload, Reload, config.get[FiniteDuration]("reloadInterval"))
+    self ! Reload
+  }
 
   // Default state, in error.
   def receive = {
     case GetSignatories => sender ! Signatories(Nil, Nil.hashCode())
     case Search(_) => sender ! Signatories(Nil, Nil.hashCode())
-    case s: Sign => sender ! UpdateFailed("Unknown error")
-    case u: Unsign => sender ! UpdateFailed("Unknown error")
+    case s: Sign => sender ! UpdateFailed("Not started")
+    case u: Unsign => sender ! UpdateFailed("Not started")
     case Reload => loadSignatories()
   }
 
   // We are cold, we haven't loaded the database yet, so hold off returning anything or saving anything
-  def loading: Receive = {
+  private def loading: Receive = {
     case g @ GetSignatories =>
       if (signatories.isEmpty) {
         pendingRequests = (sender(), g) :: pendingRequests
@@ -150,6 +165,7 @@ class SignatoriesCache(userService: UserService) extends Actor {
       Logger.info("Indexing " + signatories.length + " signatories took " + time + "ms")
       become(hot)
       sendPending()
+      refreshProfiles()
 
     case LoadFailed =>
       // If loading failed, but we still have signatories to serve, then go hot and serve those
@@ -161,7 +177,7 @@ class SignatoriesCache(userService: UserService) extends Actor {
   }
 
   // We are hot, and guaranteed to be internally consistent on this node.
-  def hot: Receive = {
+  private def hot: Receive = {
 
     case GetSignatories => sender ! Signatories(signatories, signatoriesHash)
 
@@ -212,14 +228,14 @@ class SignatoriesCache(userService: UserService) extends Actor {
     case Reload => loadSignatories()
   }
 
-  def sendPending() = {
+  private def sendPending() = {
     pendingRequests.foreach { p =>
       self.!(p._2)(p._1)
     }
     pendingRequests = Nil
   }
 
-  def search(query: String): Signatories = {
+  private def search(query: String): Signatories = {
     // Split into words, take a maximum of 2 terms
     val results = query.split("\\s+").take(2)
       // Search for all signatories for each term
@@ -232,7 +248,7 @@ class SignatoriesCache(userService: UserService) extends Actor {
     Signatories(results, results.hashCode())
   }
   
-  def loadSignatories() = {
+  private def loadSignatories() = {
     Logger.info("Loading signatories...")
     become(loading)
 
@@ -247,5 +263,67 @@ class SignatoriesCache(userService: UserService) extends Actor {
     }
   }
 
-  def extractSearchTerms(signatory: Signatory) = signatory.name.split("\\s+")
+  private def extractSearchTerms(signatory: DbSignatory) = signatory.name.split("\\s+")
+
+  private def refreshProfiles(): Unit = {
+    val refreshOlderThan = Instant.ofEpochMilli(System.currentTimeMillis() - profileRefreshInterval.toMillis)
+    val toRefresh = signatories
+      .filter(_.signed.nonEmpty)
+      .sortBy(s => (s.profileLastRefreshed, s.signed))
+      .take(profileRefreshMax)
+      .takeWhile(_.profileLastRefreshed.forall(_.isBefore(refreshOlderThan)))
+    refreshProfiles(toRefresh).foreach { _ =>
+      Logger.info(s"Refreshed ${toRefresh.size} profiles")
+    }
+  }
+
+  private def refreshProfiles(toRefresh: List[DbSignatory]): Future[Unit] = {
+    toRefresh match {
+      case Nil => Future.successful(())
+      case signatory :: rest =>
+        refreshProfile(signatory).flatMap { _ =>
+          refreshProfiles(rest)
+        }
+    }
+  }
+
+  private def refreshProfile(signatory: DbSignatory): Future[Unit] = {
+    val oauthDetails = signatory.provider match {
+      case GitHub(id, _) =>
+        userInfoProvider.lookupGitHubUser(id)
+      case Google(id) =>
+        userInfoProvider.lookupGoogleUser(id)
+      case Twitter(id, _) =>
+        userInfoProvider.lookupTwitterUser(id)
+      case LinkedIn(id) =>
+        Future.successful(None)
+    }
+
+    oauthDetails.recover {
+      case e =>
+        Logger.warn(s"Failed to fetch profile for signatory ${signatory.provider}", e)
+        None
+    }.flatMap {
+      case Some(oauthUser) =>
+        if (signatory.provider != oauthUser.provider || signatory.name != oauthUser.name ||
+          signatory.avatarUrl != oauthUser.avatar) {
+
+          Logger.info(s"Updating changed signatory ${signatory.provider} with details $oauthUser")
+
+          userService.updateProfile(signatory.copy(
+            provider = oauthUser.provider,
+            name = signatory.name,
+            avatarUrl = oauthUser.avatar
+          ))
+        } else {
+          userService.touchProfile(signatory.id)
+        }
+      case None if signatory.provider.isInstanceOf[LinkedIn] =>
+        userService.touchProfile(signatory.id)
+      case None =>
+        Logger.info(s"Signatory ${signatory.provider} no longer found with provider")
+        userService.touchProfile(signatory.id)
+    }
+  }
+
 }

@@ -1,10 +1,10 @@
 package controllers.oauth
 
-import models.OAuthUser
 import play.api.mvc._
 import play.api.libs.ws.WSClient
 import play.api.libs.oauth._
-import services.{OAuthConfig, UserService}
+import services.{OAuthConfig, UserInfoProvider, UserService}
+
 import scala.concurrent.ExecutionContext
 import play.api.libs.json.Json
 import play.api._
@@ -12,8 +12,8 @@ import play.api._
 /**
  * Twitter login provider
  */
-class TwitterController(components: ControllerComponents, config: OAuthConfig, ws: WSClient, userService: UserService)
-  (implicit ec: ExecutionContext) extends AbstractController(components) {
+class TwitterController(components: ControllerComponents, config: OAuthConfig, ws: WSClient, userService: UserService,
+  userInfoProvider: UserInfoProvider)(implicit ec: ExecutionContext) extends AbstractController(components) {
 
   def authenticate = Action.async { implicit request =>
 
@@ -26,26 +26,15 @@ class TwitterController(components: ControllerComponents, config: OAuthConfig, w
       config.twitter.retrieveAccessToken(tokenPair, verifier) match {
         case Right(token) =>
 
-          // We received the authorized tokens in the OAuth object - use them to find the details of the user
-          ws.url("https://api.twitter.com/1.1/account/verify_credentials.json")
-            .sign(OAuthCalculator(config.twitter.info.key, token)).get().flatMap { response =>
-
-            // Check if response is ok
-            if (response.status == 200) {
-              val id = (response.json \ "id").as[Long]
-              val screenName = (response.json \ "screen_name").as[String]
-              val name = (response.json \ "name").as[String]
-              val avatar = (response.json \ "profile_image_url").asOpt[String]
-              val userInfo = OAuthUser(models.Twitter(id, screenName), name, avatar)
-              userService.findOrSaveUser(userInfo).map { signatory =>
-                // Log the user in and return their details
-                Ok(views.html.popup()).withSession("user" -> signatory.id.stringify)
-              }
-            } else {
-              Logger.error("Unable to get user details from Twitter, got response: " +
-                response.status + " " + response.body)
-              sync(Forbidden(Json.toJson(Json.obj("error" -> "Twitter rejected credentials"))))
+          userInfoProvider.lookupTwitterCurrentUser(token).flatMap { userInfo =>
+            userService.findOrSaveUser(userInfo).map { signatory =>
+              // Log the user in and return their details
+              Ok(views.html.popup()).withSession("user" -> signatory.id.stringify)
             }
+          }.recover {
+            case e =>
+              Logger.warn("Error logging in user to twitter", e)
+              Forbidden(Json.toJson(Json.obj("error" -> "Twitter rejected credentials")))
           }
 
         case Left(e) =>

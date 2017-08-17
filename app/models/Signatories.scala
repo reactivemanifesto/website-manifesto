@@ -6,36 +6,57 @@ import reactivemongo.bson.{BSONLongHandler => _, _}
 import reactivemongo.bson.Macros._
 import play.api.libs.json._
 
-import scala.util.control.NonFatal
-
 /**
- * A signatory
+ * A signatory that gets stored in the database
  *
  * @param _id The internal id of the signatory
  * @param provider The provider specific ID of the signatory
  * @param name The name
  * @param avatarUrl The URL of the signatories avatar
  * @param signed The date the signatory signed, if they signed
+ * @param profileLastRefreshed When the avatar was last loaded
  */
-case class Signatory(
+case class DbSignatory(
   _id: BSONObjectID,
   provider: Provider,
   name: String,
   avatarUrl: Option[String],
-  signed: Option[Instant]
+  signed: Option[Instant],
+  profileLastRefreshed: Option[Instant]
 ) {
   def id = _id
+
+  def toWeb = WebSignatory(provider.providerId, name, avatarUrl, signed)
 }
 
-object Signatory extends Implicits {
-  implicit val format = Json.format[Signatory]
-  implicit val bsonHandler = handler[Signatory]
+object DbSignatory extends Implicits {
+  implicit val bsonHandler = handler[DbSignatory]
+}
+
+/**
+ * A signatory that gets published to the web via the JSON API.
+ *
+ * @param name The name
+ * @param avatarUrl The URL of the signatories avatar
+ * @param signed The date the signatory signed, if they signed
+ */
+case class WebSignatory(
+  providerId: String,
+  name: String,
+  avatarUrl: Option[String],
+  signed: Option[Instant]
+)
+
+object WebSignatory {
+  implicit val format: Format[WebSignatory] = Json.format
 }
 
 /**
  * A login provider
  */
-sealed trait Provider
+sealed trait Provider {
+  val providerId: String
+}
 
 object Provider extends Implicits {
   /**
@@ -47,23 +68,23 @@ object Provider extends Implicits {
       bson.getAs[T]("details").getOrElse(throw new RuntimeException("Could not parse provider details"))
 
     def read(bson: BSONDocument) = bson.getAs[String]("id") match {
-      case Some("github") => readProvider[GitHub](bson)
-      case Some("twitter") => readProvider[Twitter](bson)
-      case Some("google") => readProvider[Google](bson)
-      case Some("linkedin") => readProvider[LinkedIn](bson)
+      case Some(GitHub.Id) => readProvider[GitHub](bson)
+      case Some(Twitter.Id) => readProvider[Twitter](bson)
+      case Some(Google.Id) => readProvider[Google](bson)
+      case Some(LinkedIn.Id) => readProvider[LinkedIn](bson)
       case unknown => throw new IllegalArgumentException("Unknown provider: " + unknown)
     }
 
-    def writeProvider[T](id: String, provider: T)(implicit writer: BSONDocumentWriter[T]) = BSONDocument(
-      "id" -> id,
+    def writeProvider[T <: Provider](provider: T)(implicit writer: BSONDocumentWriter[T]) = BSONDocument(
+      "id" -> provider.providerId,
       "details" -> writer.write(provider)
     )
 
     def write(provider: Provider) = provider match {
-      case gh: GitHub => writeProvider("github", gh)
-      case t: Twitter => writeProvider("twitter", t)
-      case g: Google => writeProvider("google", g)
-      case ln: LinkedIn => writeProvider("linkedin", ln)
+      case gh: GitHub => writeProvider(gh)
+      case t: Twitter => writeProvider(t)
+      case g: Google => writeProvider(g)
+      case ln: LinkedIn => writeProvider(ln)
     }
   }
 
@@ -75,51 +96,63 @@ object Provider extends Implicits {
     def readProvider[T](json: JsValue)(implicit reads: Reads[T]): JsSuccess[T] = JsSuccess((json \ "details").as[T])
 
     def reads(json: JsValue): JsResult[Provider] = (json \ "id").asOpt[String] match {
-      case Some("github") => readProvider[GitHub](json)
-      case Some("twitter") => readProvider[Twitter](json)
-      case Some("google") => readProvider[Google](json)
-      case Some("linkedin") => readProvider[LinkedIn](json)
+      case Some(GitHub.Id) => readProvider[GitHub](json)
+      case Some(Twitter.Id) => readProvider[Twitter](json)
+      case Some(Google.Id) => readProvider[Google](json)
+      case Some(LinkedIn.Id) => readProvider[LinkedIn](json)
       case unknown => JsError("Unknown provider: " + unknown)
     }
 
-    def writeProvider[T](id: String, provider: T)(implicit writes: Writes[T]) = Json.obj(
-      "id" -> id,
+    def writeProvider[T <: Provider](provider: T)(implicit writes: Writes[T]) = Json.obj(
+      "id" -> provider.providerId,
       "details" -> provider
     )
 
     def writes(provider: Provider) = provider match {
-      case gh: GitHub => writeProvider("github", gh)(GitHub.format)
-      case t: Twitter => writeProvider("twitter", t)(Twitter.format)
-      case g: Google => writeProvider("google", g)(Google.format)
-      case ln: LinkedIn => writeProvider("linkedin", ln)(LinkedIn.format)
+      case gh: GitHub => writeProvider(gh)(GitHub.format)
+      case t: Twitter => writeProvider(t)(Twitter.format)
+      case g: Google => writeProvider(g)(Google.format)
+      case ln: LinkedIn => writeProvider(ln)(LinkedIn.format)
     }
   }
 }
 
-case class GitHub(id: Long, login: String) extends Provider
+case class GitHub(id: Long, login: String) extends Provider {
+  override val providerId = GitHub.Id
+}
 
 object GitHub extends Implicits {
+  val Id = "github"
   implicit val bsonHandler: BSONDocumentWriter[GitHub] with BSONDocumentReader[GitHub] = handler[GitHub]
   implicit val format: Format[GitHub] = Json.format[GitHub]
 }
 
-case class Twitter(id: Long, screenName: String) extends Provider
+case class Twitter(id: Long, screenName: String) extends Provider {
+  override val providerId = Twitter.Id
+}
 
 object Twitter extends Implicits {
+  val Id = "twitter"
   implicit val bsonHandler: BSONDocumentWriter[Twitter] with BSONDocumentReader[Twitter] = handler[Twitter]
   implicit val format: Format[Twitter] = Json.format[Twitter]
 }
 
-case class Google(id: String) extends Provider
+case class Google(id: String) extends Provider {
+  override val providerId = Google.Id
+}
 
 object Google extends Implicits {
+  val Id = "google"
   implicit val bsonHandler: BSONDocumentWriter[Google] with BSONDocumentReader[Google] = handler[Google]
   implicit val format: Format[Google] = Json.format[Google]
 }
 
-case class LinkedIn(id: String) extends Provider
+case class LinkedIn(id: String) extends Provider {
+  override val providerId = LinkedIn.Id
+}
 
 object LinkedIn extends Implicits {
+  val Id = "linkedin"
   implicit val bsonHandler: BSONDocumentWriter[LinkedIn] with BSONDocumentReader[LinkedIn] = handler[LinkedIn]
   implicit val format: Format[LinkedIn] = Json.format[LinkedIn]
 }
@@ -138,22 +171,10 @@ trait Implicits {
     }
   }
 
-  implicit val dateTimeHandler: BSONHandler[BSONDateTime, Instant] = new BSONHandler[BSONDateTime, Instant] {
+  implicit val instantHandler: BSONHandler[BSONDateTime, Instant] = new BSONHandler[BSONDateTime, Instant] {
     def read(time: BSONDateTime) = Instant.ofEpochMilli(time.value)
     def write(instant: Instant) = BSONDateTime(instant.toEpochMilli)
   }
 
-  implicit val bsonObjectIdFormat: Format[BSONObjectID] = new Format[BSONObjectID] {
-    def reads(json: JsValue) = json match {
-      case JsString(v) => try {
-        JsSuccess(BSONObjectID.parse(v).get)
-      } catch {
-        case NonFatal(e) => JsError("Cannot parse object id from " + v)
-      }
-      case _ => JsError("Cannot parse object id from " + json)
-    }
-
-    def writes(oid: BSONObjectID) = JsString(oid.stringify)
-  }
 }
 

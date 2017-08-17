@@ -9,7 +9,6 @@ import reactivemongo.api.commands.GetLastError
 import reactivemongo.bson._
 
 import scala.concurrent.{ExecutionContext, Future}
-import org.joda.time.DateTime
 import reactivemongo.api.Cursor
 
 class UserService(reactiveMongo: ReactiveMongoApi)(implicit ec: ExecutionContext) {
@@ -22,24 +21,24 @@ class UserService(reactiveMongo: ReactiveMongoApi)(implicit ec: ExecutionContext
    * @param user The user to save
    * @return A future of the found or saved signatory
    */
-  def findOrSaveUser(user: OAuthUser): Future[Signatory] = {
-    def providerAndId: (String, BSONValue) = user.provider match {
-      case Twitter(id, _) => ("twitter", BSONLong(id))
-      case Google(id) => ("google", BSONString(id))
-      case GitHub(id, _) => ("github", BSONLong(id))
-      case LinkedIn(id) => ("linkedin", BSONString(id))
+  def findOrSaveUser(user: OAuthUser): Future[DbSignatory] = {
+    def providerUserId: BSONValue = user.provider match {
+      case Twitter(id, _) => BSONLong(id)
+      case Google(id) => BSONString(id)
+      case GitHub(id, _) => BSONLong(id)
+      case LinkedIn(id) => BSONString(id)
     }
     def find(collection: BSONCollection) = collection.find(BSONDocument(
-      "provider.id" -> BSONString(providerAndId._1),
-      "provider.details.id" -> providerAndId._2
-    )).one[Signatory]
+      "provider.id" -> BSONString(user.provider.providerId),
+      "provider.details.id" -> providerUserId
+    )).one[DbSignatory]
 
-    def returnOrSave(collection: BSONCollection, s: Option[Signatory]) = s match {
+    def returnOrSave(collection: BSONCollection, s: Option[DbSignatory]) = s match {
       case Some(signatory) =>
         Future.successful(signatory)
 
       case None =>
-        val signatory = Signatory(BSONObjectID.generate, user.provider, user.name, user.avatar, user.signed)
+        val signatory = DbSignatory(BSONObjectID.generate, user.provider, user.name, user.avatar, user.signed, Some(Instant.now()))
         for {
           lastError <- collection.insert(signatory, writeConcern = GetLastError.Default)
         } yield {
@@ -64,7 +63,7 @@ class UserService(reactiveMongo: ReactiveMongoApi)(implicit ec: ExecutionContext
    * @param id The id of the user to find.
    * @return A future of the user, if found.
    */
-  def findUser(id: String): Future[Option[Signatory]] = findUser(BSONObjectID.parse(id).get)
+  def findUser(id: String): Future[Option[DbSignatory]] = findUser(BSONObjectID.parse(id).get)
 
   /**
    * Find the user with the given id.
@@ -72,17 +71,17 @@ class UserService(reactiveMongo: ReactiveMongoApi)(implicit ec: ExecutionContext
    * @param id The id of the user to find.
    * @return A future of the user, if found.
    */
-  def findUser(id: BSONObjectID): Future[Option[Signatory]] = {
-    collectionFuture.flatMap(_.find(BSONDocument("_id" -> id)).one[Signatory])
+  def findUser(id: BSONObjectID): Future[Option[DbSignatory]] = {
+    collectionFuture.flatMap(_.find(BSONDocument("_id" -> id)).one[DbSignatory])
   }
 
   /**
    * Load all the people that have signed the manifesto, in reverse chronological order.
    */
-  def loadSignatories(): Future[List[Signatory]] = {
+  def loadSignatories(): Future[List[DbSignatory]] = {
     collectionFuture.flatMap(_.find(BSONDocument("signed" -> BSONDocument("$exists" -> true))).sort(
       BSONDocument("signed" -> BSONInteger(-1))
-    ).cursor[Signatory]().collect[List](-1, Cursor.FailOnError[List[Signatory]]()))
+    ).cursor[DbSignatory]().collect[List](-1, Cursor.FailOnError[List[DbSignatory]]()))
   }
 
   /**
@@ -91,7 +90,7 @@ class UserService(reactiveMongo: ReactiveMongoApi)(implicit ec: ExecutionContext
    * @param id The id of the user that is signing
    * @return The updated user if successful, or an error message if the user is not allowed to sign.
    */
-  def sign(id: BSONObjectID): Future[Either[String, Signatory]] = {
+  def sign(id: BSONObjectID): Future[Either[String, DbSignatory]] = {
 
     findUser(id).flatMap {
       case Some(signatory) => signatory.signed match {
@@ -121,7 +120,7 @@ class UserService(reactiveMongo: ReactiveMongoApi)(implicit ec: ExecutionContext
    * @param id The id of the user that is removing their signature
    * @return The updated user
    */
-  def unsign(id: BSONObjectID): Future[Either[String, Signatory]] = {
+  def unsign(id: BSONObjectID): Future[Either[String, DbSignatory]] = {
 
     findUser(id).flatMap {
       case Some(signatory) =>
@@ -140,4 +139,59 @@ class UserService(reactiveMongo: ReactiveMongoApi)(implicit ec: ExecutionContext
     }
   }
 
+  /**
+    * Update a signatory profile.
+    */
+  def updateProfile(signatory: DbSignatory): Future[Unit] = {
+    val setFields = BSONDocument(
+      "provider" -> signatory.provider,
+      "name" -> signatory.name,
+      "profileLastRefreshed" -> BSONDateTime(System.currentTimeMillis())
+    ) ++ signatory.avatarUrl.fold(BSONDocument.empty) { url =>
+      BSONDocument(
+        "avatarUrl" -> url
+      )
+    }
+
+    val unset = if (signatory.avatarUrl.isEmpty) {
+      BSONDocument(
+        "$unset" -> BSONDocument(
+          "avatarUrl" -> 1
+        )
+      )
+    } else BSONDocument.empty
+
+    val update = BSONDocument(
+      "$set" -> setFields
+    ) ++ unset
+
+    for {
+      collection <- collectionFuture
+      lastError <- collection.update(BSONDocument("_id" -> signatory.id), update, GetLastError.Default)
+    } yield {
+      if (lastError.ok) {
+        ()
+      } else {
+        throw new RuntimeException(s"Error updating signatory with id ${signatory.id}: " + lastError.errmsg)
+      }
+    }
+  }
+
+  /**
+    * Touch the profile last refreshed date.
+    */
+  def touchProfile(id: BSONObjectID): Future[Unit] = {
+    for {
+      collection <- collectionFuture
+      lastError <- collection.update(BSONDocument("_id" -> id), BSONDocument("$set" ->
+        BSONDocument("profileLastRefreshed" -> BSONDateTime(System.currentTimeMillis()))
+      ), GetLastError.Default)
+    } yield {
+      if (lastError.ok) {
+        ()
+      } else {
+        throw new RuntimeException(s"Error touching signatory with id $id: " + lastError.errmsg)
+      }
+    }
+  }
 }

@@ -62,7 +62,7 @@ class SignatoriesController(components: ControllerComponents, signatoriesActor: 
         if (req.headers.get(IF_NONE_MATCH).contains(etag)) {
           NotModified
         } else {
-          val sigPage = signatories.slice(page * perPage, page * perPage + perPage)
+          val sigPage = signatories.slice(page * perPage, page * perPage + perPage).map(_.toWeb)
           // It's minus 1 so that if it's an exact divisor, we don't get one extra page
           val lastPage = (total - 1) / perPage
           val linkHeader = if (lastPage > page) {
@@ -85,7 +85,7 @@ class SignatoriesController(components: ControllerComponents, signatoriesActor: 
   def sign = Action.async { req =>
     req.session.get("user") match {
       case Some(id) => (signatoriesActor ? Sign(BSONObjectID.parse(id).get)).map {
-        case Updated(signatory) => Ok(Json.toJson(signatory))
+        case Updated(signatory) => Ok(Json.toJson(signatory.toWeb))
         case UpdateFailed(msg) => NotFound(Json.toJson(Json.obj("error" -> msg)))
       }
       case None => Future.successful(Forbidden)
@@ -98,7 +98,7 @@ class SignatoriesController(components: ControllerComponents, signatoriesActor: 
   def unsign = Action.async { req =>
     req.session.get("user") match {
       case Some(id) => (signatoriesActor ? Unsign(BSONObjectID.parse(id).get)).map {
-        case Updated(signatory) => Ok(Json.toJson(signatory))
+        case Updated(signatory) => Ok(Json.toJson(signatory.toWeb))
         case UpdateFailed(msg) => NotFound(Json.toJson(Json.obj("error" -> msg)))
       }
       case None => Future.successful(Forbidden)

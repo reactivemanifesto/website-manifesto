@@ -158,7 +158,7 @@ $(window).ready(function() {
                     // If the search field has been updated since we issued the search request, search again.
                     search(newTerm);
                 } else if (newTerm == "") {
-                    self.refreshSignatories(30)
+                    self.refreshSignatories(30);
                 } else {
                     self.searching(null);
                 }
@@ -171,7 +171,7 @@ $(window).ready(function() {
          */
         function handleSignatories(data, xhr) {
             for (var i = 0; i < data.length; i++) {
-                processSigned(data[i])
+                processSigned(data[i]);
             }
             self.signatories(data);
             handleLink(xhr);
@@ -184,9 +184,9 @@ $(window).ready(function() {
             var link = xhr.getResponseHeader("Link");
             if (link != undefined) {
                 // Extract the next page from the header
-                self.fetchMore(/.*<([^>]*)>; rel=next.*/.exec(link)[1])
+                self.fetchMore(/.*<([^>]*)>; rel=next.*/.exec(link)[1]);
             } else {
-                self.fetchMore(null)
+                self.fetchMore(null);
             }
         }
 
@@ -205,9 +205,9 @@ $(window).ready(function() {
 
         function inEnglish(time, singular, plural) {
             if (time <= 1) {
-                return singular + " ago"
+                return singular + " ago";
             } else {
-                return time + " " + plural + " ago"
+                return time + " " + plural + " ago";
             }
         }
         function processSigned(person) {
@@ -244,11 +244,11 @@ $(window).ready(function() {
         self.doFetchMore = function() {
             $.ajax(self.fetchMore()).done(function(data, status, xhr) {
                 for (var i = 0; i < data.length; i++) {
-                    processSigned(data[i])
+                    processSigned(data[i]);
                 }
                 // Don't push each one individually, the browser will have a heart attack
-                self.signatories(self.signatories().concat(data))
-                handleLink(xhr)
+                self.signatories(self.signatories().concat(data));
+                handleLink(xhr);
             });
         }
     }
@@ -258,7 +258,7 @@ $(window).ready(function() {
 
     model.refreshTotal();
     if (location.pathname == "/list") {
-        model.refreshSignatories(30)
+        model.refreshSignatories(30);
     } else {
         model.refreshSignatories(30);
 

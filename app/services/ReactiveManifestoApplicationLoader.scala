@@ -27,15 +27,12 @@ class ReactiveManifestoApplicationLoader extends ApplicationLoader {
       // see https://github.com/ReactiveMongo/Play-ReactiveMongo/issues/245
       lazy val reactiveMongoApi = new DefaultReactiveMongoApi(configuration, applicationLifecycle)
 
-      lazy val signatoriesActor: ActorRef = {
-        val actorRef = actorSystem.actorOf(Props(new SignatoriesCache(userService)), "signatories")
-        actorSystem.scheduler.schedule(2.seconds, 10.minutes, actorRef, SignatoriesCache.Reload)
-        actorRef
-      }
-
       lazy val oauthConfig = OAuthConfig.fromConfiguration(configuration)
       lazy val userService = wire[UserService]
+      lazy val userInfoProvider = wire[UserInfoProvider]
       lazy val oauth2 = wire[OAuth2]
+
+      lazy val signatoriesActor: ActorRef = actorSystem.actorOf(Props(new SignatoriesCache(userService, userInfoProvider)), "signatories")
 
       lazy val applicationController = wire[Application]
       lazy val signatoriesController = wire[SignatoriesController]
