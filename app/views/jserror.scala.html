@@ -1,0 +1,25 @@
+@import play.api.libs.json.JsError
+
+@(provider: String, messages: Messages, jsError: JsError)
+<html>
+    <head>
+        <title>Error</title>
+    </head>
+    <body>
+        <h1>Error</h1>
+        <p>An error occurred while parsing JSON from @{provider}.</p>
+        <dl>
+            @for((path, errors) <- jsError.errors) {
+                <dt>At path @path:</dt>
+                <dd>
+                    <ul>
+                    @for(error <- errors) {
+                        <li>@messages(error.message, error.args: _*)</li>
+                    }
+                    </ul>
+                </dd>
+            }
+        </dl>
+        <p>Please report this issue <a href="https://github.com/reactivemanifesto/website-manifesto">here</a>.</p>
+    </body>
+</html>

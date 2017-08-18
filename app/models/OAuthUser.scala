@@ -2,9 +2,6 @@ package models
 
 import java.time.Instant
 
-import org.joda.time.DateTime
-
-
 /**
  * A user that has logged in using OAuth.
  *

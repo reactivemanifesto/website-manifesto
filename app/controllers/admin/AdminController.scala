@@ -1,5 +1,6 @@
 package controllers.admin
 
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 import play.api.i18n.Lang
@@ -156,6 +157,6 @@ class AdminController(components: ControllerComponents, config: OAuthConfig, oau
     }
   }
 
-  private val format = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")
+  private val format = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm").withZone(ZoneId.of("UTC"))
 
 }

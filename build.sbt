@@ -1,5 +1,5 @@
 lazy val `reactivemanifesto` = (project in file("."))
-  .enablePlugins(PlayScala)
+  .enablePlugins(PlayScala, LauncherJarPlugin)
 
 name := "reactivemanifesto"
 version := "1.0-SNAPSHOT"

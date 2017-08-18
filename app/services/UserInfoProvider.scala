@@ -1,11 +1,14 @@
 package services
 
-import models.{GitHub, Google, LinkedIn, OAuthUser}
+import models._
 import play.api.libs.oauth.{OAuthCalculator, RequestToken}
 import play.api.libs.ws.{WSClient, WSRequest}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
+import play.api.libs.json._
+import play.api.libs.functional.syntax._
+
 
 class UserInfoProvider(ws: WSClient, oauthConfig: OAuthConfig)(implicit ec: ExecutionContext) {
 
@@ -23,14 +26,17 @@ class UserInfoProvider(ws: WSClient, oauthConfig: OAuthConfig)(implicit ec: Exec
         ))
   }
 
+  private val githubOauthUserReads = (
+    (__ \ "id").read[Long] and
+    (__ \ "login").read[String] and
+    (__ \ "name").readNullable[String] and
+    (__ \ "avatar_url").readNullable[String]
+  ).apply((id, login, name, avatar) => OAuthUser(GitHub(id, login), name.getOrElse(login), avatar))
+
   private def makeGitHubUserRequest(request: WSRequest): Future[Option[OAuthUser]] = {
     request.get().map { response =>
       if (response.status == 200) {
-        val id = (response.json \ "id").as[Long]
-        val login = (response.json \ "login").as[String]
-        val name = (response.json \ "name").as[String]
-        val avatar = (response.json \ "avatar_url").asOpt[String]
-        Some(OAuthUser(GitHub(id, login), name, avatar))
+        Some(response.json.as(githubOauthUserReads))
       } else if (response.status == 404) {
         None
       } else {
@@ -50,13 +56,16 @@ class UserInfoProvider(ws: WSClient, oauthConfig: OAuthConfig)(implicit ec: Exec
       .addQueryStringParameters("key" -> oauthConfig.googleApiKey))
   }
 
+  private val googleOauthUserReads = (
+    (__ \ "id").read[String] and
+    (__ \ "displayName").read[String] and
+    (__ \ "image" \ "url").readNullable[String]
+  ).apply((id, name, avatar) => OAuthUser(Google(id), name, avatar))
+
   private def makeGoogleUserRequest(request: WSRequest): Future[Option[OAuthUser]] = {
     request.get().map { response =>
       if (response.status == 200) {
-        val id = (response.json \ "id").as[String]
-        val name = (response.json \ "displayName").as[String]
-        val avatar = (response.json \ "image" \ "url").asOpt[String]
-        Some(OAuthUser(Google(id), name, avatar))
+        Some(response.json.as(googleOauthUserReads))
       } else if (response.status == 404) {
         None
       } else {
@@ -77,16 +86,19 @@ class UserInfoProvider(ws: WSClient, oauthConfig: OAuthConfig)(implicit ec: Exec
       .addHttpHeaders("Authorization" -> s"Bearer ${oauthConfig.twitterBearerToken}"))
   }
 
+  private val twitterOauthUserReads = (
+    (__ \ "id").read[Long] and
+    (__ \ "screen_name").read[String] and
+    (__ \ "name").read[String] and
+    (__ \ "profile_image_url").readNullable[String]
+  ).apply((id, screenName, name, avatar) => OAuthUser(Twitter(id, screenName), name, avatar))
+
   private def makeTwitterUserRequest(request: WSRequest): Future[Option[OAuthUser]] = {
     request.get().map { response =>
 
       // Check if response is ok
       if (response.status == 200) {
-        val id = (response.json \ "id").as[Long]
-        val screenName = (response.json \ "screen_name").as[String]
-        val name = (response.json \ "name").as[String]
-        val avatar = (response.json \ "profile_image_url").asOpt[String]
-        Some(OAuthUser(models.Twitter(id, screenName), name, avatar))
+        Some(response.json.as(twitterOauthUserReads))
       } else if (response.status == 404) {
         None
       } else {
@@ -96,16 +108,19 @@ class UserInfoProvider(ws: WSClient, oauthConfig: OAuthConfig)(implicit ec: Exec
     }
   }
 
+  private val linkedinOauthUserReads = (
+    (__ \ "id").read[String] and
+    (__ \ "formattedName").read[String] and
+    (__ \ "pictureUrl").readNullable[String]
+  ).apply((id, name, avatar) => OAuthUser(LinkedIn(id), name, avatar))
+
   def lookupLinkedInCurrentUser(accessToken: String): Future[OAuthUser] = {
     ws.url("https://api.linkedin.com/v1/people/~:(id,picture-url,formatted-name)")
       .addQueryStringParameters("oauth2_access_token" -> accessToken)
       .addHttpHeaders("X-Li-Format" -> "json", "Accept" -> "application/json").get().map { response =>
       if (response.status == 200) {
         try {
-          val id = (response.json \ "id").as[String]
-          val name = (response.json \ "formattedName").as[String]
-          val avatar = (response.json \ "pictureUrl").asOpt[String]
-          OAuthUser(LinkedIn(id), name, avatar)
+          response.json.as(linkedinOauthUserReads)
         } catch {
           case NonFatal(e) => throw new IllegalArgumentException("Error parsing profile information: " + response.body)
         }

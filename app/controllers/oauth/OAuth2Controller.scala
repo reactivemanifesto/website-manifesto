@@ -2,10 +2,13 @@ package controllers.oauth
 
 import models.OAuthUser
 import play.api._
+import play.api.libs.json.{JsError, JsResultException}
 import play.api.libs.ws.WSClient
 import services._
+
 import scala.util.control.NonFatal
 import play.api.mvc._
+
 import scala.concurrent.{ExecutionContext, Future}
 
 /**
@@ -46,6 +49,8 @@ abstract class OAuth2Controller(components: ControllerComponents, ws: WSClient, 
               // and then close itself.
               Ok(views.html.popup()).withSession("user" -> signatory.id.stringify)
             }).recover {
+              case JsResultException(errors) =>
+                InternalServerError(views.html.jserror(name, messagesApi.preferred(req), JsError(errors)))
               case NonFatal(t) =>
                 Logger.warn("Error logging in user to " + name, t)
                 Forbidden

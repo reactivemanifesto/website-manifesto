@@ -6,7 +6,7 @@ import play.api.libs.oauth._
 import services.{OAuthConfig, UserInfoProvider, UserService}
 
 import scala.concurrent.ExecutionContext
-import play.api.libs.json.Json
+import play.api.libs.json.{JsError, JsResultException, Json}
 import play.api._
 
 /**
@@ -32,9 +32,11 @@ class TwitterController(components: ControllerComponents, config: OAuthConfig, w
               Ok(views.html.popup()).withSession("user" -> signatory.id.stringify)
             }
           }.recover {
+            case JsResultException(errors) =>
+              InternalServerError(views.html.jserror("Twitter", messagesApi.preferred(request), JsError(errors)))
             case e =>
               Logger.warn("Error logging in user to twitter", e)
-              Forbidden(Json.toJson(Json.obj("error" -> "Twitter rejected credentials")))
+              Forbidden("Twitter rejected credentials")
           }
 
         case Left(e) =>
