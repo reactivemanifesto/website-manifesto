@@ -38,8 +38,9 @@ class Application(components: ControllerComponents) extends AbstractController(c
   private val zhCN = FullLang(Lang("zh-CN"), "zh_CN", "ltr")
   private val ko = FullLang(Lang("ko"), "ko_KR", "ltr")
   private val fa = FullLang(Lang("fa"), "fa_FA", "rtl")
+  private val sw = FullLang(Lang("sw"), "sw_SW", "ltr")
 
-  private val all = Seq(de, en, es, fr, it, ja, pt, ptBR, tr, id, zhCN, ko, fa)
+  private val all = Seq(de, en, es, fr, it, ja, pt, ptBR, tr, id, zhCN, ko, fa, sw)
 
   private val dateFormat: DateTimeFormatter =
     DateTimeFormat.forPattern("EEE, dd MMM yyyy HH:mm:ss 'GMT'")
@@ -112,7 +113,8 @@ class Application(components: ControllerComponents) extends AbstractController(c
       render(id, views.html.id.manifesto()),
       render(zhCN, views.html.zhCN.manifesto()),
       render(ko, views.html.ko.manifesto()),
-      render(fa, views.html.fa.manifesto())
+      render(fa, views.html.fa.manifesto()),
+      render(sw, views.html.sw.manifesto())
     )
   }
 

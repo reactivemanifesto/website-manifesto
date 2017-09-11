@@ -1,0 +1,52 @@
+@*
+ * Main manifesto.
+ *@
+
+
+<section id="the-reactive-manifesto">
+    <p>Mashirika yanayofanya kazi katika nyanja tofauti zinajitegemea kugundua chati kwa ajili ya kujenga programu ambayo yanakaa sawa. . Mifumo haya yako imara, yandumu , ni rahisi na yanapeana nafasi nzuri ya kukutana na mahitaji ya kisasa.</p>
+
+    <p>Mabadiliko haya yanatokea kwa sababu mahitaji ya programu yamebadilika kwa kasi katika miaka yaliyopita hivi karibuni. Miaka michache iliyopita programu mengi makubwa yalikuwa mamia ya seva, yanahukua sekunde ya wakati kutoa majibu, masaa ya matengenezo nje ya mtandao na gigabytes ya data. Leo programu mingi zimewekwa kwenye kila kitu kutoka vifaa vya simu na cloud-based clusters zikiendesha maelfu ya multi-core processors. Watumiaji wanatarajia majibu kwa nyakati za milliseconds na 100% uptime. Data hupimwa kwa petabytes. Mahitaji ya leo hayawezwi na programu za jana usanifu.</p>
+
+    <p>Tunaamini kwamba mbinu thabiti ya systems architecture yanahitajika, na tunaamini kwamba masuala yote muhimu tayari yametambuliwa mmoja mmoja: tunataka mifumo ambayo yako Responsive, Resilient, Elastic na Message-driven. Tunaita Mifumo haya tendaji.</p>
+
+    <p>Mifumo yakijengwa kama tendaji, yako rahisi zaidi, yameunganishwa rahisi na yako scalable. Hii huzifanyisha rahisi kuendeleza na kubadilisa. Zina uvumilivu zaidi na zinaweza kuendelea dhidi ya kufeli na yakishindwa, mifumo haya huendelea utaratibu badala ya kufa. Mifumo tendaji ni msikivu sana, na huwapa watumiaji maoni mzuri.</p>
+
+    <p>Mifumo yakijengwa kama tendaji, yako rahisi zaidi, yameunganishwa rahisi na yako <a href="/glossary#Scalability">scalable</a>. Hii huzifanyisha rahisi kuendeleza na kubadilisa. Zina uvumilivu zaidi na  zinaweza kuendelea dhidi ya <a href="/glossary#Failure">kufeli</a> na  yakishindwa, mifumo haya huendelea utaratibu badala ya kufa. Mifumo tendaji ni msikivu sana, na huwapa <a href="/glossary#User">watumiaji</a> maoni mzuri.</p>
+    <h3>Mifumo tendaji yako na:</h3>
+
+</section>
+
+<section id="responsive" class="trait">
+
+    <p><strong>Responsive</strong>: <a href="/glossary#System">Mfumo</a> unakaa msikivu wakati ambao unaanza kushindwa. Mwitikio ni msingi wa usability na matumizi, lakini zaidi ya hayo, mwitikio ina maana kwamba matatizo yanaweza kupatikana kwa haraka na kushughulikiwa kwa ufanisi. mifumo misikivu huzingatia kutoa majibu haraka na thabiti, na kuanzisha mipaka ya juu yanayoaminika hivyo kutoa huduma thabiti na bora. Tabia hii sambamba kwa upande hurahisisha error handling, hujenga uaminifu wa mtumiaji wa mwisho , na huongeza mahusiano zaidi.</p>
+
+</section>
+
+<section id="resilient" class="trait">
+
+    <p><strong>Resilient</strong>: Mfumo unakaa msikivu wakati ambao unaanza  <a href="/glossary#Failure">kufeli</a>. Hii haitumiki tu kwa yale mission-critical systems — mfumo yoyote isiyo stahimilivu itakuwa imekwama baada ya kufeli. Ustahimilivu ni mafanikio kwa <a href="/glossary#Replication">kuiga</a>, containment, <a href="/glossary#Isolation">kutengwa</a> na <a href="/glossary#Delegation">kugawanya kazi</a>. Kushindwa unawekwa kwenye <a href="/glossary#Component">vipengele</a> zilizomo ndani ya kila sehemu, kuzitenga vipengele na hivyo kuhakikisha kwamba maeneo ya mfumo yanaweza kushindwa na kuokolewa bila kuathiri mfumo kwa ujumla. Kirudio cha kila kipengele kimepewa kwa kipengele kingine. upatikanaji umehakikishwa kwa kuiga inapobidi. mteja wa sehemu hapati mzigo wa utunzaji yanayoweza kumshinda.</p>
+
+</section>
+
+<section id="elastic" class="trait">
+
+    <p><strong>Elastic</strong>: Mifumo hiyo hukaa msikivu chini ya viwango tofauti vya work load. Mifumo tendaji yanaweza kuathiriwa na mabadiliko ya kiwango cha mchango kwa kuongeza au kupunguza <a href="/glossary#Resource">rasilimali</a> zilizotengwa kwa huduma pembejeo hizo. Hii ina maana kwamba kuwa na miundo ambazo hayana ubishi au vikwazo kati, na kusababisha uwezo wa kuiga vipengele na kusambaza pembejeo miongoni mwao. Systems tendaji zinasiadia uingizaji, pamoja na tendaji, kuongeza mipangilio kwa kutoa hatua muhimu ya utendaji kuishi. Mifumo hufikia <a href="/glossary#Elasticity">kunyumbuka</a> kwa ya bei nafuu ya vifaa vya bidhaa na majukwaa programu.</p>
+
+</section>
+
+<section id="message-driven" class="trait">
+
+    <p><strong>Message Driven</strong>: Mifumo tendaji yanategemea <a href="/glossary#Asynchronous">asynchronous</a> <a href="/glossary#Message-Driven">message-passing</a> ili ziweze kuanzisha mpaka kati ya vipengele ndio zihakikishe loose-coupling, kutengana, na  <a href="/glossary#Location-Transparency">location transparency</a>. Mpaka huu pia hutoa maana ya kugawa <a href="/glossary#Failure">kufeli</a> kama ujumbe. Kuajiri message-passing ilio wazi utawezesha usimamizi mzigo, elasticity, na kudhibiti mtiririko kwa kuchagiza na kusimamia foleni ujumbe katika mfumo na kutumia  <a href="/glossary#Back-Pressure">back-pressure</a> wakati muhimu. Location transparent messages kama njia ya mawasiliano inawezesha, kwa ajili ya usimamizi ya kushindwa, kufanya kazi na constructs sawa na semantiki katika nguzo au ndani ya jeshi moja. <a href="/glossary#Non-Blocking">Non-blocking</a> inaruhusu wapokeaji tu kutumia  <a href="/glossary#Resource">rasilimali</a> wakati wa kazi, na kusababisha system overheads za chini</p>
+
+    @image("reactive-traits.svg")
+
+</section>
+
+<section id="conclusion">
+
+    <p>Mifumo kubwa zinajumuisha madogo na hivyo yanategemea mali tendaji ya hayo madogo. Hii ina maana kwamba mifumo tendaji hutumia kanuni ya kubuni ili mali hizo zitambae katika ngazi zote za kikubwa, kuzifanya composable. mifumo kubwa kabisa duniani hutegemea usanifu kulingana na tabia hizi na kutumikia mahitaji ya mabilioni ya watu wa kila siku. Ni wakati wa kutumia kanuni hizi kupanga uangalifu kutoka mwanzo badala ya kuyatafuta kila wakati.</p>
+
+</section>
+
+
