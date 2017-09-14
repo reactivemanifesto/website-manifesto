@@ -90,7 +90,7 @@ class UserInfoProvider(ws: WSClient, oauthConfig: OAuthConfig)(implicit ec: Exec
     (__ \ "id").read[Long] and
     (__ \ "screen_name").read[String] and
     (__ \ "name").read[String] and
-    (__ \ "profile_image_url").readNullable[String]
+    (__ \ "profile_image_url_https").readNullable[String]
   ).apply((id, screenName, name, avatar) => OAuthUser(Twitter(id, screenName), name, avatar))
 
   private def makeTwitterUserRequest(request: WSRequest): Future[Option[OAuthUser]] = {
