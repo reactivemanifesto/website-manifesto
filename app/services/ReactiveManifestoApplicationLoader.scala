@@ -53,7 +53,7 @@ class ReactiveManifestoApplicationLoader extends ApplicationLoader {
         wire[Routes]
       }
 
-      override lazy val httpFilters = Nil
+      override lazy val httpFilters = Seq(wire[ReactiveManifestoFilter])
     }
 
     // Make sure the actor is eager loaded
