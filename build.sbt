@@ -5,6 +5,8 @@ name := "reactivemanifesto"
 version := "1.0-SNAPSHOT"
 scalaVersion := "2.12.3"
 
+fork in Test := false
+
 libraryDependencies ++= Seq(
   ws,
   specs2,
