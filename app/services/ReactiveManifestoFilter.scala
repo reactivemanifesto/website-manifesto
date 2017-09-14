@@ -8,6 +8,7 @@ class ReactiveManifestoFilter extends EssentialFilter {
     // I need to find out exactly what Heroku is sending
     if (rh.headers.get("Log-Headers").contains("true")) {
       println(s"${rh.method} ${rh.uri} ${rh.version}")
+      println(s"secure = ${rh.secure}")
       rh.headers.headers.foreach {
         case (name, value) => println(s"$name: $value")
       }
