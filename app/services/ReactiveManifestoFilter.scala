@@ -1,19 +1,14 @@
 package services
 
-import play.api.mvc.{EssentialAction, EssentialFilter}
-
+import play.api.libs.streams.Accumulator
+import play.api.mvc.{EssentialAction, EssentialFilter, Results}
 
 class ReactiveManifestoFilter extends EssentialFilter {
   override def apply(next: EssentialAction) = EssentialAction { rh =>
-    // I need to find out exactly what Heroku is sending
-    if (rh.headers.get("Log-Headers").contains("true")) {
-      println(s"${rh.method} ${rh.uri} ${rh.version}")
-      println(s"secure = ${rh.secure}")
-      rh.headers.headers.foreach {
-        case (name, value) => println(s"$name: $value")
-      }
-      println()
+    if (!rh.secure) {
+      Accumulator.done(Results.MovedPermanently(s"https://${rh.host}${rh.uri}"))
+    } else {
+      next(rh)
     }
-    next(rh)
   }
 }
