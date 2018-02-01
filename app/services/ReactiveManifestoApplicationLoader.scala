@@ -8,7 +8,7 @@ import controllers._
 import play.api.http.HttpErrorHandler
 import play.api.i18n.I18nComponents
 import play.api.libs.ws.ahc.AhcWSComponents
-import play.api.{ApplicationLoader, BuiltInComponentsFromContext}
+import play.api.{ApplicationLoader, BuiltInComponentsFromContext, Mode}
 import play.api.ApplicationLoader.Context
 import play.modules.reactivemongo.{DefaultReactiveMongoApi, ReactiveMongoComponents}
 import router.Routes
@@ -53,7 +53,13 @@ class ReactiveManifestoApplicationLoader extends ApplicationLoader {
         wire[Routes]
       }
 
-      override lazy val httpFilters = Seq(wire[ReactiveManifestoFilter])
+      override lazy val httpFilters = {
+        if (environment.mode == Mode.Prod) {
+          Seq(wire[ReactiveManifestoFilter])
+        } else {
+          Nil
+        }
+      }
     }
 
     // Make sure the actor is eager loaded

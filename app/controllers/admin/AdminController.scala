@@ -3,6 +3,7 @@ package controllers.admin
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
+import controllers.AssetsFinder
 import play.api.i18n.Lang
 import play.api.mvc._
 import services.{OAuth2, OAuthConfig, UserService}
@@ -20,7 +21,7 @@ case class FormattedSignatory(id: String, name: String, provider: String, provid
                               providerScreenName: String, signed: String, avatarUrl: String)
 
 class AdminController(components: ControllerComponents, config: OAuthConfig, oauth2: OAuth2,
-  userService: UserService, ws: WSClient)(implicit ec: ExecutionContext)
+  userService: UserService, ws: WSClient, implicit private val assetsFinder: AssetsFinder)(implicit ec: ExecutionContext)
   extends AbstractController(components) {
 
   private implicit val lang = Lang("en")

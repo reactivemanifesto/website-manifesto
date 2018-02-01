@@ -17,3 +17,5 @@ libraryDependencies ++= Seq(
   "com.softwaremill.macwire" %% "macros" % "2.3.0" % Provided
 )
 
+pipelineStages := Seq(gzip, digest)
+excludeFilter in digest := "*.map" || "*.gz"

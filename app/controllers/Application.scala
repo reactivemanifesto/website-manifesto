@@ -12,7 +12,7 @@ import play.twirl.api.Html
 /**
  * Serves the main pages of the application
  */
-class Application(components: ControllerComponents) extends AbstractController(components) {
+class Application(components: ControllerComponents, implicit private val assetsFinder: AssetsFinder) extends AbstractController(components) {
 
   /**
    * A full lang.

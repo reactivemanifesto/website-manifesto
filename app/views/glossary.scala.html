@@ -1,4 +1,4 @@
-@(glossary: Html, dir: String)(implicit messages: MessagesApi, lang: Lang)
+@(glossary: Html, dir: String)(implicit messages: MessagesApi, lang: Lang, assetsFinder: AssetsFinder)
 
 @main(s"${messages("glossary.title")} - ${messages("title")}", dir) {
     <main>

@@ -1,4 +1,4 @@
-@(implicit messages: MessagesApi, lang: Lang)
+@(implicit messages: MessagesApi, lang: Lang, assetsFinder: AssetsFinder)
 
 @main(s"${messages("list.title")} - ${messages("title")}") {
     <main>
@@ -14,7 +14,7 @@
         <div class="signatures">
             @messages("list.search"): <input data-bind="value: searchField, valueUpdate: 'afterkeydown'"/>
             <span class="searching">
-                <img src="@routes.Assets.versioned("images/spinner.gif")" data-bind="visible: searching"/>
+                <img src="@assetsFinder.path("images/spinner.gif")" data-bind="visible: searching"/>
             </span>
         </div>
         <div data-bind="if: signatories" class="signatures">
@@ -33,7 +33,7 @@
         <ul class="full" data-bind="foreach: $data">
             <li style="display: block">
                 <span data-bind="if: $data.avatarUrl">
-                    <img class="avatar" data-bind="attr: { src: $data.avatarUrl }" width="25" height="25"/>
+                    <img class="avatar" data-bind="event: { error: $data.fallbackAvatar }, attr: { src: $data.avatarUrl }" width="25" height="25"/>
                 </span>
                 <span data-bind="text: name"></span> <span data-bind="text: fromNowSigned"></span> (<a class="version" data-bind="attr: { href: $data.version[1]}, text: version[0]"></a>)
             </li>

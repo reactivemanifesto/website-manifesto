@@ -1,4 +1,4 @@
-@(implicit messages: MessagesApi, lang: Lang)
+@(implicit messages: MessagesApi, lang: Lang, assetsFinder: AssetsFinder)
 <footer>
     <a href="@routes.Application.index("en")">@messages("title")(Lang("en"))</a> (@messages("footer.english")) <br/>
     <a href="@routes.Application.index("es")" >@messages("title")(Lang("es"))</a> (@messages("footer.spanish")) <br/>
@@ -18,4 +18,4 @@
     <p>@Html(messages("footer.ribbonSupport", "<a href='" + routes.Application.ribbons(lang.code) + "'>", "</a>"))</p>
     <p class="copyright">&copy; @messages("footer.copyright")</p>
 </footer>
-<a class="ribbon" href="@routes.Application.ribbons(lang.code)" style="right: 0; top:0; position: absolute;"><img src="/images/ribbons/we-are-reactive-blue-right.png"></a>
+<a class="ribbon" href="@routes.Application.ribbons(lang.code)" style="right: 0; top:0; position: absolute;"><img src="@assetsFinder.path("images/ribbons/we-are-reactive-blue-right.png")"></a>

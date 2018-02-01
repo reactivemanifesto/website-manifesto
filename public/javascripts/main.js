@@ -37,7 +37,7 @@ $(window).ready(function() {
                 if (!self.searching()) {
                     search(term);
                 }
-            } else if (term.length == 0) {
+            } else if (term.length === 0) {
                 if (!self.searching()) {
                     self.refreshSignatories(30)
                 }
@@ -154,10 +154,10 @@ $(window).ready(function() {
             $.ajax("/search?query=" + encodeURIComponent(term)).done(function(data, status, xhr) {
                 handleSignatories(data, xhr);
                 var newTerm = self.searchField();
-                if (newTerm != term && newTerm.length >= 2) {
+                if (newTerm !== term && newTerm.length >= 2) {
                     // If the search field has been updated since we issued the search request, search again.
                     search(newTerm);
-                } else if (newTerm == "") {
+                } else if (newTerm === "") {
                     self.refreshSignatories(30);
                 } else {
                     self.searching(null);
@@ -182,7 +182,7 @@ $(window).ready(function() {
          */
         function handleLink(xhr) {
             var link = xhr.getResponseHeader("Link");
-            if (link != undefined) {
+            if (link !== null) {
                 // Extract the next page from the header
                 self.fetchMore(/.*<([^>]*)>; rel=next.*/.exec(link)[1]);
             } else {
@@ -235,7 +235,12 @@ $(window).ready(function() {
 
             person.version = version(signed);
 
-            return person
+            person.fallbackAvatar = function(data, evt) {
+              var favicon = $("link[rel='shortcut icon']").attr("href");
+              $(evt.target).attr("src", favicon);
+            };
+
+            return person;
         }
 
         /**
@@ -250,14 +255,14 @@ $(window).ready(function() {
                 self.signatories(self.signatories().concat(data));
                 handleLink(xhr);
             });
-        }
+        };
     }
 
     var model = new ReactiveManifestoModel();
     ko.applyBindings(model);
 
     model.refreshTotal();
-    if (location.pathname == "/list") {
+    if (location.pathname === "/list") {
         model.refreshSignatories(30);
     } else {
         model.refreshSignatories(30);
