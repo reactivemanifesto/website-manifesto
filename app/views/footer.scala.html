@@ -17,5 +17,6 @@
     <br>
     <p>@Html(messages("footer.ribbonSupport", "<a href='" + routes.Application.ribbons(lang.code) + "'>", "</a>"))</p>
     <p class="copyright">&copy; @messages("footer.copyright")</p>
+    <p class="legal-links"><small><a href='/privacy'>Privacy Policy</a> | <a href="/cookie">Cookie Policy</a> | <a class="optanon-toggle-display">Cookie Settings</a></small></p>
 </footer>
 <a class="ribbon" href="@routes.Application.ribbons(lang.code)" style="right: 0; top:0; position: absolute;"><img src="@assetsFinder.path("images/ribbons/we-are-reactive-blue-right.png")"></a>

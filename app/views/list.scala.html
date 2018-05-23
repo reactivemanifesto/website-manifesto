@@ -1,6 +1,8 @@
 @(implicit messages: MessagesApi, lang: Lang, assetsFinder: AssetsFinder)
 
-@main(s"${messages("list.title")} - ${messages("title")}") {
+@optanonInsert = {}
+
+@main(s"${messages("list.title")} - ${messages("title")}", "ltr", optanonInsert) {
     <main>
         <header>
             <h1>@Html(messages("title.formatted", "<span>", "</span>"))</h1>

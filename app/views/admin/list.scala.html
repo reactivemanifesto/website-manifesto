@@ -1,6 +1,8 @@
 @(signatories: Seq[controllers.admin.FormattedSignatory])(implicit messages: MessagesApi, lang: Lang, assetsFinder: AssetsFinder)
 
-@main("The Reactive Manifesto Admin") {
+@optanonInsert = {}
+
+@main("The Reactive Manifesto Admin", "ltr", optanonInsert) {
     <main>
         <header>
             <h1>The <span>Reactive</span> Manifesto</h1>

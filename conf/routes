@@ -10,6 +10,12 @@ GET           /list                                          controllers.Applica
 GET           /$lang<[a-z]{2}(?:-[A-Z]{2})?>/list            controllers.Application.list(lang)
 GET           /ribbons                                       controllers.Application.ribbons(lang = "en")
 GET           /$lang<[a-z]{2}(?:-[A-Z]{2})?>/ribbons         controllers.Application.ribbons(lang)
+GET           /privacy                                       controllers.Application.privacy(lang = "en")
+GET           /$lang<[a-z]{2}(?:-[A-Z]{2})?>/privacy         controllers.Application.privacy(lang)
+GET           /cookie                                        controllers.Application.cookie(lang = "en")
+GET           /$lang<[a-z]{2}(?:-[A-Z]{2})?>/cookie          controllers.Application.cookie(lang)
+
+
 
 GET           /signatories                                   controllers.SignatoriesController.list(page: Int ?= 1, per_page: Int ?= 30)
 GET           /signatories/total                             controllers.SignatoriesController.count

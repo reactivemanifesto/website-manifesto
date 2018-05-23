@@ -1,30 +1,38 @@
-@(title: String, textDirection: String = "ltr")(content: Html)(implicit messages: MessagesApi, lang: Lang, assetsFinder: AssetsFinder)
+@(title: String, textDirection: String = "ltr", optanonInsert: Html)(content: Html)(implicit messages: MessagesApi, lang: Lang, assetsFinder: AssetsFinder)
 
 <!DOCTYPE html>
 <html lang="@lang.code" dir="@textDirection">
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        <title>@title</title>
-        <link rel="stylesheet" href="@assetsFinder.path("stylesheets/main.css")" />
-        <link rel="shortcut icon" href="@assetsFinder.path("images/favicon.ico")" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-        <script src="@assetsFinder.path("lib/jquery/jquery.js")" type="text/javascript"></script>
-        <script src="@assetsFinder.path("lib/knockout/knockout.js")" type="text/javascript"></script>
-        <script src="@assetsFinder.path("javascripts/main.js")" type="text/javascript"></script>
-    </head>
-    <body>
-        @content
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>@title</title>
+		<link rel="stylesheet" href="@assetsFinder.path("stylesheets/main.css")" />
+		<link rel="shortcut icon" href="@assetsFinder.path("images/favicon.ico")" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+		<!-- OneTrust Cookies Consent Notice (Staging, reactivemanifesto.org, en-GB) start -->
+		<script src="https://optanon.blob.core.windows.net/consent/6b6fabc7-9d0c-4c69-94aa-bf764de77319-test.js" type="text/javascript" charset="UTF-8"></script>
+		<script type="text/javascript">
+			function OptanonWrapper() {
+				@optanonInsert
+			}
+		</script>
+		<!-- OneTrust Cookies Consent Notice (Staging, reactivemanifesto.org, en-GB) end -->
+		<script src="@assetsFinder.path("lib/jquery/jquery.js")" type="text/javascript"></script>
+		<script src="@assetsFinder.path("lib/knockout/knockout.js")" type="text/javascript"></script>
+		<script src="@assetsFinder.path("javascripts/main.js")" type="text/javascript"></script>
+	</head>
+	<body>
+		@content
 
-        <script src="@assetsFinder.path("lib/retinajs/retina.js")" type="text/javascript"></script>
-        <script type="text/javascript">
-            var _gaq = _gaq || [];
-            _gaq.push(['_setAccount', 'UA-42352555-1']);
-            _gaq.push(['_trackPageview']);
-            (function() {
-            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-            })();
-        </script>
-    </body>
+		<script src="@assetsFinder.path("lib/retinajs/retina.js")" type="text/javascript"></script>
+		<script type="text/plain" class="optanon-category-2">
+			var _gaq = _gaq || [];
+			_gaq.push(['_setAccount', 'UA-42352555-1']);
+			_gaq.push(['_trackPageview']);
+			(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+			})();
+		</script>
+	</body>
 </html>
