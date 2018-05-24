@@ -27,9 +27,9 @@
 		<line class="st0" x1="788.8" y1="193" x2="914.8" y2="193"/>
 	</g>
 	<g>
-		<text transform="matrix(1 0 0 1 5.7999 148.965)" class="st1 st2 st3">FORM</text>
-		<text transform="matrix(1 0 0 1 5.7999 238.965)" class="st1 st2 st3">MEANS</text>
-		<text transform="matrix(1 0 0 1 5.7999 68.965)" class="st1 st2 st3">VALUE</text>
+		<text transform="matrix(1 0 0 1 5.7999 148.965)" class="st1 st2 st3">手段</text>
+		<text transform="matrix(1 0 0 1 5.7999 238.965)" class="st1 st2 st3">形式</text>
+		<text transform="matrix(1 0 0 1 5.7999 68.965)" class="st1 st2 st3">价值</text>
 	</g>
 </g>
 <g id="Layer_1_1_">
@@ -40,7 +40,7 @@
 			/>
 		<path class="st1" d="M643.8,14h-212c-4.4,0-8,3.6-8,8v35c0,4.4,3.6,8,8,8h212c4.4,0,8-3.6,8-8V22C651.8,17.5,648.2,14,643.8,14z"
 			/>
-		<text transform="matrix(1 0 0 1 511.8 42.9651)" class="st6 st7 st3">灵敏的</text>
+		<text transform="matrix(1 0 0 1 511.8 42.9651)" class="st6 st7 st3">即时响应性</text>
 		<g>
 			<path class="st4" d="M696.8,177c-8.8,0-16-7.2-16-16v-35c0-8.8,7.2-16,16-16h212c8.8,0,16,7.2,16,16v35c0,8.8-7.2,16-16,16H696.8
 				z"/>
@@ -48,7 +48,7 @@
 				z"/>
 			<path class="st1" d="M908.8,118h-212c-4.4,0-8,3.6-8,8v35c0,4.4,3.6,8,8,8h212c4.4,0,8-3.6,8-8v-35
 				C916.8,121.5,913.2,118,908.8,118z"/>
-			<text transform="matrix(1 0 0 1 766.8005 149.2253)" class="st6 st7 st3">有回复性的</text>
+			<text transform="matrix(1 0 0 1 766.8005 149.2253)" class="st6 st7 st3">回弹性</text>
 		</g>
 		<g>
 			<path class="st4" d="M431.8,282c-8.8,0-16-7.2-16-16v-35c0-8.8,7.2-16,16-16h212c8.8,0,16,7.2,16,16v35c0,8.8-7.2,16-16,16H431.8
@@ -58,7 +58,7 @@
 			<path class="st1" d="M643.8,223h-212c-4.4,0-8,3.6-8,8v35c0,4.4,3.6,8,8,8h212c4.4,0,8-3.6,8-8v-35
 				C651.8,226.5,648.2,223,643.8,223z"/>
 		</g>
-		<text transform="matrix(1 0 0 1 491.8 253.9655)" class="st6 st7 st3">消息驱动的</text>
+		<text transform="matrix(1 0 0 1 491.8 253.9655)" class="st6 st7 st3">消息驱动</text>
 		<g>
 			<path class="st4" d="M165.8,177c-8.8,0-16-7.2-16-16v-35c0-8.8,7.2-16,16-16h212c8.8,0,16,7.2,16,16v35c0,8.8-7.2,16-16,16H165.8
 				z"/>
@@ -66,7 +66,7 @@
 				z"/>
 			<path class="st1" d="M377.8,118h-212c-4.4,0-8,3.6-8,8v35c0,4.4,3.6,8,8,8h212c4.4,0,8-3.6,8-8v-35
 				C385.8,121.5,382.2,118,377.8,118z"/>
-			<text transform="matrix(1 0 0 1 236.8 148.965)" class="st6 st7 st3">可伸缩的</text>
+			<text transform="matrix(1 0 0 1 236.8 148.965)" class="st6 st7 st3">弹性</text>
 		</g>
 	</g>
 </g>
