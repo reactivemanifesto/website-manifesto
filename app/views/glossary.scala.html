@@ -1,6 +1,8 @@
 @(glossary: Html, dir: String)(implicit messages: MessagesApi, lang: Lang, assetsFinder: AssetsFinder)
 
-@main(s"${messages("glossary.title")} - ${messages("title")}", dir) {
+@optanonInsert = {}
+
+@main(s"${messages("glossary.title")} - ${messages("title")}", dir, optanonInsert) {
     <main>
         <header>
             <a class="title-link" href="@routes.Application.index(lang.code)"><h1>@Html(messages("title.formatted", "<span>", "</span>"))</h1></a>

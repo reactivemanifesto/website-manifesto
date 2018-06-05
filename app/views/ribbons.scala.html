@@ -10,7 +10,9 @@
     &lt;/a&gt;
 }
 
-@main(s"${messages("ribbons.title")} - ${messages("title")}") {
+@optanonInsert = {}
+
+@main(s"${messages("ribbons.title")} - ${messages("title")}", "ltr", optanonInsert) {
     <main>
         <header>
             <a class="title-link" href="@routes.Application.index(lang.code)"><h1>@Html(messages("title.formatted", "<span>", "</span>"))</h1></a>

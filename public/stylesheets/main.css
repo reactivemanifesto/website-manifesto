@@ -244,12 +244,16 @@ aside p {
   overflow: hidden;
   text-align: center;
 }
-.social > iframe,
-.social > div,
-.social > span {
+.social section div > iframe,
+.social section div > div,
+.social section div > span {
   display: inline-block;
   width: auto;
   min-width: 130px;
+  text-align: center
+}
+.twitter-share-button {
+  margin-right: 0
 }
 
 aside .pdf {
@@ -838,4 +842,23 @@ figure figcaption:before {
   .toc a {
     font-size: 1em;
   }
+}
+
+
+body .optanon-alert-box-wrapper .optanon-alert-box-bottom-top {
+    height: 20px
+}
+body .optanon-alert-box-wrapper .optanon-alert-box-bottom-padding {
+    padding-bottom: 20px
+}
+.optanon-cookie-policy-group-name {
+    font-weight: 700
+}
+.optanon-toggle-display {
+  cursor: pointer;
+}
+.legal-links a {
+  font-size: .75rem;
+  text-transform: uppercase;
+  opacity: .7
 }

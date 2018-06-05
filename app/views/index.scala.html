@@ -1,6 +1,11 @@
 @(manifesto: Html, fullLang: String, dir: String)(implicit messages: MessagesApi, lang: Lang, assetsFinder: AssetsFinder)
 
-@main(messages("title"), dir) {
+
+@optanonInsert = {
+    Optanon.InsertHtml('<a href="https://twitter.com/share" class="twitter-share-button" data-lang="@lang.code">Tweet</a><iframe src="//www.facebook.com/plugins/like.php?locale=@fullLang&href=http%3A%2F%2Freactivemanifesto.org&amp;send=false&amp;layout=button_count&amp;width=450&amp;show_faces=false&amp;font&amp;colorscheme=light&amp;action=like&amp;height=21&amp;appId=17899947359" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:100px; height:21px;" allowTransparency="true"></iframe><div class="g-plus" data-action="share" data-annotation="bubble" data-href="http://reactivemanifesto.org"></div>', 'share-buttons', null, null, 4)
+}
+
+@main(messages("title"), dir, optanonInsert) {
     <div id="sign">
         <span class="close">×</span>
         <div data-bind="with: loggedInUser">
@@ -80,10 +85,14 @@
         </div>
 
         <article class="social">
-                    <a href="https://twitter.com/share" class="twitter-share-button" data-lang="@lang.code">Tweet</a>
-                    <iframe src="//www.facebook.com/plugins/like.php?locale=@fullLang&href=http%3A%2F%2Freactivemanifesto.org&amp;send=false&amp;layout=button_count&amp;width=450&amp;show_faces=false&amp;font&amp;colorscheme=light&amp;action=like&amp;height=21&amp;appId=17899947359" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:100px; height:21px;" allowTransparency="true"></iframe>
-                    <div class="g-plus" data-action="share" data-annotation="bubble" data-href="http://reactivemanifesto.org"></div>
-                    <script type="IN/Share" data-url="http://reactivemanifesto.org" data-counter="right"></script>
+                <section id="share-buttons">
+
+                </section>
+
+                <!-- Turning off this for now as it doesn't play nice with onetrust cookie tool
+                <script type="IN/Share" data-url="http://reactivemanifesto.org" data-counter="right"></script>
+                -->
+
                 <p>
                     <a class="" href="@routes.Application.glossary(lang.code)">@messages("glossary.title")</a>
                 </p>
@@ -152,23 +161,25 @@
             $("body").removeClass("opened");
         };
     }());
-
-
-    // SHARE BUTTONS
-    // Twitter
-    ;(function(d,s,id){
-        var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}
-    }(document, 'script', 'twitter-wjs'));
-
-    // Google
-    ;(function() {
-        window.___gcfg = {
-            lang: '@lang.code'
-        };
-        var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
-        po.src = 'https://apis.google.com/js/plusone.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
-    }());
     </script>
-    <script src="https://platform.linkedin.com/in.js" type="text/javascript">lang: @fullLang</script>
+
+    <script type="text/plain" class="optanon-category-4">
+
+        // SHARE BUTTONS
+        // Twitter
+        ;(function(d,s,id){
+            var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}
+        }(document, 'script', 'twitter-wjs'));
+
+        // Google
+        ;(function() {
+            window.___gcfg = {
+                lang: '@lang.code'
+            };
+            var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+            po.src = 'https://apis.google.com/js/plusone.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+        }());
+    </script>
+    <script src="https://platform.linkedin.com/in.js" type="text/plain" class="optanon-category-4">lang: @fullLang</script>
 }

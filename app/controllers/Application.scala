@@ -144,6 +144,28 @@ class Application(components: ControllerComponents, implicit private val assetsF
     )
   }
 
+  val privacy = {
+    def render(lang: FullLang) = {
+      implicit val impLang = lang.lang
+      lang -> views.html.privacy.apply
+    }
+
+    cached(routes.Application.privacy,
+      render(en)
+    )
+  }
+
+  val cookie = {
+    def render(lang: FullLang) = {
+      implicit val impLang = lang.lang
+      lang -> views.html.cookie.apply
+    }
+
+    cached(routes.Application.cookie,
+      render(en)
+    )
+  }
+
   /**
    * The glossary page.
    */

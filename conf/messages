@@ -35,6 +35,13 @@ ribbons.title = Ribbons
 ribbons.showYourSupport = Show your support!
 ribbons.instructions = Choose a ribbon that you like, right or left, and copy/paste the code underneath in your html page right before the <code>&lt;/body&gt;</code> tag.
 
+# Privacy
+privacy.title = Privacy Policy
+
+# Cookie
+cookie.title = Cookie Policy
+
+
 # Footer
 footer.ribbonSupport = Show your support {0}with a ribbon{1}.
 footer.copyright = 2014, the above authors, this declaration may be freely copied in any form, but only in its entirety through this notice.
