@@ -1,0 +1,93 @@
+@*
+* Glossary
+*@
+<div class="toc cf">
+    <h2>Table of Contents</h2>
+    <ul>
+        <li><a href="#Asynchronous">Asynchronní</a></li>
+        <li><a href="#Back-Pressure">Back-Pressure</a></li>
+        <li><a href="#Batching">Dávkové zpracování</a></li>
+        <li><a href="#Component">Komponenta</a></li>
+        <li><a href="#Delegation">Delegace</a></li>
+        <li><a href="#Elasticity">Pružnost (na rozdíl od škálovatelnosti)</a></li>
+        <li><a href="#Failure">Výpadek (na rozdíl od chyby)</a></li>
+        <li><a href="#Isolation">Izolace (a zamezení šíření výpadku)</a></li>
+        <li><a href="#Location-Transparency">Transparentnost polohy</a></li>
+    </ul>
+    <ul>
+        <li><a href="#Message-Driven">Řízený zprávami (na rozdíl od řízený událostmi)</a></li>
+        <li><a href="#Non-Blocking">Neblokující</a></li>
+        <li><a href="#Protocol">Protokol</a></li>
+        <li><a href="#Replication">Replikace</a></li>
+        <li><a href="#Resource">Zdroj</a></li>
+        <li><a href="#Scalability">Škálovatelnost</a></li>
+        <li><a href="#System">Systém</a></li>
+        <li><a href="#User">Uživatel</a></li>
+    </ul>
+</div>
+
+<h2 id="Asynchronous"><a href="#Asynchronous" class="link-icon">@image("link-icon.png")</a>Asynchronní</h2>
+<p>Doslovně přeloženo jako <em>“nesoudobý, nesoučasný či nesynchronizovaný v čase”</em>. V kontextu tohoto manifestu je myšleno, že k zpracování požadavku dochází v libovolném časovém bodu poté, co byl doručen od klienta ke službě. Klient není schopen jakkoliv sledovat či sám sebe synchronizovat vzhledem ke zpracování požadavku službou. Přímý protiklad je pak synchronní zpracování, při čemž je klient o výsledku zpracování informován hned, jakmile je službou provedeno.</p>
+
+<h2 id="Back-Pressure"><a href="#Back-Pressure" class="link-icon">@image("link-icon.png")</a>Back-Pressure</h2>
+<p>Pokud se <a href="#Component">komponenta</a> nachází pod přílišnou zátěží, musí <a href="#System">systém</a> jako celek reagovat přiměřeným způsobem. Komponenta pod takovýmto tlakem nesmí způsobit katastrofální výpadek celého systému, ani odmítnout či ztratit příchozí zprávy. Pokud není komponenta schopna nápor korektně zpracovat, ale zároveň nedojde ani k jejímu výpadku, musí být tato skutečnost komunikována směrem k nadřazeným komponentám, které se musí postarat o vyrovnání zátěže. Back-pressure je důležitý mechanismus zpětné vazby umožnující systému vyrovnat se s nadměrnou zátěží namísto celkového kolapsu. Back-pressure může být kaskádovitě aplikován na celé cestě požadavku od klienta k zajištění odolnosti systému vůči nadměrnému zatížení. Systém využije této informace k poskytnutí více zdrojů pro rozložení zátěže, viz <a href="#Elasticity">pružnost</a>.</p>
+
+<h2 id="Batching"><a href="#Batching" class="link-icon">@image("link-icon.png")</a>Dávkové zpracování</h2>
+<p>Současné počítače jsou optimalizované pro opakovaní stejných výpočtů: predikce a cachování instrukcí zvyšuje počet instrukcí za sekundu při neměnném taktu procesoru. Pokud dostane stejný procesor jinou úlohu ke zpracování, nedokáže dosáhnout plného výpočetního výkonu: proto by měly být programy strukturovány tak, aby docházelo k co nejmenším změnám instrukcí. Buď je třeba zpracovávat sady dat v dávkách, nebo provádět rozdílné úlohy v různých vláknech.</p>
+<p>Ke stejnému závěru docházíme i při užití externích <a href="#Resource">zdrojů</a>, které potřebují synchronizaci a koordinaci. Vstupní-výstupní propustnost datových médií může být výrazně zvýšena, pokud je přístup prováděn z jediného dedikovaného vlákna. Použití jednoho vstupního bodu umožňuje reorganizaci operací optimálně pro dané zařízení (současná média pracují lépe při lineárním nežli přímém přístupu).</p>
+<p>Navíc umožňuje dávkové zpracování sdílení režií drahých operací jako čtení a psaní. Příkladem je zabalení více datových položek do stejného síťového packetu nebo psaní do jednoho diskového bloku pro zvýšení prostupnosti a efektivity.</p>
+
+<h2 id="Component"><a href="#Component" class="link-icon">@image("link-icon.png")</a>Komponenta</h2>
+<p>Modulární architektura, o které je řeč, je velmi stará myšlenka, viz např. <a href="https://www.cs.umd.edu/class/spring2003/cmsc838p/Design/criteria.pdf" target="_blank">Parnas (1972)</a>. V reakčním manifestu je termín “komponenta” použitý pro svůj strukturální význam vyjadřující samostatnost, zapouzdření a <a href="#Isolation">izolaci</a> vůči ostatním komponentám. Tento pohled se váže především k běhu systému, typicky je však zrcadlen i ve struktuře zdrojového kódu. Zatímco mohou různé komponenty pro běžné úlohy používat stejné moduly, kód programu definující chování každé z komponent je sám modulární. Hranice komponent jsou často úzce spojeny s <a href="http://martinfowler.com/bliki/BoundedContext.html" target="_blank">hraničními kontexty</a> v dané doméně. Takto navržený systém tíhne k soudržnosti s danou doménou, čímž udržuje izolaci a usnadňuje tak vývoj. <a href="#Protocol">Protokoly</a> založené na zasílání zpráv poskytují přirozenou komunikační vrstvu (mapování) mezi hraničními kontexty komponent.</p>
+
+<h2 id="Delegation"><a href="#Delegation" class="link-icon">@image("link-icon.png")</a>Delegace</h2>
+<p><a href="#Asynchronous">Asynchronním</a> delegováním úlohy z jedné <a href="#Component">komponenty</a> do druhé dojde k provedení dané úlohy v kontextu druhé komponenty. Tato delegace může mít za následek odlišné zpracování chyb, provedení v jiném vlákně, na jiném procesoru či v jiné síti, atd. Účel delegování je předání odpovědnosti za zpracování jiné komponentě nebo například umožnění monitorování průběhu delegované úlohy a případné reportování, ošetření chybových stavů, atd.</p>
+
+<h2 id="Elasticity"><a href="#Elasticity" class="link-icon">@image("link-icon.png")</a>Pružnost (na rozdíl od škálovatelnosti)</h2>
+<p>Pružný systém se umí automaticky přizpůsobovat měnícím se požadavkům pomocí přiměřeného přidávání a odebírání zdrojů. Podmínkou pro využití přidělených zdrojů za běhu je <a href="#Scalability">škálovatelnost</a> systému. Pružnost je tedy založena na škálovatelnosti, již rozšiřuje ve smyslu automatického řízení zdrojů.</p>
+
+<h2 id="Failure"><a href="#Failure" class="link-icon">@image("link-icon.png")</a>Výpadek (na rozdíl od chyby)</h2>
+<p>Výpadek je neočekávaná událost uvnitř služby bránící od pokračování v normálním provozu. Výpadek obecně nedovoluje odeslání odpovědi k danému (a pravděpodobně všem následujícím) klientskému požadavku. Na rozdíl od výpadku, chybou rozumíme programem předvídanou podmínku, která je detekována během validace vstupu a komunikovaná směrem ke klientovi jako běžné zpracování, bez vlivu na pozdější požadavky. Výpadek je neočekávaný a vyžaduje zásah před tím, než je <a href="#System">systém</a> znovu uveden do provozu. To ovšem neznamená, že mají všechny výpadky fatální dopad na systém - po výpadku může například dojít jen k redukci kapacity systému, omezení některé funkcionality atd. Chyby jsou naopak součástí běžného provozu služby, jsou zpracovány okamžitě a bez negativního vlivu na kapacitu či funkci systému.</p>
+<p>Příkladem výpadku je hardwarová závada, neočekávané ukončení procesu kvůli nedostatku prostředků, vady programu vedoucí k nekorektnímu vnitřnímu stavu systému, atd.</p>
+
+<h2 id="Isolation"><a href="#Isolation" class="link-icon">@image("link-icon.png")</a>Izolace (a zamezení šíření výpadku)</h2>
+<p>Izolace znamená oddělení (decoupling) v čase a prostoru. Oddělení v čase znamená nezávislý životní cyklus odesílatele a příjemce, kteří v rámci komunikace dokonce nemusí být aktivní ve stejném časovém okamžiku. Oddělení v čase je umožněno skrze vymezení <a href="#Asynchronous">asynchronních</a> hranic mezi <a href="#Component">komponentami</a> a komunikací přes <a href="#Message-Driven">zasílání zpráv</a>. Oddělení v prostoru (<a href="#Location-Transparency">transparentnost polohy</a>) znamená, že odesílatel a příjemce nemusí běžet v rámci stejného procesu, ale kdekoliv dle operační efektivity, proměnlivě v průběhu životního cyklu aplikace. </p>
+<p>Pravá izolace jde za hranice objektového zapouzdření, přidává kompartmentalizaci a zamezení šíření:</p>
+<ul>
+    <li>Stavu a chování: umožňuje návrh nulového sdílení a minimalizuje režijní náklady spojené se soudržností (jak definováno v <a href="http://www.perfdynamics.com/Manifesto/USLscalability.html" target="_blank">Universal Scalability Law</a>; </li>
+    <li>Výpadku: umožňuje <a href="#Failure">výpadky</a> zachytit, signalizovat a spravovat na odpovídající úrovni namísto kaskádovitého šíření do ostatních komponent.</li>
+</ul>
+<p>Silná izolace mezi komponentami je postavena na komunikaci skrze zcela definované <a href="#Protocol">protokoly</a> a umožňují volnou provázanost vedoucí ke snadnějšímu pochopení, vývoji a testování.</p>
+
+<h2 id="Location-Transparency"><a href="#Location-Transparency" class="link-icon">@image("link-icon.png")</a>Transparentnost polohy</h2>
+<p><a href="#Elasticity">Pružný</a> musí být adaptivní, musí umět reagovat na nepřetržité změny v požadavcích a být schopen efektivního škálování. Klíčové je pochopení, že se jedná o distribuovaný výpočet. A to i v případě, že systém běží na jediném stroji (s mnoha nezávislými CPU komunikující skrze QPI), nebo na clusteru (s mnoha nezávislými stroji komunikujícími skrze síť). Tento fakt znamená, že neexistuje žádný koncepční rozdíl mezi vertikálním škálování na multi-jádrovém procesoru a horizontálním škálovaní na clusteru.</p>
+<p>Pokud všechny <a href="#Component">komponenty</a> systému podporují mobilitu a lokální komunikace je pouhý optimalizační detail, potom není třeba definovat topologii systému staticky, ale přenechat její stavbu operacím za běhu a umožnit tak její dynamickou optimalizaci na základě aktuálních požadavků.</p>
+<p>Toto oddělení v prostoru (viz definice <a href="#Isolation">izolace</a>), umožněné skrze <a href="#Asynchronous">asynchronní</a> <a href="#Message-Driven">zasílání zpráv</a>, a oddělení běžících instancí od svých referencí nazýváme transparentnost polohy. Transparentnost polohy je často zaměňována s “transparentním distribuovaným výpočtem”, i když ve skutečnosti znamená opak: všechny aspekty a omezení (výpadky, podsítě, ztracené zprávy) komunikace přes síť jsou brány v potaz a explicitně modelovány namísto snahy o simulaci lokální komunikace přes síť (RPC, XA atd.). Náš pohled na transparentnost polohy je v plném souladu s <a href="http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.41.7628" target="_blank">A Note On Distributed Computing</a> od Waldo et al.</p>
+
+<h2 id="Message-Driven"><a href="#Message-Driven" class="link-icon">@image("link-icon.png")</a>Řízený zprávami (na rozdíl od řízený událostmi)</h2>
+<p>Zpráva je datová jednotka zaslaná do konkrétní destinace. Událost je signál vyslaný <a href="#Component">komponentou</a> na základě dosažení jistého stavu. V systému řízeném zprávami očekává adresát příjem zprávy, na kterou poté reaguje nebo ji nechá bez odezvy. V systému řízeném událostmi jsou posluchači spjati se zdrojem událostí tak, aby mohli reagovat, když k události dojde. Systém řízený událostmi je tedy zaměřen na adresovatelné zdroje událostí, zatímco systém řízený zprávami je zaměřen na adresovatelné příjemce. Zpráva může obsahovat zakódovanou událost.</p>
+<p>Dosáhnout odolnosti je mnohem náročnější v systému řízeném událostmi kvůli krátkodobé a nenávratné povaze řetězu událostí: Když je proces v běhu, služba obvykle řeší <a href="#Failure">výpadky</a> přímo, ve smyslu odezvy zpět ke klientovi. Řešení výpadku komponenty ve smyslu obnovy jejího normálního provozu však vyžaduje ošetření, které není svázano s krátkodobým klientským požadavkem, ale je schopno reagovat na celkový stav komponenty.</p>
+
+<h2 id="Non-Blocking"><a href="#Non-Blocking" class="link-icon">@image("link-icon.png")</a>Neblokující</h2>
+<p>Programování konkurenčních algoritmů je neblokující, pokud vlákna soupeřící o sdílený zdroj nemusí na neurčito pozastavit činnost kvůli exkluzivnímu přístupu k danému zdroji. Tato praxe se většinou manifestuje skrze API, která umožní přístup ke <a href="#Resource">zdroji</a>, pokud je dostupný, v opačném případě okamžitě odmítne přístup a informuje o tom klienta, namísto blokování klienta po dobu nedostupnosti zdroje. Neblokující API umožňuje klientovi zabývat se jinou činností namísto pasivního čekání na zdroj. Klient se může dodatečně zaregistrovat k danému zdroji a být informován o jeho dostupnosti či dokončení požadované operace.</p>
+
+<h2 id="Protocol"><a href="#Protocol" class="link-icon">@image("link-icon.png")</a>Protokol</h2>
+<p>Protokol definuje způsob a chování přenosu a výměny zpráv mezi <a href="#Component">komponentami</a>. Protokol shrnuje relaci mezi účastníky do množiny stavů a druhů zpráv. Protokol popisuje jaké zprávy mohou být v daném čase mezi účastníky zaslány. Protokoly se klasifikují dle typu výměny; mezi nejznámější patří požadavek–odpověď (request–reply), opakovaný požadavek–odpověď (repeated request–reply) - jako v HTTP, publikovat-odebírat (publish–subscribe), a streamování (push i pull).</p>
+<p>V porovnání s lokálními rozhraními je protokol obecnější, neboť může popisovat výměnu mezi více účastníky a zohledňuje proměnu stavů zpráv, zatímco programové rozhraní specifikuje pouze jedinou interakci mezi volajícím a volaným v daném čase.</p>
+<p>Je třeba poznamenat, že protokol pouze definuje, jaké zprávy mohou být zaslány, nehovoří však o tom, jakým způsobem má být přenos proveden, jak má být zpráva zakódována, atd. - tyto implementační detaily jsou zcela transparentní pro všechny uživatele daného protokolu.</p>
+
+<h2 id="Replication"><a href="#Replication" class="link-icon">@image("link-icon.png")</a>Replikace</h2>
+<p>Výpočet <a href="#Component">komponenty</a> souběžně na více různých místech se nazývá replikace. Může se jednat o výpočet v rozdílných vláknech, procesech, síťových uzlech nebo výpočetních centrech. Replikace přináší <a href="#Scalability">škálovatelnost</a>, při čemž je zátěž rozdělena mezi více instancí dané komponenty, a nebo odolnost na základě vícenásobného provedení požadavku na více instancích paralelně. Tyto přístupy je možné kombinovat například tak, že jsou všechny transakce příslušící danému uživateli provedeny na nejméně dvou instancích, zatímco celkový počet instancí se přizpůsobuje měnící se zátěži (viz <a href="#Elasticity">pružnost</a>).</p>
+<p>Při replikaci stavové komponenty je nutné zajistit synchronizaci dat mezi replikami; v opačném případě by musel klient vědět o daném replikačním mechanismu, což by vedlo k porušení principu zapouzdření. Synchronizace vede obecně k nutnosti kompromisu mezi konzistencí a dostupností, protože stoprocentní dostupnosti lze dosáhnout pouze v případě připuštění krátkodobého nekonzistentního stavu replik (eventuální konzistence), a naopak plná konzistence vyžaduje zamykání stavu replik, při čemž mohou tyto být krátkodobě nedostupné. Mezi těmito extrémy však leží celé spektrum možností, více či méně vyhovujících pro každou komponentu.</p>
+
+<h2 id="Resource"><a href="#Resource" class="link-icon">@image("link-icon.png")</a>Zdroj</h2>
+<p>Zdroj je vše, na čem <a href="#Component">komponenta</a> závisí. Zdroj musí být na základě potřeb komponenty zpřístupněn a udržován. Mezi zdroje patří například čas CPU, operační paměť, místo na disku, nebo propustnost sítě, plánovač služeb, a další vstupní a výstupní služby jako databáze, systém souborů atd. Pokud není <a href="#Elasticity">pružnost</a> a odolnost těchto zdrojů zajištěna, může dojít k nesprávnému fungování požadované komponenty.</p>
+
+<h2 id="Scalability"><a href="#Scalability" class="link-icon">@image("link-icon.png")</a>Škálovatelnost</h2>
+<p>Škálovatelnost, tedy schopnost <a href="#System">systému</a> využít více <a href="#Resource">zdrojů</a> pro zvýšení výpočetního výkonu, je dána poměrem získané výkonnosti ku zvýšení zdrojů. V dokonale škálovatelném systému jsou tyto hodnoty proporcionální: dvojnásobek přidělených zdrojů znamená také dvojnásobný výkon. Škálovatelnost je často omezena kvůli úzkému hrdlu v systému nebo nutnosti synchronizace; viz <a href="http://blogs.msdn.com/b/ddperf/archive/2009/04/29/parallel-scalability-isn-t-child-s-play-part-2-amdahl-s-law-vs-gunther-s-law.aspx" target="_blank">Amdahl’s Law and Gunther’s Universal Scalability Model</a>.</p>
+
+<h2 id="System"><a href="#System" class="link-icon">@image("link-icon.png")</a>Systém</h2>
+<p>Systém poskytuje službu <a href="#User">uživatelům</a> či klientům. Systém může být rozsáhlý nebo jednoduchý, což je dáno obsahem velkého či malého počtu <a href="#Component">komponent</a>, ze kterých se systém skládá. Komponenty systému poskytují dané služby na základě vzájemnné kolaborace. Komponenty jsou v rámci systému často ve vztahu klient-server (například front-end komponenty závisí na back-end komponentách). Systém sdílí společný model odolnosti, což znamená, že <a href="#Failure">výpadek</a> komponent je řešen v rámci systému <a href="#Delegation">delegováním</a> z jedné komponenty na druhou. Sub-systém je tvořen skupinami komponent <a href="#Isolation">izolovanými</a> uvnitř systému ve smyslu poskytované funkce, <a href="#Resource">zdrojů</a> nebo způsobu řešení výpadku.</p>
+
+<h2 id="User"><a href="#User" class="link-icon">@image("link-icon.png")</a>Uživatel</h2>
+<p>Uživatelem může být myšlen jakýkoliv konzument služby, ať už člověk nebo jiná služba.</p>
