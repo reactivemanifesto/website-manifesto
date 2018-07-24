@@ -119,6 +119,8 @@ class SignatoriesCache(userService: UserService, userInfoProvider: UserInfoProvi
   private val config = Configuration(system.settings.config.getConfig("signatories.cache"))
   private val profileRefreshInterval = config.get[FiniteDuration]("profile.refreshInterval")
   private val profileRefreshMax = config.get[Int]("profile.refreshMax")
+  private val maxAgeUnsigned = config.get[FiniteDuration]("unsigned.maxAge")
+  private val maxUnsignedDelete = config.get[Int]("unsigned.maxDelete")
 
   override def preStart() = {
     timers.startPeriodicTimer(Reload, Reload, config.get[FiniteDuration]("reloadInterval"))
@@ -166,6 +168,7 @@ class SignatoriesCache(userService: UserService, userInfoProvider: UserInfoProvi
       become(hot)
       sendPending()
       refreshProfiles()
+      deleteOldUnsignedProfiles()
 
     case LoadFailed =>
       // If loading failed, but we still have signatories to serve, then go hot and serve those
@@ -264,6 +267,11 @@ class SignatoriesCache(userService: UserService, userInfoProvider: UserInfoProvi
   }
 
   private def extractSearchTerms(signatory: DbSignatory) = signatory.name.split("\\s+")
+
+  private def deleteOldUnsignedProfiles(): Unit = {
+    userService.removeOldUnsignedProfiles(maxAgeUnsigned, maxUnsignedDelete)
+      .foreach(deleted => Logger.info(s"Deleted $deleted old unsigned profiles"))
+  }
 
   private def refreshProfiles(): Unit = {
     val refreshOlderThan = Instant.ofEpochMilli(System.currentTimeMillis() - profileRefreshInterval.toMillis)

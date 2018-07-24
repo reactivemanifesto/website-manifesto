@@ -11,6 +11,8 @@ import reactivemongo.bson._
 import scala.concurrent.{ExecutionContext, Future}
 import reactivemongo.api.Cursor
 
+import scala.concurrent.duration.FiniteDuration
+
 class UserService(reactiveMongo: ReactiveMongoApi)(implicit ec: ExecutionContext) {
 
   private val collectionFuture: Future[BSONCollection] = reactiveMongo.database.map(_.apply[BSONCollection]("signatories"))
@@ -193,5 +195,27 @@ class UserService(reactiveMongo: ReactiveMongoApi)(implicit ec: ExecutionContext
         throw new RuntimeException(s"Error touching signatory with id $id: " + lastError.errmsg)
       }
     }
+  }
+
+  def removeOldUnsignedProfiles(maxAgeUnsigned: FiniteDuration, maxDelete: Int): Future[Int] = {
+    val deleteOlder = System.currentTimeMillis() - maxAgeUnsigned.toMillis
+    (for {
+      collection <- collectionFuture
+      sigs <- collection.find(BSONDocument("signed" -> BSONDocument("$exists" -> false)))
+        .sort(BSONDocument("_id" -> BSONInteger(1)))
+        .cursor[DbSignatory]()
+        .collect[List](maxDelete, Cursor.FailOnError[List[DbSignatory]]())
+    } yield {
+      val toDelete = sigs.filter(_._id.time < deleteOlder).map(_._id)
+      if (toDelete.nonEmpty) {
+        collection.remove(BSONDocument(
+          "_id" -> BSONDocument("$in" -> toDelete),
+          // Not necessary, but safe
+          "signed" -> BSONDocument("$exists" -> false)
+        )).map(_.n)
+      } else {
+        Future.successful(0)
+      }
+    }).flatten
   }
 }
