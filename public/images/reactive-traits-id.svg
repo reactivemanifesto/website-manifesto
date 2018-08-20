@@ -14,9 +14,9 @@
       <line x1="783.13" y1="226.95" x2="909.13" y2="226.95" fill="none" stroke="#afb4c6" stroke-miterlimit="10" stroke-width="2" stroke-dasharray="5"/>
     </g>
     <g>
-      <text transform="translate(0.13 182.91)" font-size="18" fill="#445de9" font-family="HelveticaNeue-Bold, Helvetica Neue" font-weight="700" style="isolation: isolate">FORM</text>
-      <text transform="translate(0.13 272.91)" font-size="18" fill="#445de9" font-family="HelveticaNeue-Bold, Helvetica Neue" font-weight="700" style="isolation: isolate">MEANS</text>
-      <text transform="translate(0.13 102.91)" font-size="18" fill="#445de9" font-family="HelveticaNeue-Bold, Helvetica Neue" font-weight="700" letter-spacing="-0.05em" style="isolation: isolate">VALUE</text>
+      <text transform="translate(0.13 182.91)" font-size="18" fill="#445de9" font-family="HelveticaNeue-Bold, Helvetica Neue" font-weight="700" style="isolation: isolate">BENTUK</text>
+      <text transform="translate(0.13 272.91)" font-size="18" fill="#445de9" font-family="HelveticaNeue-Bold, Helvetica Neue" font-weight="700" style="isolation: isolate">CARA</text>
+      <text transform="translate(0.13 102.91)" font-size="18" fill="#445de9" font-family="HelveticaNeue-Bold, Helvetica Neue" font-weight="700" letter-spacing="-0.05em" style="isolation: isolate">NILAI</text>
     </g>
   </g>
   <g id="arrows">
