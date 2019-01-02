@@ -15,6 +15,7 @@ import router.Routes
 
 import scala.concurrent.duration._
 import com.softwaremill.macwire._
+import reactivemongo.api.MongoConnection
 
 class ReactiveManifestoApplicationLoader extends ApplicationLoader {
   def load(context: Context) = {
@@ -25,7 +26,15 @@ class ReactiveManifestoApplicationLoader extends ApplicationLoader {
       with AssetsComponents {
 
       // see https://github.com/ReactiveMongo/Play-ReactiveMongo/issues/245
-      lazy val reactiveMongoApi = new DefaultReactiveMongoApi(configuration, applicationLifecycle)
+      lazy val mongodbUri: MongoConnection.ParsedURI = MongoConnection.parseURI(configuration.underlying.getString("mongodb.uri")).get
+      lazy val reactiveMongoApi = new DefaultReactiveMongoApi(
+        name = "default",
+        parsedUri = mongodbUri,
+        dbName = mongodbUri.db.getOrElse(sys.error("Could not parse database name from mongodb.uri: " + mongodbUri)),
+        strictMode = false,
+        configuration = configuration,
+        applicationLifecycle = applicationLifecycle
+      )
 
       lazy val oauthConfig = OAuthConfig.fromConfiguration(configuration)
       lazy val userService = wire[UserService]
