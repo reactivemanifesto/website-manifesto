@@ -10,10 +10,9 @@ import play.api.i18n.I18nComponents
 import play.api.libs.ws.ahc.AhcWSComponents
 import play.api.{ApplicationLoader, BuiltInComponentsFromContext, Mode}
 import play.api.ApplicationLoader.Context
-import play.modules.reactivemongo.{DefaultReactiveMongoApi, ReactiveMongoComponents}
+import play.modules.reactivemongo.DefaultReactiveMongoApi
 import router.Routes
 
-import scala.concurrent.duration._
 import com.softwaremill.macwire._
 import reactivemongo.api.MongoConnection
 
