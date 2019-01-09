@@ -1,0 +1,44 @@
+@*
+ * Main manifesto.
+ *@
+
+
+<section id="the-reactive-manifesto">
+    <p>Организации, работающие в совершенно разных отраслях, независимо друг от друга находят для себя похожие шаблоны создания программного обеспечения. Основанные на них системы оказываются более надежными, устойчивыми, гибкими и соответствующими современным требованиям.</p>
+    <p>В последние годы требования к приложениям кардинально изменились. Всего несколько лет назад большим считалось приложение, состоящее из десятков серверов, тогда время ответа измерялось секундами, простои при техническом обслуживании - часами, а данные для обработки - гигабайтами. Сегодня приложения устанавливаются на всем, от мобильных устройств до облачных кластеров, насчитывающих тысячи многоядерных процессоров. Пользователи привыкли к миллисекундным задержкам и стопроцентной доступности, а данные тем временем измеряются петабайтами. Программные архитектуры вчерашнего дня не способны удовлетворить требованиям дня сегодняшнего.</p>
+    <p>Мы считаем, что для проектирования приложений необходим четкий и понятный подход, и что все его отдельные аспекты уже сформулированы: мы хотим, чтобы система была доступной, устойчивой, гибкой и основанной на обмене сообщениями. Мы называем такие системы Реактивными.</p>
+    <p>Приложения, написанные в соответствии с принципами Реактивных Систем, отличаются повышенной гибкостью, <a href="/glossary#Scalability">масштабируемостью</a> и слабой связанностью. Благодаря этому их проще разрабатывать и модифицировать. Они более устойчивы к <a href="/glossary#Failure">отказам</a> и корректно обрабатывают исключительные ситуации, избегая катастрофических последствий. Реактивные системы характеризуются высокой доступностью, обеспечивая <a href="/glossary#User">пользователям</a> эффективную и интерактивную обратную связь.</p>
+    <h3>Реактивные Системы:</h3>
+</section>
+
+<section id="responsive" class="trait">
+
+    <p><strong>Доступные: </strong> <a href="/glossary#System">Система</a> отвечает своевременно, если это вообще возможно. Доступность является краеугольным камнем удобного и полезного приложения, но, помимо этого, она позволяет быстро обнаруживать проблемы и эффективно их устранять. Доступные системы ориентированы на обеспечение быстрого и согласованного времени отклика, устанавливая надежные верхние границы, чтобы обеспечить стабильное качество обслуживания. Такое предсказуемое поведение, в свою очередь, упрощает обработку ошибок, повышает уверенность конечного пользователя в работоспособности и способствует дальнейшему взаимодействию с системой.</p>
+
+</section>
+
+<section id="resilient" class="trait">
+
+    <p><strong>Resilientes: </strong>El sistema permanece responsivo frente a <a href="/glossary#Failure">fallos</a>. Esto es aplicable no sólo a sistemas de alta disponibilidad o de misión crítica - cualquier sistema que no sea resiliente dejará de ser responsivo después de un fallo. La resiliencia es alcanzada con <a href="/glossary#Replication">replicación</a>, contención, <a href="/glossary#Isolation">aislamiento</a> y <a href="/glossary#Delegation">delegación</a>. Los fallos son manejados dentro de cada <a href="/glossary#Component">componente</a>, aislando cada componente de los demás, y asegurando así que cualquier parte del sistema pueda fallar y recuperarse sin comprometer el sistema como un todo. La recuperación de cada componente se delega en otro componente (externo) y la alta disponibilidad se asegura con replicación allí donde sea necesario. El cliente de un componente no tiene que responsabilizarse del manejo sus fallos.</p>
+
+</section>
+
+<section id="elastic" class="trait">
+
+    <p><strong>Elásticos: </strong>El sistema se mantiene responsivo bajo variaciones en la carga de trabajo. Los Sistemas Reactivos pueden reaccionar a cambios en la frecuencia de peticiones incrementando o reduciendo los <a href="/glossary#Resource">recursos</a> asignados para servir dichas peticiones. Esto implica diseños que no tengan puntos de contención o cuellos de botella centralizados, resultando en la capacidad de dividir o replicar componentes y distribuir las peticiones entre ellos. Los Sistemas Reactivos soportan algoritmos de escalado predictivos, así como Reactivos, al proporcionar relevantes medidas de rendimiento en tiempo real. La <a href="/glossary#Elasticity">elasticidad</a> se consigue de forma rentable haciendo uso de plataformas con hardware y software genéricos.</p>
+
+</section>
+
+<section id="message-driven" class="trait">
+
+    <p><strong>Orientados a Mensajes: </strong>Los Sistemas Reactivos confían en el <a href="/glossary#Message-Driven">intercambio de mensajes</a> <a href="/glossary#Asynchronous">asíncrono</a> para establecer fronteras entre componentes, lo que asegura bajo acoplamiento, aislamiento y <a href="/glossary#Location-Transparency">transparencia de ubicación</a>. Estas fronteras también proporcionan los medios para delegar <a href="/glossary#Failure">fallos</a> como mensajes. El uso del intercambio de mensajes explícito posibilita la gestión de la carga, la elasticidad, y el control de flujo, gracias al modelado y monitorización de las colas de mensajes en el sistema, y la aplicación de <a href="/glossary#Back-Pressure">back-pressure</a> cuando sea necesario. La mensajería basada en ubicaciones transparentes como medio de comunicación permite que la gestión de fallos pueda trabajar con los mismos bloques y semánticas a través de un cluster o dentro de un solo nodo. La comunicación <a href="/glossary#Non-Blocking">No-bloqueante</a> permite a los destinatarios consumir <a href="/glossary#Resource">recursos</a> sólo mientras estén activos, llevando a una menor sobrecarga del sistema.</p>
+
+    @image("reactive-traits-es.svg")
+
+</section>
+
+<section id="conclusion">
+
+    <p>Los sistemas grandes están compuestos de otros más pequeños y por lo tanto dependen de las propiedades Reactivas de sus partes. Esto significa que los Sistemas Reactivos aplican principios de diseño para que estas propiedades sean válidas a cualquier escala, haciéndolas componibles. Los sistemas más grandes del mundo confían en arquitecturas basadas en estas propiedades y atienden las necesidades de miles de millones de personas diariamente. Es tiempo de aplicar estos principios de diseño conscientemente desde el inicio, en vez de redescubrirlos cada vez.</p>
+
+</section>
