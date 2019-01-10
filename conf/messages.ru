@@ -1,6 +1,6 @@
 # Title
-title = Манифест Реактивных
-title.formatted = {0}Реактивных{1} Манифест
+title = Манифест Реактивных Систем
+title.formatted = {0}Манифест{1} Реактивных Систем
 
 # Signing
 sign.hello = Hello
@@ -9,7 +9,7 @@ sign.thankYouAndSpreadTheWord = Thank you! And spread the word!
 sign.removeYourSignature = Remove your signature
 sign.hiThere = Hi there,{0} You need to be logged to sign the manifesto
 sign.signInWith = Sign In with {0}
-sign.signTheManifesto = Podepsat manifest
+sign.signTheManifesto = Подписать манифест
 sign.logout = Logout
 
 # Manifesto
