@@ -40,8 +40,9 @@ class Application(components: ControllerComponents, implicit private val assetsF
   private val fa = FullLang(Lang("fa"), "fa_FA", "rtl")
   private val sw = FullLang(Lang("sw"), "sw_SW", "ltr")
   private val cz = FullLang(Lang("cz"), "cz_CZ", "ltr")
+  private val ru = FullLang(Lang("ru"), "ru_RU", "ltr")
 
-  private val all = Seq(de, en, es, fr, it, ja, pt, ptBR, tr, id, zhCN, ko, fa, sw, cz)
+  private val all = Seq(de, en, es, fr, it, ja, pt, ptBR, tr, id, zhCN, ko, fa, sw, cz, ru)
 
   private val dateFormat: DateTimeFormatter =
     DateTimeFormat.forPattern("EEE, dd MMM yyyy HH:mm:ss 'GMT'")
@@ -116,7 +117,8 @@ class Application(components: ControllerComponents, implicit private val assetsF
       render(ko, views.html.ko.manifesto()),
       render(fa, views.html.fa.manifesto()),
       render(sw, views.html.sw.manifesto()),
-      render(cz, views.html.cz.manifesto())
+      render(cz, views.html.cz.manifesto()),
+      render(ru, views.html.ru.manifesto())
     )
   }
 
@@ -184,7 +186,8 @@ class Application(components: ControllerComponents, implicit private val assetsF
       render(de, views.html.de.glossary()),
       render(zhCN, views.html.zhCN.glossary()),
       render(ko, views.html.ko.glossary()),
-      render(cz, views.html.cz.glossary())
+      render(cz, views.html.cz.glossary()),
+      render(ru, views.html.ru.glossary())
     )
   }
 }
