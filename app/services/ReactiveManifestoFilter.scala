@@ -10,7 +10,7 @@ class ReactiveManifestoFilter extends EssentialFilter {
   override def apply(next: EssentialAction) = EssentialAction { rh =>
     // 2019-05-16 James Roper added this to help try and debug why Moz isn't indexing our site
     if (rh.path == "/robots.txt") {
-      log.info(s"${rh.method} '${rh.path}' made from '${rh.remoteAddress}', User-Agent: '${rh.headers.get(HeaderNames.USER_AGENT).getOrElse("")}'")
+      log.info(s"${rh.method} '${rh.uri}' made from '${rh.remoteAddress}', User-Agent: '${rh.headers.get(HeaderNames.USER_AGENT).getOrElse("")}'")
     }
     if (!rh.secure) {
       Accumulator.done(Results.MovedPermanently(s"https://${rh.host}${rh.uri}"))
