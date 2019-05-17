@@ -8,11 +8,10 @@ import controllers._
 import play.api.http.HttpErrorHandler
 import play.api.i18n.I18nComponents
 import play.api.libs.ws.ahc.AhcWSComponents
-import play.api.{ApplicationLoader, BuiltInComponentsFromContext, Mode}
+import play.api.{ApplicationLoader, BuiltInComponentsFromContext, LoggerConfigurator, Mode}
 import play.api.ApplicationLoader.Context
 import play.modules.reactivemongo.DefaultReactiveMongoApi
 import router.Routes
-
 import com.softwaremill.macwire._
 import reactivemongo.api.MongoConnection
 
@@ -23,6 +22,8 @@ class ReactiveManifestoApplicationLoader extends ApplicationLoader {
       with I18nComponents
       with AhcWSComponents
       with AssetsComponents {
+
+      LoggerConfigurator(environment.classLoader).foreach(_.configure(environment))
 
       // see https://github.com/ReactiveMongo/Play-ReactiveMongo/issues/245
       lazy val mongodbUri: MongoConnection.ParsedURI = MongoConnection.parseURI(configuration.underlying.getString("mongodb.uri")).get

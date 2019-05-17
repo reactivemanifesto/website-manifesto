@@ -1,6 +1,7 @@
 package services
 
 import models._
+import play.api.Logger
 import play.api.http.HeaderNames
 import play.api.libs.oauth.{OAuthCalculator, RequestToken}
 import play.api.libs.ws.{WSClient, WSRequest}
@@ -10,8 +11,12 @@ import scala.util.control.NonFatal
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
 
+import scala.util.{Failure, Success}
+
 
 class UserInfoProvider(ws: WSClient, oauthConfig: OAuthConfig)(implicit ec: ExecutionContext) {
+
+  private val linkedInLog = Logger("linkedin-migration")
 
   import UserInfoProvider._
 
@@ -102,14 +107,58 @@ class UserInfoProvider(ws: WSClient, oauthConfig: OAuthConfig)(implicit ec: Exec
   }
 
   def lookupLinkedInCurrentUser(accessToken: String): Future[OAuthUser] = {
+    val v1Future = lookupLinkedInV1CurrentUser(accessToken)
+      .transform(Success(_))
+    val v2Future = lookupLinkedInV2CurrentUser(accessToken)
+      .transform(Success(_))
+
+    for {
+      v1Try <- v1Future
+      v2Try <- v2Future
+    } yield {
+      (v1Try, v2Try) match {
+        case (Failure(error), Success(v2User)) =>
+          linkedInLog.info(s"Failure loading ${v2User.provider} ${v2User.name} from V1 API, using V2 API instead: $error")
+          v2User
+        case (Success(v1User), Success(v2User)) if v2User == v1User =>
+          linkedInLog.info(s"LinkedIn V1 and V2 API user objects for ${v1User.provider} ${v1User.name} match")
+          v2User
+        case (Success(v1User), Success(v2User)) =>
+          linkedInLog.info(s"LinkedIn V1 and V2 API users don't match, v1: $v1User, v2: $v2User")
+          v1User
+        case (Success(v1User), Failure(error)) =>
+          linkedInLog.info(s"Error retrieving LinkedIn V2 user for ${v1User.provider} ${v1User.name}: $error")
+          v1User
+        case (Failure(error), v2User) =>
+          throw error
+      }
+    }
+  }
+
+  def lookupLinkedInV1CurrentUser(accessToken: String): Future[OAuthUser] = {
     ws.url("https://api.linkedin.com/v1/people/~:(id,picture-url,formatted-name)")
       .addQueryStringParameters("oauth2_access_token" -> accessToken)
       .addHttpHeaders("X-Li-Format" -> "json", "Accept" -> "application/json").get().map { response =>
       if (response.status == 200) {
         try {
-          response.json.as(linkedinOauthUserReads)
+          response.json.as(linkedinV1OauthUserReads)
         } catch {
-          case NonFatal(e) => throw new IllegalArgumentException("Error parsing profile information: " + response.body)
+          case NonFatal(e) => throw new IllegalArgumentException(s"Error parsing profile information: $e, ${response.body}")
+        }
+      } else {
+        throw new IllegalArgumentException("Error looking up profile information, status was: " + response.status + " " + response.body)
+      }
+    }
+  }
+
+  def lookupLinkedInV2CurrentUser(accessToken: String): Future[OAuthUser] = {
+    ws.url("https://api.linkedin.com/v2/me?projection=(id,localizedFirstName,localizedLastName,profilePicture(displayImage~:playableStreams))")
+      .addHttpHeaders("Authorization" -> s"Bearer $accessToken").get().map { response =>
+      if (response.status == 200) {
+        try {
+          response.json.as(linkedinV2OauthUserReads)
+        } catch {
+          case NonFatal(e) => throw new IllegalArgumentException(s"Error parsing profile information: $e, ${response.body}")
         }
       } else {
         throw new IllegalArgumentException("Error looking up profile information, status was: " + response.status + " " + response.body)
@@ -154,10 +203,38 @@ object UserInfoProvider {
       (__ \ "profile_image_url_https").readNullable[String]
     ).apply((id, screenName, name, avatar) => OAuthUser(Twitter(id, screenName), name, avatar))
 
-  val linkedinOauthUserReads: Reads[OAuthUser] = (
+  val linkedinV1OauthUserReads: Reads[OAuthUser] = (
     (__ \ "id").read[String] and
       (__ \ "formattedName").read[String] and
       (__ \ "pictureUrl").readNullable[String]
     ).apply((id, name, avatar) => OAuthUser(LinkedIn(id), name, avatar))
+
+  private case class LinkedInImageElement(url: String, size: Int)
+
+  private object LinkedInImageElement {
+    implicit val reads: Reads[LinkedInImageElement] = (
+      (__ \ "identifiers" \ 0 \ "identifier").read[String] and
+        (__ \ "data" \ "com.linkedin.digitalmedia.mediaartifact.StillImage" \ "displaySize" \ "width").read[Int]
+    ) (LinkedInImageElement.apply _)
+  }
+
+  val linkedinV2OauthUserReads: Reads[OAuthUser] = (
+    (__ \ "id").read[String] and
+      (__ \ "localizedFirstName").read[String] and
+      (__ \ "localizedLastName").read[String] and
+      // omg.... linkedin.... what have you done.... hardest to use API ever.
+      (__ \ "profilePicture" \ "displayImage~" \ "elements").readOptIfMissing[List[JsObject]]
+    ) { (id, firstName, lastName, images) =>
+
+    val avatar = images.getOrElse(Nil)
+      .collect(Function.unlift(_.asOpt[LinkedInImageElement]))
+        .filter(_.size >= 50)
+        .sortBy(_.size)
+        .map(_.url)
+        .headOption
+
+    OAuthUser(LinkedIn(id), s"$firstName $lastName", avatar)
+  }
+
 
 }
