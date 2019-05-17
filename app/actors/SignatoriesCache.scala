@@ -300,7 +300,7 @@ class SignatoriesCache(userService: UserService, userInfoProvider: UserInfoProvi
       case GitHub(id, _) =>
         userInfoProvider.lookupGitHubUser(id)
       case Google(id) =>
-        userInfoProvider.lookupGoogleUser(id)
+        userInfoProvider.lookupGoogleUser(id, signatory.name)
       case Twitter(id, _) =>
         userInfoProvider.lookupTwitterUser(id)
       case LinkedIn(id) =>

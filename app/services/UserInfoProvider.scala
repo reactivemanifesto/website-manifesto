@@ -56,7 +56,7 @@ class UserInfoProvider(ws: WSClient, oauthConfig: OAuthConfig)(implicit ec: Exec
       }
   }
 
-  def lookupGoogleUser(id: String): Future[Option[OAuthUser]] = {
+  def lookupGoogleUser(id: String, existingName: String): Future[Option[OAuthUser]] = {
     ws.url(s"https://people.googleapis.com/v1/people/$id")
       .addQueryStringParameters(
         "personFields" -> "names,photos",
@@ -65,7 +65,7 @@ class UserInfoProvider(ws: WSClient, oauthConfig: OAuthConfig)(implicit ec: Exec
       .map { response =>
         if (response.status == 200) {
           val (name, avatar) = response.json.as(googlePeopleReads)
-          Some(OAuthUser(Google(id), name, avatar))
+          Some(OAuthUser(Google(id), name.getOrElse(existingName), avatar))
         } else if (response.status == 404) {
           None
         } else {
@@ -133,12 +133,18 @@ object UserInfoProvider {
       (__ \ "picture").readNullable[String]
     ).apply((id, name, avatar) => OAuthUser(Google(id), name, avatar))
 
-  val googlePeopleReads: Reads[(String, Option[String])] = (
-    (__ \ "names" \ 0 \ "displayName").read[String] and
-      (__ \ "photos").readNullable[JsArray].flatMap {
-        case Some(photos) if photos.value.nonEmpty => (__ \ "photos" \ 0 \ "url").readNullable[String]
-        case None => Reads.pure[Option[String]](None)
+  private implicit class JsPathReadOptIfMissing(path: JsPath) {
+    def readOptIfMissing[T: Reads]: Reads[Option[T]] = Reads { jsValue =>
+      path.asSingleJson(jsValue) match {
+        case JsDefined(value) => value.validate[T].map(Some.apply)
+        case JsUndefined() => JsSuccess(None)
       }
+    }
+  }
+
+  val googlePeopleReads: Reads[(Option[String], Option[String])] = (
+    (__ \ "names" \ 0 \ "displayName").readOptIfMissing[String] and
+      (__ \ "photos" \ 0 \ "url").readOptIfMissing[String]
     ).tupled
 
   val twitterOauthUserReads: Reads[OAuthUser] = (
