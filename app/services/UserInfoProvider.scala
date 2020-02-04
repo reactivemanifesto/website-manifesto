@@ -18,7 +18,7 @@ class UserInfoProvider(ws: WSClient, oauthConfig: OAuthConfig)(implicit ec: Exec
 
   def lookupGitHubCurrentUser(accessToken: String): Future[OAuthUser] = {
     makeGitHubUserRequest(ws.url("https://api.github.com/user")
-      .addQueryStringParameters("access_token" -> accessToken))
+      .addHttpHeaders("Authorization" -> s"token $accessToken"))
       .map(_.getOrElse(throw new RuntimeException("User not found")))
   }
 
