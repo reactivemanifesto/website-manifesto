@@ -1,10 +1,9 @@
 package services
 
 import models._
-import play.api.Logger
 import play.api.http.HeaderNames
 import play.api.libs.oauth.{OAuthCalculator, RequestToken}
-import play.api.libs.ws.{WSClient, WSRequest}
+import play.api.libs.ws.{WSAuthScheme, WSClient, WSRequest}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
@@ -24,10 +23,13 @@ class UserInfoProvider(ws: WSClient, oauthConfig: OAuthConfig)(implicit ec: Exec
 
   def lookupGitHubUser(id: Long): Future[Option[OAuthUser]] = {
     makeGitHubUserRequest(ws.url(s"https://api.github.com/user/$id")
-      .addQueryStringParameters(
-        "client_id" -> oauthConfig.github.clientId,
-        "client_secret" -> oauthConfig.github.clientSecret
-      ))
+      // Testing has shown that passing the client_id/client_secret as BASIC credentials works,
+      // even though not (yet) documented. The docs currently say they should be passed using
+      // query parameters, but that method is deprecated and results in us being spammed with
+      // email about using a deprecated mode of authentication:
+      // https://developer.github.com/v3/#increasing-the-unauthenticated-rate-limit-for-oauth-applications
+      .withAuth(oauthConfig.github.clientId, oauthConfig.github.clientSecret, WSAuthScheme.BASIC)
+    )
   }
 
   private def makeGitHubUserRequest(request: WSRequest): Future[Option[OAuthUser]] = {
