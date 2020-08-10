@@ -1,0 +1,170 @@
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  creationTimestamp: '2020-08-07T13:52:53Z'
+  generation: 3
+  labels:
+    app: reactivemanifesto-website
+  name: reactivemanifesto-website
+  namespace: reactivemanifesto-website
+  resourceVersion: '1111306392'
+  selfLink: >-
+    /apis/apps.openshift.io/v1/namespaces/reactivemanifesto-website/deploymentconfigs/reactivemanifesto-website
+  uid: 4a06c80d-d8b5-11ea-9233-12b5519f9b58
+spec:
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    app: reactivemanifesto-website
+    deploymentconfig: reactivemanifesto-website
+  strategy:
+    activeDeadlineSeconds: 21600
+    resources: {}
+    rollingParams:
+      intervalSeconds: 1
+      maxSurge: 1
+      maxUnavailable: 1
+      timeoutSeconds: 600
+      updatePeriodSeconds: 1
+    type: Rolling
+  template:
+    metadata:
+      annotations:
+        openshift.io/generated-by: OpenShiftWebConsole
+      creationTimestamp: null
+      labels:
+        app: reactivemanifesto-website
+        deploymentconfig: reactivemanifesto-website
+    spec:
+      containers:
+        - env:
+            - name: HTTP_BIND_ADDRESS
+              value: 0.0.0.0
+            - name: JAVA_OPTS
+              value: "-Dpidfile.path=/dev/null -Dconfig.resource=application.conf -Xmx1073741824 -Xms1073741824"
+            - name: APPLICATION_SECRET
+              valueFrom:
+                secretKeyRef:
+                  key: APPLICATION_SECRET
+                  name: application-secret
+            - name: GITHUB_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  key: GITHUB_CLIENT_ID
+                  name: github-client-id
+            - name: GITHUB_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  key: GITHUB_CLIENT_SECRET
+                  name: github-client-secret
+            - name: GOOGLE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: GOOGLE_API_KEY
+                  name: google-api-key
+            - name: GOOGLE_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  key: GOOGLE_CLIENT_ID
+                  name: google-client-id
+            - name: GOOGLE_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  key: GOOGLE_CLIENT_SECRET
+                  name: google-client-secret
+            - name: JAVA_TOOL_OPTIONS
+              valueFrom:
+                secretKeyRef:
+                  key: JAVA_TOOL_OPTIONS
+                  name: java-tool-options
+            - name: LINKEDIN_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  key: LINKEDIN_CLIENT_ID
+                  name: linkedin-client-id
+            - name: LINKEDIN_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  key: LINKEDIN_CLIENT_SECRET
+                  name: linkedin-client-secret
+            - name: MONGOLAB_URI
+              valueFrom:
+                secretKeyRef:
+                  key: MONGOLAB_URI
+                  name: mongolab-uri
+            - name: TWITTER_AUTH_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: TWITTER_AUTH_KEY
+                  name: twitter-auth-key
+            - name: TWITTER_AUTH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  key: TWITTER_AUTH_SECRET
+                  name: twitter-auth-secret
+            - name: TWITTER_BEARER_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  key: TWITTER_BEARER_TOKEN
+                  name: twitter-bearer-token
+          image: >-
+            docker-registry.default.svc:5000/reactivemanifesto-website/reactivemanifesto-website@sha256:8cb6ef7bd0b651ef21dffad8166228b9f00a584c5afe1182aef05d024254cef2
+          imagePullPolicy: Always
+          name: reactivemanifesto-website
+          resources:
+            limits:
+              memory: 1500Mi
+          ports:
+            - containerPort: 80
+              protocol: TCP
+            - containerPort: 443
+              protocol: TCP
+            - containerPort: 9000
+              protocol: TCP
+          resources:
+            limits:
+              memory: 1500Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+  test: false
+  triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+          - reactivemanifesto-website
+        from:
+          kind: ImageStreamTag
+          name: 'reactivemanifesto-website:latest'
+          namespace: reactivemanifesto-website
+        lastTriggeredImage: >-
+          docker-registry.default.svc:5000/reactivemanifesto-website/reactivemanifesto-website@sha256:8cb6ef7bd0b651ef21dffad8166228b9f00a584c5afe1182aef05d024254cef2
+      type: ImageChange
+    - type: ConfigChange
+status:
+  availableReplicas: 0
+  conditions:
+    - lastTransitionTime: '2020-08-07T13:52:53Z'
+      lastUpdateTime: '2020-08-07T13:52:53Z'
+      message: Deployment config does not have minimum availability.
+      status: 'False'
+      type: Available
+    - lastTransitionTime: '2020-08-07T15:21:03Z'
+      lastUpdateTime: '2020-08-07T15:21:03Z'
+      message: replication controller "reactivemanifesto-website-1" is progressing
+      reason: ReplicationControllerUpdated
+      status: 'True'
+      type: Progressing
+  details:
+    causes:
+      - type: ConfigChange
+    message: config change
+  latestVersion: 1
+  observedGeneration: 3
+  replicas: 2
+  unavailableReplicas: 2
+  updatedReplicas: 2
