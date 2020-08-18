@@ -95,7 +95,7 @@
 
 
 <h2 id="Scalability"><a href="#Scalability" class="link-icon">@image("link-icon.png")</a>확장성</h2>
-<p><a href="#System">시스템</a>의 기능 중 성능을 높이기 위해 더 많은 컴퓨팅 <a href="#Resource">자원</a>을 사용하는 것은 자원 증가에 대한 입력 처리량의 증가 비율로 측정한다. 완벽하게 확장 가능한 시스템은 이 두 숫자가 비례한다는 특성이 있다: 자원을 두 배 할당하면 처리량이 두 배가 된다. 시스템 내의 병목 지점 또는 동기화 지점의 도입은 일반적으로 확장성을 제한하는 원인이다. <a href="http://blogs.msdn.com/b/ddperf/archive/2009/04/29/parallel-scalability-isn-t-child-s-play-part-2-amdahl-s-law-vs-gunther-s-law.aspx" target="_blank"> Amdahl’s Law and Gunther’s Universal Scalability Model</a> 참조.</p>
+<p><a href="#System">시스템</a>의 기능 중 성능을 높이기 위해 더 많은 컴퓨팅 <a href="#Resource">자원</a>을 사용하는 것은 자원 증가에 대한 입력 처리량의 증가 비율로 측정한다. 완벽하게 확장 가능한 시스템은 이 두 숫자가 비례한다는 특성이 있다: 자원을 두 배 할당하면 처리량이 두 배가 된다. 시스템 내의 병목 지점 또는 동기화 지점의 도입은 일반적으로 확장성을 제한하는 원인이다. <a href="https://docs.microsoft.com/en-ca/archive/blogs/ddperf/parallel-scalability-isnt-childs-play-part-2-amdahls-law-vs-gunthers-law" target="_blank"> Amdahl’s Law and Gunther’s Universal Scalability Model</a> 참조.</p>
 
 <h2 id="System"><a href="#System" class="link-icon">@image("link-icon.png")</a>시스템</h2>
 <p>시스템은 <a href="#User">사용자</a>나 클라이언트에게 서비스들을 제공하며 조합되는 <a href="#Component">컴포넌트</a> 의 수에 따라 커지거나 작아질 수 있다. 시스템 내의 모든 컴포넌트는 이러한 서비스들을 제공하기 위해 협력한다. 많은 경우에 컴포넌트들은 같은 시스템 내에서 클라이언트-서버 관계에 있다 (프론트엔드 컴포넌트들이 백엔드 컴포넌트들에 의존하는 경우 등). 한 시스템은 공통된 복원 모델을 공유하여 시스템 내의 컴포넌트 <a href="#Failure">장애 (오류와 대조)</a>는 다른 컴포넌트로 <a href="#Delegation">위임</a> 되어 시스템 내에서 처리된다. 시스템 내 컴포넌트 묶음이 가지는 기능, <a href="#Resource">자원</a>  혹은 장애 모델이 시스템의 나머지 부분과 <a href="#Isolation">분리 (그리고 억제)</a>된다면 이것을 하위 시스템으로 보는 게 유용하다.</p>
