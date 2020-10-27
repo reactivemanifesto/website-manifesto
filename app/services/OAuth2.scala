@@ -41,7 +41,7 @@ class OAuth2(ws: WSClient)(implicit ec: ExecutionContext) {
    * @param state The state.
    * @param extraParams Any extra parameters required in the sign in url by the provider.
    */
-  def signInUrl(settings: OAuth2Settings, redirectUri: String, state: String, extraParams: (String, String)*) = {
+  def signInUrl(settings: OAuth2Settings, redirectUri: String, state: String, extraParams: (String, String)*): String = {
     val params = Seq(
       "client_id" -> settings.clientId,
       "redirect_uri" -> redirectUri,

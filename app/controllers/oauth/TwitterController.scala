@@ -1,5 +1,6 @@
 package controllers.oauth
 
+import org.slf4j.LoggerFactory
 import play.api.mvc._
 import play.api.libs.ws.WSClient
 import play.api.libs.oauth._
@@ -7,13 +8,14 @@ import services.{OAuthConfig, UserInfoProvider, UserService}
 
 import scala.concurrent.ExecutionContext
 import play.api.libs.json.{JsError, JsResultException, Json}
-import play.api._
 
 /**
  * Twitter login provider
  */
 class TwitterController(components: ControllerComponents, config: OAuthConfig, ws: WSClient, userService: UserService,
   userInfoProvider: UserInfoProvider)(implicit ec: ExecutionContext) extends AbstractController(components) {
+
+  private val log = LoggerFactory.getLogger(classOf[TwitterController])
 
   def authenticate = Action.async { implicit request =>
 
@@ -35,12 +37,12 @@ class TwitterController(components: ControllerComponents, config: OAuthConfig, w
             case JsResultException(errors) =>
               InternalServerError(views.html.jserror("Twitter", messagesApi.preferred(request), JsError(errors)))
             case e =>
-              Logger.warn("Error logging in user to twitter", e)
+              log.warn("Error logging in user to twitter", e)
               Forbidden("Twitter rejected credentials")
           }
 
         case Left(e) =>
-          Logger.error("Failed to retrieve access token", e)
+          log.error("Failed to retrieve access token", e)
           sync(NotFound(Json.toJson(Json.obj("error" -> "Failed to retrieve access token"))))
       }
     }.getOrElse(
@@ -51,7 +53,7 @@ class TwitterController(components: ControllerComponents, config: OAuthConfig, w
             .withSession("token" -> t.token, "secret" -> t.secret))
 
         case Left(e) =>
-          Logger.error("Failed to retrieve request token", e)
+          log.error("Failed to retrieve request token", e)
           sync(NotFound(Json.toJson(Json.obj("error" -> "Failed to retrieve request token"))))
       })
   }

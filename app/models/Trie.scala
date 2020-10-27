@@ -4,7 +4,7 @@ import java.util.Locale
 import scala.collection.SortedMap
 
 object Trie {
-  def apply[A](values: (String, A)*) = empty ++ values
+  def apply[A](values: (String, A)*): Trie[A] = empty ++ values
   def empty[A]: Trie[A] = new Trie[A]()
 }
 
@@ -31,7 +31,7 @@ class Trie[A](nodes: SortedMap[Char, Trie[A]] = SortedMap.empty[Char, Trie[A]], 
   /**
    * Index the given value with the given keys
    */
-  def index(keys: TraversableOnce[String], value: A) = this ++ keys.map(_ -> value)
+  def index(keys: TraversableOnce[String], value: A): Trie[A] = this ++ keys.map(_ -> value)
 
   /**
    * Remove the given value at the given key.
@@ -47,7 +47,7 @@ class Trie[A](nodes: SortedMap[Char, Trie[A]] = SortedMap.empty[Char, Trie[A]], 
   /**
    * Whether this index is empty.
    */
-  def isEmpty = values.isEmpty && nodes.isEmpty
+  def isEmpty: Boolean = values.isEmpty && nodes.isEmpty
 
   private def normalise(s: String) = s.trim().toLowerCase(Locale.ROOT).toList
 
@@ -63,7 +63,7 @@ class Trie[A](nodes: SortedMap[Char, Trie[A]] = SortedMap.empty[Char, Trie[A]], 
   private def put(key: List[Char], value: A): Trie[A] = key match {
     case Nil => new Trie(nodes, values + value)
     case c :: rest =>
-      val node = nodes.get(c).getOrElse(new Trie()).put(rest, value)
+      val node = nodes.getOrElse(c, new Trie()).put(rest, value)
       new Trie(nodes + (c -> node), values)
   }
   

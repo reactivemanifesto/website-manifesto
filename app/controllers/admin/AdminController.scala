@@ -10,11 +10,10 @@ import play.api.mvc._
 import services.{OAuth2, OAuthConfig, UserService}
 
 import scala.util.control.NonFatal
-import play.api.Logger
-
 import scala.concurrent.{ExecutionContext, Future}
 import play.api.libs.ws.WSClient
 import models._
+import org.slf4j.LoggerFactory
 
 import scala.util.control.Exception._
 
@@ -24,6 +23,8 @@ case class FormattedSignatory(id: String, name: String, provider: String, provid
 class AdminController(components: ControllerComponents, config: OAuthConfig, oauth2: OAuth2,
   userService: UserService, ws: WSClient, implicit private val assetsFinder: AssetsFinder)(implicit ec: ExecutionContext)
   extends AbstractController(components) {
+
+  private val log = LoggerFactory.getLogger(classOf[AdminController])
 
   private implicit val lang = Lang("en")
 
@@ -72,7 +73,7 @@ class AdminController(components: ControllerComponents, config: OAuthConfig, oau
               }
             }).recover {
               case NonFatal(t) =>
-                Logger.warn("Error logging in user", t)
+                log.warn("Error logging in user", t)
                 Forbidden
             }
           } else {
