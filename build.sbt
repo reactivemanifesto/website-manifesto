@@ -13,7 +13,8 @@ libraryDependencies ++= Seq(
   "org.webjars" % "jquery" % "2.1.4",
   "org.webjars" % "knockout" % "2.3.0",
   "org.webjars" % "retinajs" % "0.0.2",
-  "org.reactivemongo" %% "play2-reactivemongo" % "0.16.0-play26",
+  "org.reactivemongo" %% "play2-reactivemongo" % "0.20.11-play26",
+  "org.reactivemongo" %% "reactivemongo-bson-macros" % "0.20.11",
   "com.softwaremill.macwire" %% "macros" % "2.3.1" % Provided
 )
 
