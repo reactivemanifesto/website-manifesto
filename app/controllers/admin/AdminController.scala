@@ -4,6 +4,7 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 import akka.stream.scaladsl.Source
+import akka.util.ByteString
 import controllers.AssetsFinder
 import play.api.i18n.Lang
 import play.api.mvc._
@@ -146,6 +147,8 @@ class AdminController(components: ControllerComponents, config: OAuthConfig, oau
           val sig = formatSig(raw)
           s"""${sig.id},"${sig.name}",${sig.provider},${sig.providerId},"${sig.providerScreenName}",${sig.signed},"${sig.avatarUrl}",${sig.lastRefreshed}"""
         }.intersperse("Id,Name,OAuth Provider,OAuth Provider Id,OAuth Provider Screen Name,Date Signed,Avatar URL,User Data Last Refreshed", "\n", "")
+        .grouped(100)
+        .map(_.foldLeft(ByteString.newBuilder)((builder, string) => builder.append(ByteString(string))).result())
       ).as("text/csv").withHeaders("Content-Disposition" -> "attachment;filename=signatories.csv")
     }
   }
