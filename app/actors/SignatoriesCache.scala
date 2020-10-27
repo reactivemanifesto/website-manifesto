@@ -2,10 +2,9 @@ package actors
 
 import java.time.Instant
 
-import akka.actor.{Actor, ActorRef, Timers}
+import akka.actor.{Actor, ActorLogging, ActorRef, Timers}
 import models._
-import reactivemongo.bson.BSONObjectID
-import play.api.{Configuration, Logger}
+import play.api.Configuration
 
 import scala.util._
 import services.{UserInfoProvider, UserService}
@@ -13,6 +12,7 @@ import services.{UserInfoProvider, UserService}
 import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration
 import scala.util.control.NonFatal
+import reactivemongo.api.bson.BSONObjectID
 
 /**
  * Messages sent/received by the signatories cache
@@ -89,7 +89,7 @@ object SignatoriesCache {
  *
  * The third state is a hot state.  The cache is hot and consistent.  All messages will be handled normally.
  */
-class SignatoriesCache(userService: UserService, userInfoProvider: UserInfoProvider) extends Actor with Timers {
+class SignatoriesCache(userService: UserService, userInfoProvider: UserInfoProvider) extends Actor with Timers with ActorLogging {
 
   // Internal messages, sent from asynchronous callbacks.
   case class SignatoryAdded(signatory: DbSignatory)
@@ -108,7 +108,7 @@ class SignatoriesCache(userService: UserService, userInfoProvider: UserInfoProvi
   // Prefix lookup index of the signatories
   private var signatoriesIndex = Trie.empty[DbSignatory]
 
-  private def update(signatories: List[DbSignatory]) = {
+  private def update(signatories: List[DbSignatory]): Unit = {
     this.signatories = signatories
     this.signatoriesHash = signatories.hashCode()
   }
@@ -122,17 +122,17 @@ class SignatoriesCache(userService: UserService, userInfoProvider: UserInfoProvi
   private val maxAgeUnsigned = config.get[FiniteDuration]("unsigned.maxAge")
   private val maxUnsignedDelete = config.get[Int]("unsigned.maxDelete")
 
-  override def preStart() = {
+  override def preStart(): Unit = {
     timers.startPeriodicTimer(Reload, Reload, config.get[FiniteDuration]("reloadInterval"))
     self ! Reload
   }
 
   // Default state, in error.
-  def receive = {
+  def receive: Receive = {
     case GetSignatories => sender ! Signatories(Nil, Nil.hashCode())
     case Search(_) => sender ! Signatories(Nil, Nil.hashCode())
-    case s: Sign => sender ! UpdateFailed("Not started")
-    case u: Unsign => sender ! UpdateFailed("Not started")
+    case _: Sign => sender ! UpdateFailed("Not started")
+    case _: Unsign => sender ! UpdateFailed("Not started")
     case Reload => loadSignatories()
   }
 
@@ -164,7 +164,7 @@ class SignatoriesCache(userService: UserService, userInfoProvider: UserInfoProvi
       val start = System.currentTimeMillis()
       signatoriesIndex = Trie(sigs.flatMap(s => extractSearchTerms(s).map(_ -> s)):_*)
       val time = System.currentTimeMillis() - start
-      Logger.info("Indexing " + signatories.length + " signatories took " + time + "ms")
+      log.info(s"Indexing ${signatories.length} signatories took ${time}ms")
       become(hot)
       sendPending()
       refreshProfiles()
@@ -196,7 +196,7 @@ class SignatoriesCache(userService: UserService, userInfoProvider: UserInfoProvi
       val from = sender()
       userService.sign(oid).recover {
         case NonFatal(e) =>
-          Logger.error("Error signing " + oid, e)
+          log.error("Error signing " + oid, e)
           Left("Unknown error")
       } foreach {
         case Left(err) => from ! UpdateFailed(err)
@@ -209,7 +209,7 @@ class SignatoriesCache(userService: UserService, userInfoProvider: UserInfoProvi
       val from = sender()
       userService.unsign(oid).recover {
         case NonFatal(e) =>
-          Logger.error("Error unsigning " + oid, e)
+          log.error("Error unsigning " + oid, e)
           Left("Unknown error")
       } foreach {
         case Left(err) => from ! UpdateFailed(err)
@@ -231,7 +231,7 @@ class SignatoriesCache(userService: UserService, userInfoProvider: UserInfoProvi
     case Reload => loadSignatories()
   }
 
-  private def sendPending() = {
+  private def sendPending(): Unit = {
     pendingRequests.foreach { p =>
       self.!(p._2)(p._1)
     }
@@ -251,17 +251,17 @@ class SignatoriesCache(userService: UserService, userInfoProvider: UserInfoProvi
     Signatories(results, results.hashCode())
   }
   
-  private def loadSignatories() = {
-    Logger.info("Loading signatories...")
+  private def loadSignatories(): Unit = {
+    log.info("Loading signatories...")
     become(loading)
 
     userService.loadSignatories().onComplete {
       case Success(results) =>
-        Logger.info("Loaded " + results.size + " signatories")
+        log.info("Loaded " + results.size + " signatories")
         self ! SignatoriesLoaded(results)
 
       case Failure(t) =>
-        Logger.error("Error loading signatories", t)
+        log.error("Error loading signatories", t)
         self ! LoadFailed
     }
   }
@@ -270,7 +270,7 @@ class SignatoriesCache(userService: UserService, userInfoProvider: UserInfoProvi
 
   private def deleteOldUnsignedProfiles(): Unit = {
     userService.removeOldUnsignedProfiles(maxAgeUnsigned, maxUnsignedDelete)
-      .foreach(deleted => Logger.info(s"Deleted $deleted old unsigned profiles"))
+      .foreach(deleted => log.info(s"Deleted $deleted old unsigned profiles"))
   }
 
   private def refreshProfiles(): Unit = {
@@ -281,7 +281,7 @@ class SignatoriesCache(userService: UserService, userInfoProvider: UserInfoProvi
       .take(profileRefreshMax)
       .takeWhile(_.profileLastRefreshed.forall(_.isBefore(refreshOlderThan)))
     refreshProfiles(toRefresh).foreach { _ =>
-      Logger.info(s"Refreshed ${toRefresh.size} profiles")
+      log.info(s"Refreshed ${toRefresh.size} profiles")
     }
   }
 
@@ -309,14 +309,14 @@ class SignatoriesCache(userService: UserService, userInfoProvider: UserInfoProvi
 
     oauthDetails.recover {
       case e =>
-        Logger.warn(s"Failed to fetch profile for signatory ${signatory.provider}", e)
+        log.warning(s"Failed to fetch profile for signatory ${signatory.provider}", e)
         None
     }.flatMap {
       case Some(oauthUser) =>
         if (signatory.provider != oauthUser.provider || signatory.name != oauthUser.name ||
           signatory.avatarUrl != oauthUser.avatar) {
 
-          Logger.info(s"Updating changed signatory ${signatory.provider} with details $oauthUser")
+          log.info(s"Updating changed signatory ${signatory.provider} with details $oauthUser")
 
           userService.updateProfile(signatory.copy(
             provider = oauthUser.provider,
@@ -329,7 +329,7 @@ class SignatoriesCache(userService: UserService, userInfoProvider: UserInfoProvi
       case None if signatory.provider.isInstanceOf[LinkedIn] =>
         userService.touchProfile(signatory.id)
       case None =>
-        Logger.info(s"Signatory ${signatory.provider} no longer found with provider")
+        log.info(s"Signatory ${signatory.provider} no longer found with provider")
         userService.touchProfile(signatory.id)
     }
   }

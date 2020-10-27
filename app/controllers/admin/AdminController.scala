@@ -4,17 +4,17 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 import akka.stream.scaladsl.Source
+import akka.util.ByteString
 import controllers.AssetsFinder
 import play.api.i18n.Lang
 import play.api.mvc._
 import services.{OAuth2, OAuthConfig, UserService}
 
 import scala.util.control.NonFatal
-import play.api.Logger
-
 import scala.concurrent.{ExecutionContext, Future}
 import play.api.libs.ws.WSClient
 import models._
+import org.slf4j.LoggerFactory
 
 import scala.util.control.Exception._
 
@@ -24,6 +24,8 @@ case class FormattedSignatory(id: String, name: String, provider: String, provid
 class AdminController(components: ControllerComponents, config: OAuthConfig, oauth2: OAuth2,
   userService: UserService, ws: WSClient, implicit private val assetsFinder: AssetsFinder)(implicit ec: ExecutionContext)
   extends AbstractController(components) {
+
+  private val log = LoggerFactory.getLogger(classOf[AdminController])
 
   private implicit val lang = Lang("en")
 
@@ -72,7 +74,7 @@ class AdminController(components: ControllerComponents, config: OAuthConfig, oau
               }
             }).recover {
               case NonFatal(t) =>
-                Logger.warn("Error logging in user", t)
+                log.warn("Error logging in user", t)
                 Forbidden
             }
           } else {
@@ -144,7 +146,9 @@ class AdminController(components: ControllerComponents, config: OAuthConfig, oau
         .map { raw =>
           val sig = formatSig(raw)
           s"""${sig.id},"${sig.name}",${sig.provider},${sig.providerId},"${sig.providerScreenName}",${sig.signed},"${sig.avatarUrl}",${sig.lastRefreshed}"""
-        }.intersperse("Id,Name,OAuth Provider,OAuth Provider Id,OAuth Provider Screen Name,Date Signed,Avatar URL,User Data Last Refreshed", "\n", "")
+        }.intersperse("Id,Name,OAuth Provider,OAuth Provider Id,OAuth Provider Screen Name,Date Signed,Avatar URL,User Data Last Refreshed\n", "\n", "\n")
+        .grouped(100)
+        .map(_.foldLeft(ByteString.newBuilder)((builder, string) => builder.append(ByteString(string))).result())
       ).as("text/csv").withHeaders("Content-Disposition" -> "attachment;filename=signatories.csv")
     }
   }

@@ -7,10 +7,10 @@ import akka.util.Timeout._
 import akka.util.Timeout
 import actors.SignatoriesCache._
 import play.api.libs.json.Json
-import reactivemongo.bson.BSONObjectID
 
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
+import reactivemongo.api.bson.BSONObjectID
 
 /**
  * Provides access to signatories.  All access to the signatories is through an actor, which ensures consistent caching.

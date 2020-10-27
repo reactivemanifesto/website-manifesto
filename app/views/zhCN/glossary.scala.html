@@ -84,7 +84,7 @@
 <p><a href="#Component">组件</a>执行其功能所依赖的一切都是资源， 资源必须要根据组件的需要而进行调配。 这包括 CPU 的分配、 内存以及持久化存储以及网络带宽、 内存带宽、 CPU 缓存、 内部插座的 CPU 链接、 可靠的计时器以及任务调度服务、 其他的输入和输出设备、 外部服务（如数据库或者网络文件系统等）等等。 所有的这些资源都必须要考虑到  <a href="#Scalability">弹性</a>和回弹性 ， 因为缺少必需的资源将妨碍组件在被需要时发挥正常作用。</p>
 
 <h2 id="Scalability"><a href="#Scalability" class="link-icon">@image("link-icon.png")</a>可伸缩性</h2>
-<p>一个<a href="#System">系统</a>通过利用更多的计算<a href="#Resource">资源</a>来提升其性能的能力， 是通过系统吞吐量的提升比上资源所增加的比值来衡量的。 一个完美的可伸缩性系统的特点是这两个数字是成正比的。 所分配的资源加倍也将使得吞吐量翻倍。 可伸缩性通常受限于系统中所引入的瓶颈或者同步点， 参见<a href="http://blogs.msdn.com/b/ddperf/archive/2009/04/29/parallel-scalability-isn-t-child-s-play-part-2-amdahl-s-law-vs-gunther-s-law.aspx" target="_blank">Amdahl 定律以及 Gunther 的通用可伸缩模型（ Amdahl’s Law and Gunther’s Universal Scalability Model）</a>。</p>
+<p>一个<a href="#System">系统</a>通过利用更多的计算<a href="#Resource">资源</a>来提升其性能的能力， 是通过系统吞吐量的提升比上资源所增加的比值来衡量的。 一个完美的可伸缩性系统的特点是这两个数字是成正比的。 所分配的资源加倍也将使得吞吐量翻倍。 可伸缩性通常受限于系统中所引入的瓶颈或者同步点， 参见<a href="https://docs.microsoft.com/en-ca/archive/blogs/ddperf/parallel-scalability-isnt-childs-play-part-2-amdahls-law-vs-gunthers-law" target="_blank">Amdahl 定律以及 Gunther 的通用可伸缩模型（ Amdahl’s Law and Gunther’s Universal Scalability Model）</a>。</p>
 
 <h2 id="System"><a href="#System" class="link-icon">@image("link-icon.png")</a>系统</h2>
 <p>系统为它的<a href="#User">用户</a>或者客户端提供服务。 系统可大可小， 它们可以包含许多<a href="#Component">组件</a>或者只有少数几个组件（参见 C.2.4）。 系统中的所有组件相互协作，从而提供这些服务。 在很多情况下， 位于相同系统中的多个组件之间，具有某种客户端——服务端的对应关系（例如，考虑一下，前端组件依赖于后端组件）。 一个系统中共享着一种通用的回弹性模型， 意即， 某个组件的<a href="#Failure">失败</a>将会在该系统的内部得到处理， 并由一个组件<a href="#Delegation">委托</a>给另外一个组件。 如果系统中的某系列组件的功能、<a href="#Resource">资源</a>或者失败模型都和系统中的其余部分相互<a href="#Isolation">隔离</a>， 那么将这一系列的组件看作是系统的子系统将更有利于系统设计。</p>

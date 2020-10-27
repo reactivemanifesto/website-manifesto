@@ -89,7 +89,7 @@
 <p><a href="#Component">コンポーネント</a>が自身の機能を実行するのに依存するあらゆるものが<strong>リソース</strong> (resource) であり、コンポーネントが必要とするのに従って供給されなければならない。これらのリソースには CPU 割り当て、メインメモリ、永続化ストレージなどがあり、同様にネットワーク帯域、メインメモリ帯域、CPU キャッシュ、ソケット間 CPU リンク、高信頼なタイマーとタスクスケジューリングサービス、その他の入出力デバイス、データベースやネットワークファイルシステムのような外部サービス、などが含まれる。必要なリソースが不足していると必要なときにコンポーネントが機能しないので、これらの全てのリソースについて<a href="#Elasticity">弾力性</a>と耐障害性を考慮する必要がある。</p>
 
 <h2 id="Scalability"><a href="#Scalability" class="link-icon">@image("link-icon.png")</a>スケーラビリティ</h2>
-<p>システムが自身の性能を向上させるためにさらなる計算<a href="#Resource">リソース</a>を利用する能力は、スループットの向上のリソースの増加に対する比率によって測定される。完全な<strong>スケーラビリティ</strong> (scalability) があるシステムでは両者の数値は比例するので、リソースの割り当てが二倍になればスループットも二倍になる。ボトルネックやシステム内の同期点は、一般にスケーラビリティが制約される原因となる。<a target="_blank" href="http://blogs.msdn.com/b/ddperf/archive/2009/04/29/parallel-scalability-isn-t-child-s-play-part-2-amdahl-s-law-vs-gunther-s-law.aspx">アムダールの法則とグンサーの普遍的スケーラビリティモデル</a> を見よ。</p>
+<p>システムが自身の性能を向上させるためにさらなる計算<a href="#Resource">リソース</a>を利用する能力は、スループットの向上のリソースの増加に対する比率によって測定される。完全な<strong>スケーラビリティ</strong> (scalability) があるシステムでは両者の数値は比例するので、リソースの割り当てが二倍になればスループットも二倍になる。ボトルネックやシステム内の同期点は、一般にスケーラビリティが制約される原因となる。<a target="_blank" href="https://docs.microsoft.com/en-ca/archive/blogs/ddperf/parallel-scalability-isnt-childs-play-part-2-amdahls-law-vs-gunthers-law">アムダールの法則とグンサーの普遍的スケーラビリティモデル</a> を見よ。</p>
 
 
 <h2 id="System"><a href="#System" class="link-icon">@image("link-icon.png")</a>システム</h2>

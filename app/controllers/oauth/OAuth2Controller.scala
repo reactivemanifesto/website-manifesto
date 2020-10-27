@@ -1,6 +1,7 @@
 package controllers.oauth
 
 import models.OAuthUser
+import org.slf4j.LoggerFactory
 import play.api._
 import play.api.libs.json.{JsError, JsResultException}
 import play.api.libs.ws.WSClient
@@ -17,6 +18,8 @@ import scala.concurrent.{ExecutionContext, Future}
 abstract class OAuth2Controller(components: ControllerComponents, ws: WSClient, oauth2: OAuth2,
   userService: UserService, name: String, settings: OAuth2Settings, extraParams: Seq[(String, String)] = Nil)
   (implicit ec: ExecutionContext) extends AbstractController(components) {
+
+  private val log = LoggerFactory.getLogger(getClass)
 
   /**
    * Authenticate action.  The same URL is used for authentication and for redirecting to with the access token.
@@ -52,7 +55,7 @@ abstract class OAuth2Controller(components: ControllerComponents, ws: WSClient, 
               case JsResultException(errors) =>
                 InternalServerError(views.html.jserror(name, messagesApi.preferred(req), JsError(errors)))
               case NonFatal(t) =>
-                Logger.warn("Error logging in user to " + name, t)
+                log.warn("Error logging in user to " + name, t)
                 Forbidden
             }
           } else {
