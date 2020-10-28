@@ -14,6 +14,10 @@ import play.modules.reactivemongo.DefaultReactiveMongoApi
 import router.Routes
 import com.softwaremill.macwire._
 import reactivemongo.api.MongoConnection
+import reactivemongo.api.MongoConnection.ParsedURIWithDB
+
+import scala.concurrent.Await
+import scala.concurrent.duration._
 
 class ReactiveManifestoApplicationLoader extends ApplicationLoader {
   def load(context: Context) = {
@@ -26,11 +30,10 @@ class ReactiveManifestoApplicationLoader extends ApplicationLoader {
       LoggerConfigurator(environment.classLoader).foreach(_.configure(environment))
 
       // see https://github.com/ReactiveMongo/Play-ReactiveMongo/issues/245
-      lazy val mongodbUri: MongoConnection.ParsedURI = MongoConnection.parseURI(configuration.underlying.getString("mongodb.uri")).get
+      lazy val mongodbUri: ParsedURIWithDB = Await.result(MongoConnection.fromStringWithDB(configuration.underlying.getString("mongodb.uri")), 1.minute)
       lazy val reactiveMongoApi = new DefaultReactiveMongoApi(
-        name = "default",
         parsedUri = mongodbUri,
-        dbName = mongodbUri.db.getOrElse(sys.error("Could not parse database name from mongodb.uri: " + mongodbUri)),
+        dbName = mongodbUri.db,
         strictMode = false,
         configuration = configuration,
         applicationLifecycle = applicationLifecycle
@@ -55,7 +58,7 @@ class ReactiveManifestoApplicationLoader extends ApplicationLoader {
 
 
       override lazy val httpErrorHandler: HttpErrorHandler = new ReactiveManifestoErrorHandler(environment,
-        configuration, sourceMapper, Some(router))
+        configuration, devContext.map(_.sourceMapper), Some(router))
 
       override lazy val router = {
         val prefix: String = "/"

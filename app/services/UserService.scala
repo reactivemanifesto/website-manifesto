@@ -4,14 +4,13 @@ import java.time.Instant
 
 import play.modules.reactivemongo.ReactiveMongoApi
 import models._
-import reactivemongo.api.collections.bson.BSONCollection
-import reactivemongo.api.commands.GetLastError
-import reactivemongo.bson._
+import reactivemongo.api.bson.collection.BSONCollection
 
 import scala.concurrent.{ExecutionContext, Future}
 import reactivemongo.api.Cursor
 
 import scala.concurrent.duration.FiniteDuration
+import reactivemongo.api.bson._
 
 class UserService(reactiveMongo: ReactiveMongoApi)(implicit ec: ExecutionContext) {
 
@@ -42,14 +41,8 @@ class UserService(reactiveMongo: ReactiveMongoApi)(implicit ec: ExecutionContext
       case None =>
         val signatory = DbSignatory(BSONObjectID.generate, user.provider, user.name, user.avatar, user.signed, Some(Instant.now()))
         for {
-          lastError <- collection.insert(signatory, writeConcern = GetLastError.Default)
-        } yield {
-          if (lastError.ok) {
-            signatory
-          } else {
-            throw new RuntimeException("Unable to save signatory: " + lastError.writeErrors)
-          }
-        }
+          _ <- collection.insert.one(signatory)
+        } yield signatory
     }
 
     for {
@@ -98,16 +91,10 @@ class UserService(reactiveMongo: ReactiveMongoApi)(implicit ec: ExecutionContext
       case Some(signatory) => signatory.signed match {
         case None =>
           val signed = Instant.now()
-          collectionFuture.flatMap(_.update(BSONDocument("_id" -> id), BSONDocument("$set" ->
-            BSONDocument("signed" -> BSONDateTime(signed.toEpochMilli))
-          ), GetLastError.Default)).map {
-            lastError =>
-              if (lastError.ok) {
-                Right(signatory.copy(signed = Some(signed)))
-              } else {
-                throw new RuntimeException("Error signing: " + lastError.errmsg)
-              }
-          }
+          for {
+            collection <- collectionFuture
+            _ <- collection.update.one(q = BSONDocument("_id" -> id), u = BSONDocument("$set" -> BSONDocument("signed" -> BSONDateTime(signed.toEpochMilli))))
+          } yield Right(signatory.copy(signed = Some(signed)))
 
         case Some(signed) => Future.successful(Left("Already signed on " + signed))
       }
@@ -126,16 +113,10 @@ class UserService(reactiveMongo: ReactiveMongoApi)(implicit ec: ExecutionContext
 
     findUser(id).flatMap {
       case Some(signatory) =>
-        collectionFuture.flatMap(_.update(BSONDocument("_id" -> id), BSONDocument("$unset" ->
-          BSONDocument("signed" -> BSONInteger(1))
-        ), GetLastError.Default)).map {
-          lastError =>
-            if (lastError.ok) {
-              Right(signatory.copy(signed = None))
-            } else {
-              throw new RuntimeException("Error unsigning: " + lastError.errmsg)
-            }
-        }
+        for {
+          collection <- collectionFuture
+          _ <- collection.update.one(q = BSONDocument("_id" -> id), u = BSONDocument("$unset" -> BSONDocument("signed" -> BSONInteger(1))))
+        } yield Right(signatory.copy(signed = None))
 
       case None => Future.successful(Left("Signatory not found"))
     }
@@ -169,14 +150,8 @@ class UserService(reactiveMongo: ReactiveMongoApi)(implicit ec: ExecutionContext
 
     for {
       collection <- collectionFuture
-      lastError <- collection.update(BSONDocument("_id" -> signatory.id), update, GetLastError.Default)
-    } yield {
-      if (lastError.ok) {
-        ()
-      } else {
-        throw new RuntimeException(s"Error updating signatory with id ${signatory.id}: " + lastError.errmsg)
-      }
-    }
+      _ <- collection.update.one(q = BSONDocument("_id" -> signatory.id), u = update)
+    } yield ()
   }
 
   /**
@@ -185,16 +160,8 @@ class UserService(reactiveMongo: ReactiveMongoApi)(implicit ec: ExecutionContext
   def touchProfile(id: BSONObjectID): Future[Unit] = {
     for {
       collection <- collectionFuture
-      lastError <- collection.update(BSONDocument("_id" -> id), BSONDocument("$set" ->
-        BSONDocument("profileLastRefreshed" -> BSONDateTime(System.currentTimeMillis()))
-      ), GetLastError.Default)
-    } yield {
-      if (lastError.ok) {
-        ()
-      } else {
-        throw new RuntimeException(s"Error touching signatory with id $id: " + lastError.errmsg)
-      }
-    }
+      _ <- collection.update.one(q = BSONDocument("_id" -> id), u = BSONDocument("$set" -> BSONDocument("profileLastRefreshed" -> BSONDateTime(System.currentTimeMillis()))))
+    } yield ()
   }
 
   def removeOldUnsignedProfiles(maxAgeUnsigned: FiniteDuration, maxDelete: Int): Future[Int] = {
@@ -208,11 +175,7 @@ class UserService(reactiveMongo: ReactiveMongoApi)(implicit ec: ExecutionContext
     } yield {
       val toDelete = sigs.filter(_._id.time < deleteOlder).map(_._id)
       if (toDelete.nonEmpty) {
-        collection.remove(BSONDocument(
-          "_id" -> BSONDocument("$in" -> toDelete),
-          // Not necessary, but safe
-          "signed" -> BSONDocument("$exists" -> false)
-        )).map(_.n)
+        collection.delete.one(q = BSONDocument("_id" -> BSONDocument("$in" -> toDelete), "signed" -> BSONDocument("$exists" -> false))).map(_.n)
       } else {
         Future.successful(0)
       }
