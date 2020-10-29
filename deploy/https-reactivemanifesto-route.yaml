@@ -1,0 +1,23 @@
+# This is OpenShift online specific yaml
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  labels:
+    app: reactivemanifesto-website
+  name: reactivemanifesto.org
+  namespace: reactivemanifesto-website
+spec:
+  host: reactivemanifesto.org
+  port:
+    targetPort: 9000-tcp
+  to:
+    kind: Service
+    name: reactivemanifesto-website-svc
+    weight: 100
+  wildcardPolicy: None
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+    certificate: GET_FROM_COMODOSSL
+    key: BUILT_LOCALLY_AND_FED_TO_COMODOSSL
+    caCertificate: GET_FROM_COMODOSSL

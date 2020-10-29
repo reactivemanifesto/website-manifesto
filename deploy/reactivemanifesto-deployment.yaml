@@ -128,13 +128,10 @@ spec:
           name: reactivemanifesto-website
           resources:
             limits:
-              memory: 1200Mi
+              memory: 1500Mi
           ports:
             - containerPort: 9000
               protocol: TCP
-          resources:
-            limits:
-              memory: 1200Mi
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
       dnsPolicy: ClusterFirst
