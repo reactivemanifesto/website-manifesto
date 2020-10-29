@@ -33,4 +33,4 @@ javaOptions in Universal ++= Seq(
 packageName in Docker := name.value
 version in Docker := "latest"
 dockerPermissionStrategy := DockerPermissionStrategy.Run
-dockerRepository := sys.env.get("DOCKER_REPOSITORY").orElse(Some("registry.pro-us-east-1.openshift.com/reactivemanifesto-website"))
+dockerRepository := sys.env.get("DOCKER_REPOSITORY").orElse(Some("registry.pro-us-east-1.openshift.com/staging-reactivemanifesto-website"))
