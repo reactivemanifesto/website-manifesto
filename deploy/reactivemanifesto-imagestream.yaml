@@ -1,0 +1,20 @@
+# This is OpenShift online specific yaml
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: reactivemanifesto-website
+  namespace: reactivemanifesto-website
+spec:
+  lookupPolicy:
+    local: false
+  tags:
+    - annotations: null
+      from:
+        kind: DockerImage
+        name: 'registry.pro-us-east-1.openshift.com/reactivemanifesto-website/reactivemanifesto-website:latest'
+      generation: 6
+      importPolicy:
+        scheduled: true
+      name: latest
+      referencePolicy:
+        type: Source

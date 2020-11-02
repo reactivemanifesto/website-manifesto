@@ -20,6 +20,7 @@ GET           /$lang<[a-z]{2}(?:-[A-Z]{2})?>/cookie          controllers.Applica
 GET           /signatories                                   controllers.SignatoriesController.list(page: Int ?= 1, per_page: Int ?= 30)
 GET           /signatories/total                             controllers.SignatoriesController.count
 GET           /search                                        controllers.SignatoriesController.search(page: Int ?= 1, per_page: Int ?= 30, query)
+GET           /health                                        controllers.Application.health
 
 GET           /user                                          controllers.CurrentUserController.getUser
 DELETE        /user                                          controllers.CurrentUserController.logOut

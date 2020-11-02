@@ -190,4 +190,6 @@ class Application(components: ControllerComponents, implicit private val assetsF
       render(ru, views.html.ru.glossary())
     )
   }
+
+  def health = Action { Ok("All set!") }
 }

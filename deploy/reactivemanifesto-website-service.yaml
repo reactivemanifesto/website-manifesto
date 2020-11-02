@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: reactivemanifesto-website
+  name: reactivemanifesto-website-svc
+spec:
+  clusterIP: 172.30.132.34
+  ports:
+    - name: 9000-tcp
+      port: 9000
+      protocol: TCP
+      targetPort: 9000
+  selector:
+    app: reactivemanifesto-website
+  sessionAffinity: None
+  type: ClusterIP
