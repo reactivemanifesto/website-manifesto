@@ -12,10 +12,8 @@ class ReactiveManifestoFilter extends EssentialFilter {
     if (rh.path == "/robots.txt") {
       log.info(s"${rh.method} '${rh.uri}' made from '${rh.remoteAddress}', User-Agent: '${rh.headers.get(HeaderNames.USER_AGENT).getOrElse("")}'")
     }
-    if (!rh.secure) {
-      Accumulator.done(Results.MovedPermanently(s"https://${rh.host}${rh.uri}"))
-    } else {
-      next(rh)
-    }
+
+    next(rh)
+
   }
 }
