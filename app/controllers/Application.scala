@@ -181,6 +181,7 @@ class Application(components: ControllerComponents, implicit private val assetsF
 
     cached(routes.Application.glossary,
       render(en, views.html.en.glossary()),
+      render(fr, views.html.fr.glossary()),
       render(ja, views.html.ja.glossary()),
       render(it, views.html.it.glossary()),
       render(de, views.html.de.glossary()),
