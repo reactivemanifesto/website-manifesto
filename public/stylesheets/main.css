@@ -844,21 +844,47 @@ figure figcaption:before {
   }
 }
 
-
-body .optanon-alert-box-wrapper .optanon-alert-box-bottom-top {
-    height: 20px
-}
-body .optanon-alert-box-wrapper .optanon-alert-box-bottom-padding {
-    padding-bottom: 20px
-}
-.optanon-cookie-policy-group-name {
-    font-weight: 700
-}
-.optanon-toggle-display {
+.ot-sdk-show-settings {
   cursor: pointer;
+  border: none !important;
+  padding: 0 !important;
 }
+.ot-sdk-show-settings:hover {
+  background-color: transparent !important;
+}
+
 .legal-links a {
   font-size: .75rem;
   text-transform: uppercase;
   opacity: .7
+}
+
+.companion {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem 0;
+
+}
+
+.companion .r-logo {
+  font-size: 1.5rem;
+  margin: 0;
+  font-weight: 200;
+  font-family: "Helvetica Neue", sans-serif;
+  text-decoration: none;
+  line-height: 1.3;
+}
+.companion .r-logo span {
+  border-bottom: 2px solid #fff;
+}
+.companion .r-logo:hover {
+  color: #fff;
+  text-decoration: none;
+}
+
+.companion em {
+  opacity: 0.7;
 }
