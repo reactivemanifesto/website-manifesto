@@ -17,6 +17,9 @@ manifesto.publishVersion = Published on September 16 2014. (v2.0)
 manifesto.downloadAsPDF = Download as PDF
 manifesto.suggestImprovements = Suggest improvements
 
+#Principle
+principles.cta = Read the Reactive Principles
+
 # List
 list.title = Signatures
 list.loading = Loading...
