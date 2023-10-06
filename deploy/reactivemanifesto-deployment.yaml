@@ -108,7 +108,7 @@ spec:
                   key: TWITTER_BEARER_TOKEN
                   name: twitter-bearer-token
           image: >-
-            docker.cloudsmith.io/docker/generic/reactive:latest
+            docker.cloudsmith.io/generic/reactive:latest
           imagePullPolicy: Always
           livenessProbe:
             failureThreshold: 3
