@@ -1,5 +1,6 @@
 # This is OpenShift online specific yaml
-apiVersion: image.openshift.io/v1
+#apiVersion: image.openshift.io/v1
+apiVersion: apps/v1
 kind: ImageStream
 metadata:
   name: reactivemanifesto-website
@@ -11,7 +12,8 @@ spec:
     - annotations: null
       from:
         kind: DockerImage
-        name: 'registry.pro-us-east-1.openshift.com/reactivemanifesto-website/reactivemanifesto-website:latest'
+#        name: 'registry.pro-us-east-1.openshift.com/reactivemanifesto-website/reactivemanifesto-website:latest'
+        name: docker/generic/reactive:latest
       generation: 6
       importPolicy:
         scheduled: true

@@ -1,36 +1,41 @@
-apiVersion: apps.openshift.io/v1
-kind: DeploymentConfig
+apiVersion: apps/v1
+#kind: DeploymentConfig
+kind: Deployment
 metadata:
-  creationTimestamp: '2020-08-07T13:52:53Z'
+#  creationTimestamp: '2020-08-07T13:52:53Z'
   generation: 3
   labels:
     app: reactivemanifesto-website
   name: reactivemanifesto-website
   namespace: reactivemanifesto-website
-  resourceVersion: '1111306392'
-  selfLink: >-
-    /apis/apps.openshift.io/v1/namespaces/reactivemanifesto-website/deploymentconfigs/reactivemanifesto-website
-  uid: 4a06c80d-d8b5-11ea-9233-12b5519f9b58
+#  resourceVersion: '1111306392'
+#  selfLink: >-
+#    /apis/apps.openshift.io/v1/namespaces/reactivemanifesto-website/deploymentconfigs/reactivemanifesto-website
+#  uid: 4a06c80d-d8b5-11ea-9233-12b5519f9b58
 spec:
   replicas: 1
   revisionHistoryLimit: 10
   selector:
-    app: reactivemanifesto-website
-    deploymentconfig: reactivemanifesto-website
+    matchLabels:
+      app: reactivemanifesto-website
+      deploymentconfig: reactivemanifesto-website
   strategy:
-    activeDeadlineSeconds: 21600
-    resources: {}
-    rollingParams:
-      intervalSeconds: 1
+#    activeDeadlineSeconds: 21600
+#    resources: {}
+#    rollingParams:
+#      intervalSeconds: 1
+#      maxSurge: 1
+#      maxUnavailable: 1
+#      timeoutSeconds: 600
+#      updatePeriodSeconds: 1
+    rollingUpdate:
       maxSurge: 1
       maxUnavailable: 1
-      timeoutSeconds: 600
-      updatePeriodSeconds: 1
-    type: Rolling
+    type: RollingUpdate
   template:
     metadata:
       annotations:
-        openshift.io/generated-by: OpenShiftWebConsole
+#        openshift.io/generated-by: OpenShiftWebConsole
       creationTimestamp: null
       labels:
         app: reactivemanifesto-website
@@ -103,7 +108,7 @@ spec:
                   key: TWITTER_BEARER_TOKEN
                   name: twitter-bearer-token
           image: >-
-            docker-registry.default.svc:5000/reactivemanifesto-website/reactivemanifesto-website@sha256:8cb6ef7bd0b651ef21dffad8166228b9f00a584c5afe1182aef05d024254cef2
+            docker.cloudsmith.io/docker/generic/reactive:latest
           imagePullPolicy: Always
           livenessProbe:
             failureThreshold: 3
@@ -139,20 +144,20 @@ spec:
       schedulerName: default-scheduler
       securityContext: {}
       terminationGracePeriodSeconds: 30
-  test: false
-  triggers:
-    - imageChangeParams:
-        automatic: true
-        containerNames:
-          - reactivemanifesto-website
-        from:
-          kind: ImageStreamTag
-          name: 'reactivemanifesto-website:latest'
-          namespace: reactivemanifesto-website
-        lastTriggeredImage: >-
-          docker-registry.default.svc:5000/reactivemanifesto-website/reactivemanifesto-website@sha256:8cb6ef7bd0b651ef21dffad8166228b9f00a584c5afe1182aef05d024254cef2
-      type: ImageChange
-    - type: ConfigChange
+#  test: false
+#  triggers:
+#    - imageChangeParams:
+#        automatic: true
+#        containerNames:
+#          - reactivemanifesto-website
+#        from:
+#          kind: ImageStreamTag
+#          name: 'reactivemanifesto-website:latest'
+#          namespace: reactivemanifesto-website
+#        lastTriggeredImage: >-
+#          docker-registry.default.svc:5000/reactivemanifesto-website/reactivemanifesto-website@sha256:8cb6ef7bd0b651ef21dffad8166228b9f00a584c5afe1182aef05d024254cef2
+#     type: ImageChange
+#    - type: ConfigChange
 status:
   availableReplicas: 0
   conditions:
@@ -167,11 +172,11 @@ status:
       reason: ReplicationControllerUpdated
       status: 'True'
       type: Progressing
-  details:
-    causes:
-      - type: ConfigChange
-    message: config change
-  latestVersion: 1
+#  details:
+#    causes:
+#      - type: ConfigChange
+#    message: config change
+#  latestVersion: 1
   observedGeneration: 3
   replicas: 2
   unavailableReplicas: 2

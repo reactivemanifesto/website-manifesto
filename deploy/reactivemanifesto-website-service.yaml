@@ -5,7 +5,8 @@ metadata:
     app: reactivemanifesto-website
   name: reactivemanifesto-website-svc
 spec:
-  clusterIP: 172.30.132.34
+#  clusterIP: 172.30.132.34
+  clusterIP: None # Setting to None for a headless
   ports:
     - name: 9000-tcp
       port: 9000
