@@ -1,7 +1,6 @@
 package services
 
 import java.time.Instant
-
 import play.modules.reactivemongo.ReactiveMongoApi
 import models._
 import reactivemongo.api.bson.collection.BSONCollection
@@ -9,12 +8,17 @@ import reactivemongo.api.bson.collection.BSONCollection
 import scala.concurrent.{ExecutionContext, Future}
 import reactivemongo.api.Cursor
 
-import scala.concurrent.duration.FiniteDuration
+import scala.concurrent.duration.{DurationInt, FiniteDuration}
 import reactivemongo.api.bson._
 
 class UserService(reactiveMongo: ReactiveMongoApi)(implicit ec: ExecutionContext) {
 
-  private val collectionFuture: Future[BSONCollection] = reactiveMongo.database.map(_.apply[BSONCollection]("signatories"))
+  def getDatabaseInfo = {
+    s"Active: ${reactiveMongo.connection.active} - ${reactiveMongo.connection.database("reactivemanifesto")}"
+  }
+
+  private val collectionFuture: Future[BSONCollection] = reactiveMongo.connection.database("reactivemanifesto", reactivemongo.api.FailoverStrategy(1.minute, 3, _*3)).map(_.apply[BSONCollection]("signatories"))
+  //reactiveMongo.database.map(_.apply[BSONCollection]("signatories"))
 
   /**
    * Find the given OAuth user, and if the user can't be found, create a new one.

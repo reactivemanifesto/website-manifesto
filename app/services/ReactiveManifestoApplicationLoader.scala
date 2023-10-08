@@ -38,6 +38,7 @@ class ReactiveManifestoApplicationLoader extends ApplicationLoader {
         configuration = configuration,
         applicationLifecycle = applicationLifecycle
       )
+      reactiveMongoApi.connection.database("reactivemanifesto", reactivemongo.api.FailoverStrategy(1.minute, 3, _*3))
 
       lazy val oauthConfig = OAuthConfig.fromConfiguration(configuration)
       lazy val userService = wire[UserService]
