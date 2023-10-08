@@ -261,7 +261,7 @@ class SignatoriesCache(userService: UserService, userInfoProvider: UserInfoProvi
         self ! SignatoriesLoaded(results)
 
       case Failure(t) =>
-        log.error("Error loading signatories", t)
+        log.error(t, "Error loading signatories")
         self ! LoadFailed
     }
   }
