@@ -22,9 +22,9 @@ Run:
     play ~run
 
 
-# Production Operation Info (OpenShift)
+# Production Operation Info (GKE)
 
-Deployment is via Redhat's Openshift Online cluster.
+Deployment is via Google Kubernetes Engine.
 
 ### Docker image and deploying
 
@@ -34,42 +34,15 @@ We use the sbt-native plugin to produce a docker image.
 
 **Note**: This defaults to stage (which is not set up currently) - prod should be done from CI, but if really wanted you can set the repository override via an environment variable `export DOCKER_REPOSITORY=registry.pro-us-east-1.openshift.com/reactivemanifesto-website`
 
-Once you have a docker image you can upload it to your openshift registry.  There are a number of ways to do this, so you may need to check your documentation.
+Once you have a docker image you can upload it to cloudsmith.  There are a number of ways to do this, so you may need to check your documentation.
 
 Currently that mechanism is to deploy the local image to Lightbend's internal repo.  You will need to make sure that you have access and will require both the username and password (or contact internal-it@lightbend.com).
 
-NOTE: You'll need to install the `oc` CLI, which can be accessed from https://console.pro-us-east-1.openshift.com/console/command-line
+Then push:
 
-First login to `oc`:
+`docker push docker.cloudsmith.io/lightbend/internal-registry/website-manifesto:latest`
 
-`oc login https://api.pro-us-east-1.openshift.com -u USERNAME -p PASSWORD`
+### GKE Setup
 
-and change to the correct project if needed:
-
-`oc project reactivemanifesto-website`
-
-After which you can set up your docker:
-
-`docker login -u USERNAME -p $(oc whoami -t) https://registry.pro-us-east-1.openshift.com`
-
-Then push the local image:
-
-`docker push registry.pro-us-east-1.openshift.com/reactivemanifesto-website/reactivemanifesto-website:latest`
-
-### Openshift Setup
-
-In case it needs re-built, the YAML files are in the deploy folder:
-
-* reactivemanifesto-deployment.yaml
-* reactivemanifesto-imagestream.yaml
-* https-reactivemanifesto-route.yaml
-* https-www-reactivemanifesto-route.yaml
-* reactivemanifesto-website-service.yaml
-
-You can choose to run these scripts via your `oc` cli or simply upload them into the openshift UI under their respective headings.
-Note: with oc you will need to first `oc login`
-
-ie. `oc apply -f deployment/reactivemanifesto-deployment.yaml` (repeat for each yaml)
-
-Secrets are managed through the openshift > secrets UI and are linked via the deployment.yaml
+In case it needs re-built, the YAML files are in the deploy folder and the secrets in 1Password
 

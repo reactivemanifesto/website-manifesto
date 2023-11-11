@@ -1,17 +1,69 @@
 apiVersion: v1
 kind: Service
 metadata:
+  annotations:
+    cloud.google.com/neg: '{"ingress":true}'
+    cloud.google.com/neg-status: '{"network_endpoint_groups":{"9000":"k8s1-42e4f580-reactivemanifest-reactivemanifesto-we-90-f935911d"},"zones":["us-east4-a","us-east4-b","us-east4-c"]}'
+  creationTimestamp: "2023-10-09T00:23:56Z"
+  generateName: reactivemanifesto-website-
   labels:
     app: reactivemanifesto-website
-  name: reactivemanifesto-website-svc
+  managedFields:
+    - apiVersion: v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:metadata:
+          f:annotations:
+            f:cloud.google.com/neg: {}
+          f:generateName: {}
+          f:labels:
+            .: {}
+            f:app: {}
+        f:spec:
+          f:internalTrafficPolicy: {}
+          f:ports:
+            .: {}
+            k:{"port":9000,"protocol":"TCP"}:
+              .: {}
+              f:port: {}
+              f:protocol: {}
+              f:targetPort: {}
+          f:selector: {}
+          f:sessionAffinity: {}
+          f:type: {}
+      manager: GoogleCloudConsole
+      operation: Update
+      time: "2023-10-25T04:43:20Z"
+    - apiVersion: v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:metadata:
+          f:annotations:
+            f:cloud.google.com/neg-status: {}
+      manager: glbc
+      operation: Update
+      subresource: status
+      time: "2023-11-10T15:33:14Z"
+  name: reactivemanifesto-website-7n7gz
+  namespace: reactivemanifesto-website
+  resourceVersion: "36649053"
+  uid: e35de7de-9415-4a6c-b3b3-c1d1837267c9
 spec:
-  clusterIP: 172.30.132.34
+  clusterIP: 34.118.227.133
+  clusterIPs:
+    - 34.118.227.133
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+    - IPv4
+  ipFamilyPolicy: SingleStack
   ports:
-    - name: 9000-tcp
-      port: 9000
+    - port: 9000
       protocol: TCP
       targetPort: 9000
   selector:
     app: reactivemanifesto-website
+    deploymentconfig: reactivemanifesto-website
   sessionAffinity: None
   type: ClusterIP
+status:
+  loadBalancer: {}
