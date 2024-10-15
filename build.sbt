@@ -30,8 +30,12 @@ javaOptions in Universal ++= Seq(
   "-Dpidfile.path=/dev/null"
 )
 
+lazy val gitSha: String = Process("git rev-parse --short HEAD").!!.trim
+lazy val currentDate: String = new SimpleDateFormat("yyyyMMdd-HHmm").format(new Date())
+lazy val uniqueTag: String = s"$currentDate-$gitSha"
+
 packageName in Docker := name.value
-version in Docker := "latest"
+version in Docker := uniqueTag
 dockerPermissionStrategy := DockerPermissionStrategy.Run
 dockerRepository := sys.env.get("DOCKER_REPOSITORY").orElse(Some("docker.cloudsmith.io/lightbend/internal-registry"))
 dockerCommands ++= Seq(
@@ -42,3 +46,5 @@ dockerCommands ++= Seq(
   ExecCmd("RUN", "wget", "-o-", "https://downloads.mongodb.com/compass/mongodb-mongosh_1.10.6_amd64.deb"),
   ExecCmd("RUN", "dpkg", "-i", "mongodb-mongosh_1.10.6_amd64.deb")
 )
+
+dockerAliases ++= Seq(dockerAlias.value.withTag(Option("latest")))
