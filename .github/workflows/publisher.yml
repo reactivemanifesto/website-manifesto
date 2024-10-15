@@ -1,0 +1,91 @@
+name: PublishWorkflow
+
+on: 
+  push: 
+    branches:
+      - master
+
+env:
+  JAVA_OPTS: '-Dhttps.protocols=TLSv1.2'
+  DOCKER_REPOSITORY: 'docker.cloudsmith.io/lightbend/internal-registry'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up JDK 11
+      uses: actions/setup-java@v3
+      with:
+        java-version: '11'
+        distribution: 'temurin'
+        cache: 'sbt'
+          
+    - name: Build
+      run: |
+        sbt -J-Xms4G -J-Xmx4096M -J-Xss16M -Dakka.test.timefactor=4 clean test docker:publishLocal | tee build.log
+        perl -ne 'print "$1\n" if /\[info\] Built image .* with tags \[([^,]+)/' "build.log"
+        UNIQUE_VERSION=$(grep 'Built image' build.log | sed -n 's/.*with tags \[\([^,]*\),.*/\1/p')
+        echo "UNIQUE_VERSION=$UNIQUE_VERSION" >> $GITHUB_ENV
+
+    - name: Log in to Cloudsmith Docker registry
+      uses: docker/login-action@v2
+      with:
+        registry: docker.cloudsmith.io
+        username: ${{ secrets.CLOUDSMITH_MACHINE_USER }}
+        password: ${{ secrets.CLOUDSMITH_MACHINE_PASSWORD }}
+
+    - name: Tag Docker image
+      run: docker tag docker.cloudsmith.io/lightbend/internal-registry/reactivemanifesto-website:${{ env.UNIQUE_VERSION }} docker.cloudsmith.io/lightbend/internal-registry/reactivemanifesto-website:${{ env.UNIQUE_VERSION }}
+
+    - name: Push Docker image
+      run: docker push docker.cloudsmith.io/lightbend/internal-registry/reactivemanifesto-website:${{ env.UNIQUE_VERSION }}
+
+    - name: Log out of Cloudsmith Docker registry
+      run: docker logout docker.cloudsmith.io
+
+    - name: Set up Google Cloud SDK
+      uses: google-github-actions/setup-gcloud@v1
+      with:
+        version: 'latest'
+
+    - name: Install gke-gcloud-auth-plugin
+      run: |
+        gcloud components install gke-gcloud-auth-plugin
+
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v1
+      with:
+        credentials_json: ${{ secrets.GCP_LIGHTBEND_INFRASTRUCTURE_CREDS }}
+
+    - name: Configure Docker for gcloud
+      run: gcloud auth configure-docker
+
+    - name: Get Kubernetes credentials
+      run: gcloud container clusters get-credentials infra-east4 --region us-east4 --project lightbend-infrastructure
+
+    - name: Update Kubernetes deployment image
+      run: |
+        kubectl set image deployment/reactivemanifesto-website reactivemanifesto-website=docker.cloudsmith.io/lightbend/internal-registry/reactivemanifesto-website:${{ env.UNIQUE_VERSION }} --namespace reactivemanifesto-website
+
+    - name: Verify Deployment
+      run: kubectl rollout status deployment/reactivemanifesto-website --namespace reactivemanifesto-website
+
+    - name: Email on failure
+      if: ${{ failure() }}
+      uses: dawidd6/action-send-mail@6063705cefe50cb915fc53bb06d4049cae2953b2
+      with:
+        server_address: smtp.gmail.com
+        server_port: 465
+        secure: true
+        username: ${{secrets.MAIL_USERNAME}}
+        password: ${{secrets.MAIL_PASSWORD}}
+        subject: "Failed: ${{ github.workflow }} / ${{ github.job }}"
+        to: ${{secrets.MAIL_SEND_TO}}
+        from: Internal IT
+        body: |
+          Job ${{ github.job }} in workflow ${{ github.workflow }} of ${{github.repository}} failed!
+          https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}
