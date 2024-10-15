@@ -1,6 +1,8 @@
 import com.typesafe.sbt.packager.docker.DockerPermissionStrategy
 import com.typesafe.sbt.packager.docker.DockerPlugin.autoImport.dockerPermissionStrategy
 import com.typesafe.sbt.packager.docker._
+import java.text.SimpleDateFormat
+import java.util.Date
 
 lazy val `reactivemanifesto` = (project in file("."))
   .enablePlugins(PlayScala, LauncherJarPlugin)
