@@ -1,0 +1,14 @@
+apiVersion: networking.gke.io/v1beta1
+kind: FrontendConfig
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"networking.gke.io/v1beta1","kind":"FrontendConfig","metadata":{"annotations":{},"name":"frontendconfig","namespace":"reactivemanifesto-website"},"spec":{"sslPolicy":"global-tls-policy"}}
+  creationTimestamp: "2025-02-10T09:50:32Z"
+  generation: 1
+  name: frontendconfig
+  namespace: reactivemanifesto-website
+  resourceVersion: "552910494"
+  uid: 155baa3c-46ab-4517-97f1-8be04a87f0b0
+spec:
+  sslPolicy: global-tls-policy

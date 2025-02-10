@@ -1,0 +1,25 @@
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"networking.gke.io/v1","kind":"ManagedCertificate","metadata":{"annotations":{},"name":"reactive-manifesto","namespace":"reactivemanifesto-website"},"spec":{"domains":["reactivemanifesto.org","www.reactivemanifesto.org"]}}
+  creationTimestamp: "2025-02-10T09:19:18Z"
+  generation: 4
+  name: reactive-manifesto
+  namespace: reactivemanifesto-website
+  resourceVersion: "552913360"
+  uid: c52a1198-5a41-4973-be45-81c7b4e37a8d
+spec:
+  domains:
+  - reactivemanifesto.org
+  - www.reactivemanifesto.org
+status:
+  certificateName: mcrt-f9763912-d9f8-4c0f-8efa-336ef806be07
+  certificateStatus: Active
+  domainStatus:
+  - domain: reactivemanifesto.org
+    status: Active
+  - domain: www.reactivemanifesto.org
+    status: Active
+  expireTime: "2025-05-11T02:40:01.000-07:00"
