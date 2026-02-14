@@ -17,7 +17,7 @@ class GitHubController(components: ControllerComponents, config: OAuthConfig, ws
 
   val name = "GitHub"
 
-  def redirectUri(implicit req: RequestHeader) = routes.GitHubController.authenticate().absoluteURL()
+  def redirectUri(implicit req: RequestHeader) = routes.GitHubController.authenticate().absoluteURL(true)
 
   def getUserInfo(accessToken: String): Future[OAuthUser] = userInfoProvider.lookupGitHubCurrentUser(accessToken)
 }
