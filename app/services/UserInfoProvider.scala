@@ -105,7 +105,7 @@ class UserInfoProvider(ws: WSClient, oauthConfig: OAuthConfig)(implicit ec: Exec
   }
 
   def lookupLinkedInCurrentUser(accessToken: String): Future[OAuthUser] = {
-    ws.url("https://api.linkedin.com/v2/me?projection=(id,localizedFirstName,localizedLastName,profilePicture(displayImage~:playableStreams))")
+    ws.url("https://api.linkedin.com/v2/userinfo")
       .addHttpHeaders("Authorization" -> s"Bearer $accessToken").get().map { response =>
       if (response.status == 200) {
         try {
@@ -166,20 +166,12 @@ object UserInfoProvider {
   }
 
   val linkedinOauthUserReads: Reads[OAuthUser] = (
-    (__ \ "id").read[String] and
-      (__ \ "localizedFirstName").read[String] and
-      (__ \ "localizedLastName").read[String] and
-      // omg.... linkedin.... what have you done.... hardest to use API ever.
-      (__ \ "profilePicture" \ "displayImage~" \ "elements").readOptIfMissing[List[JsObject]]
-    ) { (id, firstName, lastName, images) =>
-
-    val avatar = images.getOrElse(Nil)
-      .collect(Function.unlift(_.asOpt[LinkedInImageElement]))
-        .filter(_.size >= 50)
-        .sortBy(_.size)
-        .map(_.url)
-        .headOption
-
+    (__ \ "sub").read[String] and          // OIDC uses 'sub' as the unique ID
+    (__ \ "given_name").read[String] and   // Simple first name
+    (__ \ "family_name").read[String] and  // Simple last name
+    (__ \ "picture").readNullable[String]  // Direct URL to the profile picture
+  ) { (id, firstName, lastName, avatar) =>
+    // Note: 'sub' is the unique identifier in OIDC
     OAuthUser(LinkedIn(id), s"$firstName $lastName", avatar)
   }
 
