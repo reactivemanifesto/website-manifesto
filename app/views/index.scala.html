@@ -119,7 +119,7 @@
         <ul class="full" data-bind="foreach: $data">
             <li>
                 <span data-bind="if: $data.avatarUrl">
-                    <img class="avatar" data-bind="attr: { src: $data.avatarUrl }" width="25" height="25"/>
+                    <img class="avatar" data-bind="event: { error: $data.fallbackAvatar }, attr: { src: $data.avatarUrl }" width="25" height="25"/>
                 </span>
                 <cite class="user" data-bind="text: name"></cite>
             </li>
