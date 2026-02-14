@@ -42,7 +42,7 @@ class AdminController(components: ControllerComponents, config: OAuthConfig, oau
   def login = Action { implicit req =>
     val state = oauth2.generateState
     Redirect(oauth2.signInUrl(settings, redirectUri, state)).withSession("state" -> state)
-  }ab
+  }
 
   def authenticate = Action.async { implicit req =>
 
