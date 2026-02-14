@@ -14,7 +14,7 @@ class LinkedInController(components: ControllerComponents, config: OAuthConfig, 
   userService: UserService, userInfoProvider: UserInfoProvider)(implicit ec: ExecutionContext)
   extends OAuth2Controller(components, ws, oauth2, userService, "LinkedIn", config.linkedIn, Seq("response_type" -> "code")) {
 
-  def redirectUri(implicit req: RequestHeader) = routes.LinkedInController.authenticate().absoluteURL()
+  def redirectUri(implicit req: RequestHeader) = routes.LinkedInController.authenticate().absoluteURL(true)
 
   def getUserInfo(accessToken: String): Future[OAuthUser] = userInfoProvider.lookupLinkedInCurrentUser(accessToken)
 }

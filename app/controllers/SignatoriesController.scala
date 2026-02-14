@@ -66,8 +66,8 @@ class SignatoriesController(components: ControllerComponents, signatoriesActor: 
           // It's minus 1 so that if it's an exact divisor, we don't get one extra page
           val lastPage = (total - 1) / perPage
           val linkHeader = if (lastPage > page) {
-            val nextUrl= reverseRoute(page + 2, perPage).absoluteURL()
-            val lastUrl = reverseRoute(lastPage + 1, perPage).absoluteURL()
+            val nextUrl= reverseRoute(page + 2, perPage).absoluteURL(true)
+            val lastUrl = reverseRoute(lastPage + 1, perPage).absoluteURL(true)
             Some("Link" -> s"""<$nextUrl>; rel=next, <$lastUrl>; rel=last""")
           } else None
 

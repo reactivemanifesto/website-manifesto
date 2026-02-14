@@ -16,6 +16,6 @@ class GoogleController(components: ControllerComponents, config: OAuthConfig, ws
 
   def getUserInfo(accessToken: String): Future[OAuthUser] = userInfoProvider.lookupGoogleCurrentUser(accessToken)
 
-  def redirectUri(implicit req: RequestHeader) = routes.GoogleController.authenticate().absoluteURL()
+  def redirectUri(implicit req: RequestHeader) = routes.GoogleController.authenticate().absoluteURL(true)
 
 }

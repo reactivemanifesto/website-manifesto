@@ -37,7 +37,7 @@ class AdminController(components: ControllerComponents, config: OAuthConfig, oau
 
   private val Expires = 7200000
 
-  private def redirectUri(implicit req: RequestHeader) = routes.AdminController.authenticate().absoluteURL()
+  private def redirectUri(implicit req: RequestHeader) = routes.AdminController.authenticate().absoluteURL(true)
 
   def login = Action { implicit req =>
     val state = oauth2.generateState
