@@ -2,14 +2,21 @@
 
 
 @optanonInsert = {
-    var shareUrl = encodeURIComponent('https://www.reactivemanifesto.org');
-    var fbIframe = '<iframe src="https://www.facebook.com/plugins/like.php?href=' + shareUrl + '&width=120&layout=button_count&action=like&size=small&share=false&height=21&appId" ' +
-                   'width="120" height="21" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" ' +
-                   'allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>';
-    Optanon.InsertHtml(
-        '<a href="https://twitter.com/share" class="twitter-share-button" data-lang="en">Tweet</a>' + fbIframe, 
+
+Optanon.InsertHtml(
+        '<a href="https://twitter.com/share" class="twitter-share-button" data-lang="en">Tweet</a>' +
+        '<div class="fb-like" data-href="https://www.reactivemanifesto.org" data-width="120" data-layout="button_count" data-action="like" data-size="small" data-share="false"></div>', 
         'share-buttons', 
-        null, 
+        function() {
+            setTimeout(function() {
+                if (window.FB) {
+                    window.FB.XFBML.parse(document.getElementById('share-buttons'));
+                }
+                if (window.twttr) {
+                    window.twttr.widgets.load();
+                }
+            }, 100);
+        }, 
         null, 
         4
     );
@@ -17,7 +24,7 @@
 
 @main(messages("title"), dir, optanonInsert) {
     <div id="fb-root"></div>
-    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v19.0"></script>
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v19.0&appId=1454420736243602"></script>
     <div id="sign">
         <span class="close">×</span>
         <div data-bind="with: loggedInUser">
