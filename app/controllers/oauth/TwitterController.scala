@@ -46,7 +46,7 @@ class TwitterController(components: ControllerComponents, config: OAuthConfig, w
           sync(NotFound(Json.toJson(Json.obj("error" -> "Failed to retrieve access token"))))
       }
     }.getOrElse(
-      config.twitter.retrieveRequestToken(routes.TwitterController.authenticate().absoluteURL()) match {
+      config.twitter.retrieveRequestToken(routes.TwitterController.authenticate().absoluteURL(true)) match {
         case Right(t) =>
           // We received the unauthorized tokens in the OAuth object - store it before we proceed
           sync(Redirect(config.twitter.redirectUrl(t.token))
