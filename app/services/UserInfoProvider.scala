@@ -106,7 +106,9 @@ class UserInfoProvider(ws: WSClient, oauthConfig: OAuthConfig)(implicit ec: Exec
 
   def lookupLinkedInCurrentUser(accessToken: String): Future[OAuthUser] = {
     ws.url("https://api.linkedin.com/v2/userinfo")
-      .addHttpHeaders("Authorization" -> s"Bearer $accessToken").get().map { response =>
+      .addHttpHeaders("Authorization" -> s"Bearer $accessToken",
+                      "LinkedIn-Version" -> "202502",
+                      "X-Restli-Protocol-Version" -> "2.0.0").get().map { response =>
       if (response.status == 200) {
         try {
           response.json.as(linkedinOauthUserReads)
