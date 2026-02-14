@@ -2,7 +2,7 @@
 
 
 @optanonInsert = {
-    Optanon.InsertHtml('<a href="https://twitter.com/share" class="twitter-share-button" data-lang="@lang.code">Tweet</a><div class="fb-like" data-href="https://www.reactivemanifesto.org" data-width="" data-layout="button_count" data-action="like" data-size="small" data-share="false"></div>', 'share-buttons', null, null, 4)
+    Optanon.InsertHtml('<a href="https://twitter.com/share" class="twitter-share-button" data-lang="@lang.code">Tweet</a><div class="fb-like" data-href="https://www.reactivemanifesto.org" data-width="" data-layout="button_count" data-action="like" data-size="small" data-share="false"></div>', 'share-buttons', function() {if (typeof FB !== 'undefined') {FB.XFBML.parse();} if (typeof twttr !== 'undefined') {twttr.widgets.load();}}, null, 4)
 }
 
 @main(messages("title"), dir, optanonInsert) {
