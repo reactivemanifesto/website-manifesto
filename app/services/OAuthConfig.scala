@@ -35,7 +35,7 @@ object OAuthConfig {
       name = "linkedin",
       signInUrl = "https://www.linkedin.com/oauth/v2/authorization",
       accessTokenUrl = "https://www.linkedin.com/oauth/v2/accessToken",
-      scopes = Seq("profile")
+      scopes = Seq("openid", "profile")
     )
 
     val twitterKey = ConsumerKey(
